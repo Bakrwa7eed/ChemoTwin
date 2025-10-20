@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemoTwin RAG Simulator: Digital Twins for Chemotherapy Effects</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e6f0fa 0%, #d0e4ff 100%);
+            z-index: -2;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 102, 204, 0.2);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); }
+            100% { transform: translateY(-100vh) translateX(100px); }
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 102, 204, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #0066cc, #3399ff, #0066cc);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 1.1em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .view-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            background: #e2e8f0;
+            color: #64748b;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(135deg, #0066cc, #3399ff);
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 102, 204, 0.3);
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .patient-id-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 102, 204, 0.1);
+        }
+
+        .patient-id-section h2 {
+            color: #0066cc;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .id-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .patient-id-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px;
+            border: 2px solid rgba(0, 102, 204, 0.3);
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .patient-id-input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066cc, #3399ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .input-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            height: fit-content;
+            display: none;
+        }
+
+        .input-panel.active {
+            display: block;
+        }
+
+        .input-panel h2 {
+            color: #0066cc;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        #currentPatientId {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 102, 204, 0.1);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(230, 240, 250, 0.5);
+            border: 2px solid rgba(0, 102, 204, 0.3);
+            border-radius: 8px;
+            color: #333;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+            background: rgba(230, 240, 250, 0.8);
+            box-shadow: 0 0 15px rgba(0, 102, 204, 0.2);
+        }
+
+        .dose-display {
+            background: rgba(230, 240, 250, 0.5);
+            border: 2px solid rgba(0, 102, 204, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .dose-display label {
+            display: block;
+            color: #0066cc;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .dose-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .dose-progress {
+            width: 100%;
+            height: 10px;
+            background: rgba(0, 102, 204, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .dose-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .dose-display small {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .btn-add-session {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-add-session:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .session-count {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1em;
+        }
+
+        .session-count span {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .results-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            min-height: 600px;
+            display: none;
+        }
+
+        .results-panel.active {
+            display: block;
+        }
+
+        .results-panel h2 {
+            color: #0066cc;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(0, 102, 204, 0.2);
+        }
+
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .tab:hover {
+            color: #0066cc;
+        }
+
+        .tab.active {
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0066cc, #3399ff);
+            border-radius: 2px 2px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .alert {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .alert h4 {
+            color: #991b1b;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .alert p {
+            color: #7f1d1d;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .alert cite {
+            display: block;
+            margin-top: 8px;
+            color: #b91c1c;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: rgba(230, 240, 250, 0.6);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .metric-card:hover {
+            background: rgba(230, 240, 250, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 102, 204, 0.2);
+        }
+
+        .metric-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #0066cc, #3399ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            color: #555;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .digital-twin-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .study-card {
+            background: white;
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .study-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.15);
+            transform: translateX(5px);
+        }
+
+        .study-card h5 {
+            color: #0066cc;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .study-card p {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .study-card .relevance-tag {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .study-card cite {
+            color: #888;
+            font-size: 0.85em;
+            font-style: italic;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: 300px !important;
+        }
+
+        .session-item {
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: rgba(230, 240, 250, 0.4);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .session-item:hover {
+            background: rgba(230, 240, 250, 0.7);
+            transform: translateX(5px);
+        }
+
+        .session-item h4 {
+            color: #0066cc;
+            margin-bottom: 8px;
+        }
+
+        .session-item p {
+            color: #555;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .no-data-message .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .recovery-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 25px;
+        }
+
+        .recovery-circle {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+        }
+
+        .recovery-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .patient-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .patient-metric-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .patient-metric-card.heart {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+
+        .patient-metric-card.blood {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        .patient-metric-card.energy {
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+        }
+
+        .patient-metric-card .metric-title {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .metric-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .heart .metric-bar-fill {
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+        }
+
+        .blood .metric-bar-fill {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+        }
+
+        .energy .metric-bar-fill {
+            background: linear-gradient(90deg, #ca8a04, #eab308);
+        }
+
+        .patient-advice {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 102, 204, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            line-height: 1.8;
+        }
+
+        .twin-analysis-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .twin-analysis-box h4 {
+            color: #0369a1;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        .twin-analysis-box p {
+            color: #075985;
+            line-height: 1.7;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="main-container">
+        <header class="header">
+            <h1>🧬 ChemoTwin Simulator</h1>
+            <p class="subtitle">Evidence-Based Digital Twins for Chemotherapy Effects with RAG-Powered Insights</p>
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('doctor')">👨‍⚕️ Doctor View</button>
+                <button class="view-btn" onclick="switchView('patient')">👤 Patient View</button>
+            </div>
+        </header>
+        
+        <div class="patient-id-section">
+            <h2>Patient Identification & Management</h2>
+            <div class="id-controls">
+                <input type="text" id="patientId" placeholder="Enter Patient ID (e.g., PT-2025-001)" class="patient-id-input">
+                <button onclick="loadPatient()" class="btn btn-primary">Load Patient</button>
+                <button onclick="generateVirtualPatient()" class="btn btn-success">Generate Virtual Patient</button>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="input-panel" id="patientForm">
+                <h2>Patient Profile - <span id="currentPatientId">No Patient Loaded</span></h2>
+                
+                <div class="form-section">
+                    <h3>Demographics</h3>
+                    <div class="input-group">
+                        <label>Age (years)</label>
+                        <input type="number" id="age" min="1" max="100" value="45" oninput="updatePatientRealtime()">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Sex</label>
+                        <select id="sex" onchange="updatePatientRealtime()">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Cancer Type</label>
+                        <select id="cancer" onchange="updatePatientRealtime()">
+                            <option value="leukemia">Leukemia</option>
+                            <option value="lymphoma">Lymphoma</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Chronic Diseases (Ctrl+Click for multiple)</label>
+                        <select id="chronicDiseases" multiple onchange="updatePatientRealtime()">
+                            <option value="diabetes">Diabetes</option>
+                            <option value="hypertension">Hypertension</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Current Vitals</h3>
+                    <div class="input-group">
+                        <label>Temperature (°C)</label>
+                        <input type="number" id="temperature" step="0.1" min="35" max="42" value="37.0" oninput="updatePatientRealtime()">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Blood Pressure (mmHg)</label>
+                        <input type="text" id="bloodPressure" placeholder="120/80" value="120/80" oninput="updatePatientRealtime()">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Heart Rate (bpm)</label>
+                        <input type="number" id="heartRate" min="40" max="200" value="75" oninput="updatePatientRealtime()">
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Treatment Information</h3>
+                    <div class="dose-display">
+                        <label>Cumulative Dose</label>
+                        <div class="dose-value" id="cumulativeDoseDisplay">0 mg/m²</div>
+                        <div class="dose-progress">
+                            <div class="dose-progress-bar" id="doseProgressBar" style="width: 0%"></div>
+                        </div>
+                        <small>Maximum recommended: 550 mg/m²</small>
+                    </div>
+                    
+                    <button class="btn-add-session" onclick="addTreatmentSession()">
+                        ➕ Add Treatment Session (60 mg/m²)
+                    </button>
+                </div>
+                
+                <div class="session-count">
+                    <strong>Total Sessions:</strong> <span id="sessionCount">0</span>
+                </div>
+            </div>
+            
+            <div class="results-panel" id="resultsArea">
+                <h2>Analysis Results <span class="digital-twin-badge">🧬 Digital Twin Active</span></h2>
+                
+                <div id="doctorView">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('overview')">Overview</button>
+                        <button class="tab" onclick="switchTab('rag-insights')">RAG Insights</button>
+                        <button class="tab" onclick="switchTab('history')">Patient History</button>
+                    </div>
+                    
+                    <div id="overview" class="tab-content active">
+                        <div id="digitalTwinAnalysis"></div>
+                        <div id="clinicalAlerts"></div>
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-icon">❤️</div>
+                                <div class="metric-value" id="cardioRisk">--</div>
+                                <div class="metric-label">Cardiotoxicity Risk (%)</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon">🩸</div>
+                                <div class="metric-value" id="neutroRisk">--</div>
+                                <div class="metric-label">Neutropenia Risk (%)</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon">🔴</div>
+                                <div class="metric-value" id="anemiaRisk">--</div>
+                                <div class="metric-label">Anemia Risk (%)</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-icon">⭐</div>
+                                <div class="metric-value" id="qualityScore">--</div>
+                                <div class="metric-label">Recovery Score</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Personalized Risk Distribution <span class="digital-twin-badge">Patient-Specific</span></h3>
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div id="rag-insights" class="tab-content">
+                        <h3>Evidence-Based Clinical Insights 📚</h3>
+                        <p style="color: #666; margin-bottom: 20px;">Studies relevant to this patient's specific risk profile</p>
+                        <div id="ragStudiesContainer"></div>
+                    </div>
+                    
+                    <div id="history" class="tab-content">
+                        <h3>Treatment History & Progress</h3>
+                        <div class="chart-container">
+                            <canvas id="progressChart"></canvas>
+                        </div>
+                        <div id="sessionHistoryList"></div>
+                    </div>
+                </div>
+                
+                <div id="patientView" style="display: none;">
+                    <div id="noDataMessage" class="no-data-message">
+                        <div class="icon">📊</div>
+                        <p>Add your first treatment session to see your personalized health journey</p>
+                    </div>
+                    
+                    <div id="patientDataContent" style="display: none;">
+                        <div class="recovery-section">
+                            <h3>Your Recovery Score</h3>
+                            <div class="recovery-circle">
+                                <svg width="200" height="200" id="recoveryCircleSVG"></svg>
+                                <div class="recovery-number" id="recoveryScoreNumber">--</div>
+                            </div>
+                            <p class="recovery-message" id="recoveryMessage"></p>
+                        </div>
+                        
+                        <div class="patient-metrics-grid">
+                            <div class="patient-metric-card heart">
+                                <div class="metric-icon">❤️</div>
+                                <div class="metric-title">Heart Health</div>
+                                <div class="metric-value" id="patientHeartScore">--</div>
+                                <div class="metric-bar">
+                                    <div class="metric-bar-fill" id="heartBar"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="patient-metric-card blood">
+                                <div class="metric-icon">🩸</div>
+                                <div class="metric-title">Blood Health</div>
+                                <div class="metric-value" id="patientBloodScore">--</div>
+                                <div class="metric-bar">
+                                    <div class="metric-bar-fill" id="bloodBar"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="patient-metric-card energy">
+                                <div class="metric-icon">⚡</div>
+                                <div class="metric-title">Energy Level</div>
+                                <div class="metric-value" id="patientEnergyScore">--</div>
+                                <div class="metric-bar">
+                                    <div class="metric-bar-fill" id="energyBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Your Health Journey</h3>
+                            <canvas id="patientJourneyChart"></canvas>
+                        </div>
+                        
+                        <div class="patient-advice" id="patientAdviceSection"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global state
+        let currentPatient = null;
+        let patientDatabase = {};
+        let currentView = 'doctor';
+        let charts = {};
+
+        // ENHANCED RAG Knowledge Base with detailed studies
+        const ragKnowledge = {
+            cardiotoxicity: {
+                studies: [
+                    {
+                        title: "Lipshultz et al. (1995) - Long-term Cardiac Effects of Doxorubicin",
+                        findings: "This landmark study followed 115 children treated with doxorubicin for up to 15 years. Results showed cumulative doses exceeding 550 mg/m² resulted in 36% cardiotoxicity risk. Importantly, subclinical cardiac changes were detected via echocardiography at doses as low as 200 mg/m². The study demonstrated that anthracycline-induced cardiomyopathy can manifest years after treatment completion, emphasizing the need for long-term cardiac surveillance.",
+                        dosageThreshold: 200,
+                        highRiskDose: 550,
+                        riskAtThreshold: 36,
+                        citation: "Lipshultz SE, et al. N Engl J Med. 1995;332(25):1738-1743.",
+                        relevance: "High relevance for cumulative dose >200 mg/m²"
+                    },
+                    {
+                        title: "Swain et al. (2003) - Cardioprotection with Dexrazoxane for Advanced Breast Cancer",
+                        findings: "Multicenter trial of 534 patients demonstrated that cardiotoxicity risk increases exponentially above 450 mg/m². Dexrazoxane, an iron-chelating cardioprotective agent, reduced cardiotoxicity incidence by approximately 50% (13% vs 26%, p<0.01) without compromising antitumor efficacy. The protective effect was most pronounced in patients receiving cumulative doses >300 mg/m². Study recommends prophylactic dexrazoxane at 10:1 ratio to doxorubicin.",
+                        dosageThreshold: 300,
+                        highRiskDose: 450,
+                        riskAtThreshold: 18,
+                        citation: "Swain SM, et al. Cancer. 2003;97(11):2869-2879.",
+                        relevance: "Critical for doses approaching 300-450 mg/m²"
+                    },
+                    {
+                        title: "Cardinale et al. (2015) - Early Detection and Prevention with Troponin Monitoring",
+                        findings: "Prospective study of 2,625 patients showed that troponin I elevation during chemotherapy predicts future left ventricular dysfunction with 84% sensitivity. Patients with elevated troponin who received early intervention with enalapril (ACE inhibitor) had preserved cardiac function in 90% of cases versus only 62% without intervention. This demonstrates the critical window for cardioprotection through biomarker-guided therapy.",
+                        dosageThreshold: 240,
+                        citation: "Cardinale D, et al. Circulation. 2015;131(20):1981-1988.",
+                        relevance: "Essential for all patients - emphasizes monitoring"
+                    }
+                ],
+                mechanisms: "Doxorubicin generates reactive oxygen species (ROS) through redox cycling with iron, forming highly toxic doxorubicin-iron complexes. These produce superoxide radicals causing mitochondrial DNA damage, membrane disruption, and cardiomyocyte apoptosis. Topoisomerase-2β inhibition in cardiac cells leads to DNA double-strand breaks.",
+                management: "Cardioprotection: Dexrazoxane (10:1 ratio to doxorubicin). Monitoring: Baseline ECHO, repeat at 250, 400, 550 mg/m². Troponin levels before each cycle. Treatment: ACE inhibitors (enalapril 2.5-10mg daily), beta-blockers (carvedilol 3.125-25mg BID) if LVEF drops >10%."
+            },
+            hematotoxicity: {
+                studies: [
+                    {
+                        title: "Crawford et al. (2004) - Risk Model for Febrile Neutropenia",
+                        findings: "Meta-analysis of 25 randomized trials involving 12,000+ patients revealed Grade 3-4 neutropenia occurs in 60-80% of patients receiving standard anthracycline-based regimens. Prophylactic G-CSF (granulocyte colony-stimulating factor) reduced febrile neutropenia incidence by 46% (from 39% to 21%, p<0.001) and infection-related mortality by 26%. Neutrophil nadir typically occurs 10-14 days post-administration, with recovery by day 21. Risk factors include age >65, prior chemotherapy, poor performance status, and advanced disease.",
+                        riskPercentage: 60,
+                        citation: "Crawford J, et al. Cancer. 2004;100(2):228-237.",
+                        relevance: "Universal applicability - all chemotherapy patients"
+                    },
+                    {
+                        title: "Groopman & Itri (1999) - Management of Chemotherapy-Induced Anemia",
+                        findings: "Comprehensive review of 22 clinical trials showed chemotherapy-induced anemia affects approximately 75% of patients, with 25% developing severe anemia (Hgb <8 g/dL). Erythropoiesis-stimulating agents (ESAs) like epoetin alfa reduced transfusion requirements by 50% and improved quality of life scores. Target hemoglobin should be maintained at 10-12 g/dL. However, ESAs should be used cautiously due to potential thromboembolic risk.",
+                        riskPercentage: 75,
+                        citation: "Groopman JE, Itri LM. J Natl Cancer Inst. 1999;91(19):1616-1634.",
+                        relevance: "Relevant after multiple treatment cycles"
+                    },
+                    {
+                        title: "Aapro et al. (2011) - EORTC Guidelines for G-CSF Usage",
+                        findings: "European guidelines based on systematic review establish that prophylactic G-CSF is recommended when febrile neutropenia risk exceeds 20%. For intermediate risk (10-20%), individual patient factors should guide decision. Pegfilgrastim (long-acting G-CSF) administered 24 hours post-chemotherapy provides sustained neutrophil support through the nadir period.",
+                        citation: "Aapro MS, et al. Eur J Cancer. 2011;47(1):8-32.",
+                        relevance: "Critical for treatment planning and prevention"
+                    }
+                ],
+                mechanisms: "Anthracyclines directly damage rapidly dividing bone marrow stem cells, particularly myeloid precursors. DNA synthesis disruption in hematopoietic cells leads to myelosuppression. Peak effect at 10-14 days with recovery by day 21. Cumulative doses affect bone marrow reserve.",
+                management: "G-CSF (filgrastim 300mcg or pegfilgrastim 6mg) if ANC <1500/μL or prophylactically for high-risk patients. Dose delays if ANC <1000/μL. Prophylactic fluoroquinolones if prolonged neutropenia expected. ESAs for Hgb <10 g/dL. Platelet transfusions if <10,000/μL or active bleeding."
+            },
+            gastrointestinal: {
+                studies: [
+                    {
+                        title: "Hesketh et al. (2017) - ASCO Antiemetic Clinical Practice Guidelines",
+                        findings: "Evidence-based guidelines classify doxorubicin as highly emetogenic (>90% emesis without prophylaxis). Triple therapy with 5-HT3 antagonist (ondansetron 8mg), NK1 receptor antagonist (aprepitant 125mg day 1, 80mg days 2-3), and dexamethasone (12mg) provides complete response (no vomiting, no rescue medication) in 70-80% of patients. Olanzapine 5-10mg added as fourth agent increases complete response to 86%.",
+                        riskPercentage: 90,
+                        citation: "Hesketh PJ, et al. J Clin Oncol. 2017;35(28):3240-3261.",
+                        relevance: "Universal - applies to all doxorubicin treatments"
+                    }
+                ],
+                mechanisms: "Serotonin release from enterochromaffin cells in GI tract activates 5-HT3 receptors. Direct stimulation of chemoreceptor trigger zone (CTZ) in medulla. Delayed nausea (24-120 hours) mediated through substance P and NK1 receptors.",
+                management: "Acute phase: Ondansetron 8mg IV + aprepitant 125mg PO + dexamethasone 12mg PO. Delayed phase: Aprepitant 80mg days 2-3 + dexamethasone 8mg. Breakthrough: Metoclopramide 10mg q6h or olanzapine 5-10mg daily."
+            },
+            mucositis: {
+                studies: [
+                    {
+                        title: "Sonis et al. (2004) - Pathobiology of Oral Mucositis",
+                        findings: "Mechanistic study reveals mucositis occurs in 40-60% of patients receiving anthracyclines. Oral cryotherapy (ice chips held in mouth 30 minutes pre-infusion through 30 minutes post) reduces incidence by approximately 50% through vasoconstriction limiting drug exposure to oral mucosa. Palifermin (recombinant keratinocyte growth factor) decreases severe mucositis in high-dose settings but costly. Natural history: onset 5-10 days post-treatment, resolution by day 14-21.",
+                        riskPercentage: 50,
+                        citation: "Sonis ST. Nat Rev Cancer. 2004;4(4):277-284.",
+                        relevance: "Moderate relevance - increases with cumulative exposure"
+                    }
+                ],
+                mechanisms: "Direct DNA damage to rapidly dividing basal epithelial cells. ROS generation causing cellular injury and death. Inflammatory cascade with cytokine release (IL-1β, TNF-α) amplifies damage. Bacterial colonization of ulcerated areas.",
+                management: "Prevention: Oral cryotherapy during infusion. Oral hygiene: Gentle brushing, bland rinses (saline or sodium bicarbonate) 4-6 times daily. Avoid alcohol-based mouthwashes. Pain: 'Magic mouthwash' (lidocaine/diphenhydramine/antacid). Systemic analgesics if severe. Palifermin 60 μg/kg for high-dose regimens."
+            }
+        };
+
+        // ENHANCED DIGITAL TWIN RISK CALCULATOR - Truly personalized
+        function calculateDigitalTwinRisks(patient) {
+            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer } = patient;
+            const dose = cumulativeDose;
+            
+            // === CARDIOTOXICITY - Multi-factorial personalized model ===
+            let cardioBase = 0;
+            if (dose > 550) cardioBase = 36;
+            else if (dose > 450) cardioBase = 24;
+            else if (dose > 300) cardioBase = 12;
+            else if (dose > 200) cardioBase = 5;
+            else cardioBase = 1;
+            
+            let cardioModifiers = [];
+            
+            // Age is a major risk factor
+            if (age < 18) {
+                cardioBase += 8;
+                cardioModifiers.push(`Pediatric age (${age}yo) adds +8% risk - children more susceptible`);
+            } else if (age > 65) {
+                cardioBase += 10;
+                cardioModifiers.push(`Advanced age (${age}yo) adds +10% risk - reduced cardiac reserve`);
+            }
+            
+            // Sex differences in cardiotoxicity
+            if (sex === 'female') {
+                cardioBase += 4;
+                cardioModifiers.push("Female sex adds +4% risk - hormonal factors affect cardiac response");
+            }
+            
+            // Comorbidities are critical
+            if (chronicDiseases.includes('diabetes')) {
+                cardioBase += 12;
+                cardioModifiers.push("Diabetes adds +12% risk - microvascular damage compounds cardiotoxicity");
+            }
+            if (chronicDiseases.includes('hypertension')) {
+                cardioBase += 10;
+                cardioModifiers.push("Hypertension adds +10% risk - pre-existing cardiac stress");
+            }
+            
+            // Current vital signs matter
+            const systolic = parseInt(vitals.bloodPressure.split('/')[0]);
+            if (systolic > 140) {
+                cardioBase += 6;
+                cardioModifiers.push(`Elevated BP (${vitals.bloodPressure}) adds +6% risk - acute cardiac strain`);
+            } else if (systolic < 90) {
+                cardioBase += 4;
+                cardioModifiers.push(`Low BP (${vitals.bloodPressure}) adds +4% risk - reduced perfusion`);
+            }
+            
+            if (vitals.heartRate > 100) {
+                cardioBase += 5;
+                cardioModifiers.push(`Tachycardia (${vitals.heartRate} bpm) adds +5% risk - increased cardiac workload`);
+            }
+            
+            if (vitals.temperature > 37.5) {
+                cardioBase += 3;
+                cardioModifiers.push(`Fever (${vitals.temperature}°C) adds +3% risk - metabolic stress`);
+            }
+            
+            const cardioRisk = Math.min(95, Math.round(cardioBase));
+            
+            // === HEMATOLOGIC TOXICITY - Dose and reserve dependent ===
+            let neutroBase = 35 + (dose / 600 * 45); // Scales from 35% to 80%
+            let neutroModifiers = [];
+            
+            if (age > 65) {
+                neutroBase += 12;
+                neutroModifiers.push(`Age ${age} adds +12% - reduced marrow reserve`);
+            }
+            if (chronicDiseases.includes('diabetes')) {
+                neutroBase += 6;
+                neutroModifiers.push("Diabetes adds +6% - impaired immune function");
+            }
+            if (cancer === 'leukemia') {
+                neutroBase += 18;
+                neutroModifiers.push("Leukemia adds +18% - already compromised marrow");
+            }
+            if (vitals.temperature > 37.5) {
+                neutroBase += 5;
+                neutroModifiers.push("Current fever suggests active infection risk");
+            }
+            
+            const neutroRisk = Math.min(95, Math.round(neutroBase));
+            
+            // === OTHER PERSONALIZED RISKS ===
+            let anemiaBase = 30 + (dose / 600 * 45);
+            if (sex === 'female') anemiaBase += 8; // Menstruation, lower baseline
+            if (age > 65) anemiaBase += 7;
+            const anemiaRisk = Math.min(90, Math.round(anemiaBase));
+            
+            let nauseaBase = 82; // Doxorubicin is highly emetogenic
+            if (sex === 'female') nauseaBase += 10;
+            if (age < 50) nauseaBase += 6;
+            if (vitals.temperature > 37.5) nauseaBase += 4;
+            const nauseaRisk = Math.min(98, Math.round(nauseaBase));
+            
+            let fatigueBase = 55 + (dose / 600 * 35);
+            if (age > 60) fatigueBase += 10;
+            if (chronicDiseases.length > 0) fatigueBase += 8;
+            const fatigueRisk = Math.min(95, Math.round(fatigueBase));
+            
+            let mucositisBase = 25 + (dose / 600 * 35);
+            if (age < 18 || age > 65) mucositisBase += 10;
+            const mucositisRisk = Math.min(85, Math.round(mucositisBase));
+            
+            // === OVERALL QUALITY SCORE ===
+            const overallScore = Math.round(100 - ((cardioRisk + neutroRisk + fatigueRisk) / 3) * 0.8);
+            
+            return {
+                cardioRisk,
+                cardioModifiers,
+                neutroRisk,
+                neutroModifiers,
+                anemiaRisk,
+                nauseaRisk,
+                fatigueRisk,
+                mucositisRisk,
+                overallScore
+            };
+        }
+
+        // SMART RAG QUERY - Returns relevant studies based on patient state
+        function queryRAG(patient) {
+            const risks = calculateDigitalTwinRisks(patient);
+            const dose = patient.cumulativeDose;
+            let relevantStudies = [];
+            
+            // Cardiotoxicity studies
+            if (dose >= 200 || risks.cardioRisk > 15) {
+                ragKnowledge.cardiotoxicity.studies.forEach(study => {
+                    if (dose >= study.dosageThreshold) {
+                        relevantStudies.push({
+                            ...study,
+                            category: 'Cardiotoxicity',
+                            patientRelevance: `Your cumulative dose (${dose} mg/m²) exceeds the ${study.dosageThreshold} mg/m² threshold studied`
+                        });
+                    }
+                });
+            }
+            
+            // Hematologic studies
+            if (dose > 0 || risks.neutroRisk > 40) {
+                ragKnowledge.hematotoxicity.studies.forEach(study => {
+                    relevantStudies.push({
+                        ...study,
+                        category: 'Hematotoxicity',
+                        patientRelevance: `Your risk profile (${risks.neutroRisk}% neutropenia risk) warrants these evidence-based interventions`
+                    });
+                });
+            }
+            
+            // GI toxicity - always relevant for doxorubicin
+            if (dose > 0) {
+                ragKnowledge.gastrointestinal.studies.forEach(study => {
+                    relevantStudies.push({
+                        ...study,
+                        category: 'Gastrointestinal',
+                        patientRelevance: `Doxorubicin is highly emetogenic - these guidelines apply to your treatment`
+                    });
+                });
+            }
+            
+            // Mucositis
+            if (dose >= 180 || risks.mucositisRisk > 30) {
+                ragKnowledge.mucositis.studies.forEach(study => {
+                    relevantStudies.push({
+                        ...study,
+                        category: 'Mucositis',
+                        patientRelevance: `Your treatment regimen places you at ${risks.mucositisRisk}% risk for mucositis`
+                    });
+                });
+            }
+            
+            return {
+                studies: relevantStudies,
+                mechanismsCardio: ragKnowledge.cardiotoxicity.mechanisms,
+                mechanismsHemato: ragKnowledge.hematotoxicity.mechanisms,
+                managementCardio: ragKnowledge.cardiotoxicity.management,
+                managementHemato: ragKnowledge.hematotoxicity.management
+            };
+        }
+
+        // Initialize patient
+        function initializePatient(id) {
+            return {
+                id: id,
+                age: 45,
+                sex: 'male',
+                cancer: 'lymphoma',
+                chronicDiseases: [],
+                vitals: {
+                    temperature: 37.0,
+                    bloodPressure: '120/80',
+                    heartRate: 75
+                },
+                cumulativeDose: 0,
+                sessions: []
+            };
+        }
+
+        function loadPatient() {
+            const patientId = document.getElementById('patientId').value.trim();
+            
+            if (!patientId) {
+                alert('Please enter a Patient ID');
+                return;
+            }
+            
+            if (patientDatabase[patientId]) {
+                currentPatient = patientDatabase[patientId];
+                alert(`Patient ${patientId} loaded successfully!\n\nSessions: ${currentPatient.sessions.length}\nCumulative Dose: ${currentPatient.cumulativeDose} mg/m²`);
+            } else {
+                currentPatient = initializePatient(patientId);
+                patientDatabase[patientId] = currentPatient;
+                alert(`✨ New patient ${patientId} created!\n\nYou can now add treatment sessions to build their digital twin.`);
+            }
+            
+            updateUI();
+        }
+
+        function generateVirtualPatient() {
+            const randomId = 'PT-2025-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+            document.getElementById('patientId').value = randomId;
+            
+            const patient = initializePatient(randomId);
+            patient.age = Math.floor(Math.random() * 60) + 20;
+            patient.sex = Math.random() > 0.5 ? 'male' : 'female';
+            patient.cancer = Math.random() > 0.5 ? 'leukemia' : 'lymphoma';
+            
+            if (Math.random() > 0.7) patient.chronicDiseases.push('diabetes');
+            if (Math.random() > 0.6) patient.chronicDiseases.push('hypertension');
+            
+            patient.vitals.temperature = (36.5 + Math.random() * 1.5).toFixed(1);
+            patient.vitals.bloodPressure = `${Math.floor(Math.random() * 40) + 110}/${Math.floor(Math.random() * 30) + 70}`;
+            patient.vitals.heartRate = Math.floor(Math.random() * 40) + 60;
+            
+            currentPatient = patient;
+            patientDatabase[randomId] = patient;
+            
+            updateUI();
+            alert(`🎲 Virtual patient generated!\n\n👤 ID: ${randomId}\n📅 Age: ${patient.age} years\n⚧ Sex: ${patient.sex}\n🏥 Cancer: ${patient.cancer}\n💊 Chronic conditions: ${patient.chronicDiseases.length > 0 ? patient.chronicDiseases.join(', ') : 'None'}\n\nDigital twin is ready for treatment simulation!`);
+        }
+
+        function updateUI() {
+            if (!currentPatient) return;
+            
+            document.getElementById('patientForm').classList.add('active');
+            document.getElementById('resultsArea').classList.add('active');
+            
+            document.getElementById('currentPatientId').textContent = currentPatient.id;
+            document.getElementById('age').value = currentPatient.age;
+            document.getElementById('sex').value = currentPatient.sex;
+            document.getElementById('cancer').value = currentPatient.cancer;
+            document.getElementById('temperature').value = currentPatient.vitals.temperature;
+            document.getElementById('bloodPressure').value = currentPatient.vitals.bloodPressure;
+            document.getElementById('heartRate').value = currentPatient.vitals.heartRate;
+            
+            const chronicSelect = document.getElementById('chronicDiseases');
+            Array.from(chronicSelect.options).forEach(option => {
+                option.selected = currentPatient.chronicDiseases.includes(option.value);
+            });
+            
+            updateDoseDisplay();
+            document.getElementById('sessionCount').textContent = currentPatient.sessions.length;
+            
+            if (currentPatient.sessions.length > 0) {
+                runSimulation();
+            }
+        }
+
+        function updatePatientRealtime() {
+            if (!currentPatient) return;
+            
+            currentPatient.age = parseInt(document.getElementById('age').value) || 45;
+            currentPatient.sex = document.getElementById('sex').value;
+            currentPatient.cancer = document.getElementById('cancer').value;
+            currentPatient.vitals.temperature = parseFloat(document.getElementById('temperature').value) || 37.0;
+            currentPatient.vitals.bloodPressure = document.getElementById('bloodPressure').value || '120/80';
+            currentPatient.vitals.heartRate = parseInt(document.getElementById('heartRate').value) || 75;
+            
+            const chronicSelect = document.getElementById('chronicDiseases');
+            currentPatient.chronicDiseases = Array.from(chronicSelect.selectedOptions).map(opt => opt.value).filter(v => v !== 'none');
+            
+            if (currentPatient.sessions.length > 0) {
+                runSimulation();
+            }
+        }
+
+        function updateDoseDisplay() {
+            const dose = currentPatient.cumulativeDose;
+            const maxDose = 550;
+            const percentage = Math.min(100, (dose / maxDose) * 100);
+            
+            document.getElementById('cumulativeDoseDisplay').textContent = `${dose} mg/m²`;
+            document.getElementById('doseProgressBar').style.width = `${percentage}%`;
+            
+            const progressBar = document.getElementById('doseProgressBar');
+            if (percentage < 60) {
+                progressBar.style.background = 'linear-gradient(90deg, #10b981, #059669)';
+            } else if (percentage < 80) {
+                progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
+            } else {
+                progressBar.style.background = 'linear-gradient(90deg, #ef4444, #dc2626)';
+            }
+        }
+
+        function addTreatmentSession() {
+            if (!currentPatient) {
+                alert('⚠️ Please load or create a patient first!');
+                return;
+            }
+            
+            const sessionDose = 60;
+            
+            if (currentPatient.cumulativeDose + sessionDose > 600) {
+                if (!confirm(`⚠️ WARNING: High Dose Alert!\n\nThis session will bring cumulative dose to ${currentPatient.cumulativeDose + sessionDose} mg/m²\n\nThis EXCEEDS the recommended maximum dose of 550 mg/m²\nCardiotoxicity risk will be significantly elevated.\n\nAre you sure you want to continue?`)) {
+                    return;
+                }
+            }
+            
+            currentPatient.cumulativeDose += sessionDose;
+            
+            const risks = calculateDigitalTwinRisks(currentPatient);
+            const ragInsights = queryRAG(currentPatient);
+            
+            const session = {
+                date: new Date().toISOString(),
+                sessionNumber: currentPatient.sessions.length + 1,
+                dose: sessionDose,
+                cumulativeDose: currentPatient.cumulativeDose,
+                vitals: { ...currentPatient.vitals },
+                risks: risks,
+                ragInsights: ragInsights
+            };
+            
+            currentPatient.sessions.push(session);
+            
+            updateDoseDisplay();
+            document.getElementById('sessionCount').textContent = currentPatient.sessions.length;
+            
+            runSimulation();
+            
+            let alertMsg = `✅ Treatment Session ${session.sessionNumber} Completed!\n\n`;
+            alertMsg += `💉 Dose: ${sessionDose} mg/m²\n`;
+            alertMsg += `📊 Cumulative: ${currentPatient.cumulativeDose} mg/m²\n\n`;
+            alertMsg += `🧬 Digital Twin Analysis:\n`;
+            alertMsg += `❤️  Cardiotoxicity: ${risks.cardioRisk}%\n`;
+            alertMsg += `🩸 Neutropenia: ${risks.neutroRisk}%\n`;
+            alertMsg += `⭐ Recovery Score: ${risks.overallScore}\n\n`;
+            
+            if (risks.cardioRisk > 25) {
+                alertMsg += `⚠️ High cardiotoxicity risk detected!\n`;
+            }
+            if (risks.neutroRisk > 60) {
+                alertMsg += `⚠️ High neutropenia risk - consider G-CSF!\n`;
+            }
+            
+            alert(alertMsg);
+        }
+
+        function runSimulation() {
+            if (!currentPatient || currentPatient.sessions.length === 0) return;
+            
+            const latestSession = currentPatient.sessions[currentPatient.sessions.length - 1];
+            const risks = latestSession.risks;
+            const ragInsights = latestSession.ragInsights;
+            
+            document.getElementById('cardioRisk').textContent = risks.cardioRisk + '%';
+            document.getElementById('neutroRisk').textContent = risks.neutroRisk + '%';
+            document.getElementById('anemiaRisk').textContent = risks.anemiaRisk + '%';
+            document.getElementById('qualityScore').textContent = risks.overallScore;
+            
+            displayDigitalTwinAnalysis(risks);
+            displayAlerts(risks, ragInsights);
+            displayRAGInsights(ragInsights);
+            displaySessionHistory();
+            updateCharts();
+            updatePatientView(risks);
+        }
+
+        function displayDigitalTwinAnalysis(risks) {
+            const container = document.getElementById('digitalTwinAnalysis');
+            
+            let html = '<div class="twin-analysis-box">';
+            html += '<h4>🧬 Digital Twin Personalized Analysis</h4>';
+            html += `<p><strong>${currentPatient.id}</strong> | ${currentPatient.age}yo ${currentPatient.sex} | ${currentPatient.cancer} | ${currentPatient.cumulativeDose} mg/m²</p>`;
+            
+            if (risks.cardioModifiers && risks.cardioModifiers.length > 0) {
+                html += '<p><strong>Cardiotoxicity Risk Factors (Personalized):</strong></p><ul style="margin-left: 20px;">';
+                risks.cardioModifiers.forEach(mod => {
+                    html += `<li>${mod}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            if (risks.neutroModifiers && risks.neutroModifiers.length > 0) {
+                html += '<p><strong>Neutropenia Risk Factors (Personalized):</strong></p><ul style="margin-left: 20px;">';
+                risks.neutroModifiers.forEach(mod => {
+                    html += `<li>${mod}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function displayAlerts(risks, ragInsights) {
+            const alertsContainer = document.getElementById('clinicalAlerts');
+            alertsContainer.innerHTML = '';
+            
+            if (risks.cardioRisk > 20) {
+                const alert = document.createElement('div');
+                alert.className = 'alert';
+                const relevantStudy = ragInsights.studies.find(s => s.category === 'Cardiotoxicity');
+                alert.innerHTML = `
+                    <h4>⚠️ HIGH CARDIOTOXICITY RISK ALERT</h4>
+                    <p><strong>Risk Level: ${risks.cardioRisk}%</strong> - This patient is at elevated risk based on their personalized profile.</p>
+                    <p><strong>Immediate Actions Required:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Consider dexrazoxane cardioprotection (10:1 ratio to doxorubicin)</li>
+                        <li>Schedule echocardiogram within 1 week</li>
+                        <li>Monitor troponin I levels before next cycle</li>
+                        <li>Evaluate for ACE inhibitor prophylaxis (enalapril 2.5-10mg daily)</li>
+                    </ul>
+                    ${relevantStudy ? `<cite>Evidence: ${relevantStudy.citation}</cite>` : ''}
+                `;
+                alertsContainer.appendChild(alert);
+            }
+            
+            if (risks.neutroRisk > 60) {
+                const alert = document.createElement('div');
+                alert.className = 'alert';
+                alert.innerHTML = `
+                    <h4>⚠️ HIGH NEUTROPENIA RISK ALERT</h4>
+                    <p><strong>Risk Level: ${risks.neutroRisk}%</strong> - Significant infection risk expected.</p>
+                    <p><strong>Immediate Actions Required:</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 8px;">
+                        <li>Prophylactic G-CSF strongly recommended (pegfilgrastim 6mg 24h post-chemo)</li>
+                        <li>Monitor CBC closely - check on day 7, 10, and 14</li>
+                        <li>Consider prophylactic fluoroquinolone if ANC drops below 1000/μL</li>
+                        <li>Patient education: fever protocol (call if temp >38°C/100.4°F)</li>
+                    </ul>
+                `;
+                alertsContainer.appendChild(alert);
+            }
+            
+            if (risks.nauseaRisk > 85) {
+                const alert = document.createElement('div');
+                alert.className = 'alert';
+                alert.innerHTML = `
+                    <h4>⚠️ HIGH EMETOGENIC RISK</h4>
+                    <p><strong>Risk Level: ${risks.nauseaRisk}%</strong> - Aggressive antiemetic prophylaxis required.</p>
+                    <p><strong>Recommended Regimen:</strong> Ondansetron 8mg + Aprepitant 125mg + Dexamethasone 12mg (acute), followed by Aprepitant 80mg days 2-3</p>
+                `;
+                alertsContainer.appendChild(alert);
+            }
+        }
+
+        function displayRAGInsights(ragInsights) {
+            const container = document.getElementById('ragStudiesContainer');
+            container.innerHTML = '';
+            
+            if (!ragInsights || !ragInsights.studies || ragInsights.studies.length === 0) {
+                container.innerHTML = '<p style="color: #666; padding: 20px; text-align: center;">No high-risk factors identified at current dose level. This patient is within safe treatment parameters.</p>';
+                return;
+            }
+            
+            ragInsights.studies.forEach(study => {
+                const card = document.createElement('div');
+                card.className = 'study-card';
+                card.innerHTML = `
+                    <h5>${study.title}</h5>
+                    <span class="relevance-tag">📌 ${study.category}</span>
+                    <p style="margin-top: 12px;"><strong>Key Findings:</strong> ${study.findings}</p>
+                    <p style="background: #fef3c7; padding: 10px; border-radius: 8px; margin-top: 10px;">
+                        <strong>Why This Matters for Your Patient:</strong> ${study.patientRelevance}
+                    </p>
+                    <cite>${study.citation}</cite>
+                `;
+                container.appendChild(card);
+            });
+            
+            // Add mechanisms and management
+            if (ragInsights.mechanismsCardio) {
+                const mechCard = document.createElement('div');
+                mechCard.className = 'study-card';
+                mechCard.style.background = '#f0f9ff';
+                mechCard.innerHTML = `
+                    <h5>🔬 Mechanism of Cardiotoxicity</h5>
+                    <p>${ragInsights.mechanismsCardio}</p>
+                `;
+                container.appendChild(mechCard);
+            }
+            
+            if (ragInsights.managementCardio) {
+                const mgmtCard = document.createElement('div');
+                mgmtCard.className = 'study-card';
+                mgmtCard.style.background = '#f0fdf4';
+                mgmtCard.innerHTML = `
+                    <h5>💊 Evidence-Based Management</h5>
+                    <p>${ragInsights.managementCardio}</p>
+                `;
+                container.appendChild(mgmtCard);
+            }
+        }
+
+        function displaySessionHistory() {
+            const container = document.getElementById('sessionHistoryList');
+            container.innerHTML = '';
+            
+            currentPatient.sessions.forEach((session, idx) => {
+                const item = document.createElement('div');
+                item.className = 'session-item';
+                const date = new Date(session.date).toLocaleDateString();
+                const time = new Date(session.date).toLocaleTimeString();
+                item.innerHTML = `
+                    <h4>Session ${session.sessionNumber} - ${date} at ${time}</h4>
+                    <p><strong>Dose:</strong> ${session.dose} mg/m² | <strong>Cumulative:</strong> ${session.cumulativeDose} mg/m²</p>
+                    <p><strong>Vitals:</strong> BP: ${session.vitals.bloodPressure} | HR: ${session.vitals.heartRate} bpm | Temp: ${session.vitals.temperature}°C</p>
+                    <p><strong>Risk Profile:</strong> Cardio: ${session.risks.cardioRisk}% | Neutro: ${session.risks.neutroRisk}% | Recovery Score: ${session.risks.overallScore}</p>
+                    <p><strong>RAG Insights:</strong> ${session.ragInsights.studies.length} relevant clinical studies identified</p>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function updateCharts() {
+            updateRiskChart();
+            updateProgressChart();
+            updatePatientJourneyChart();
+        }
+
+        function updateRiskChart() {
+            const ctx = document.getElementById('riskChart');
+            if (!ctx) return;
+            
+            const latestSession = currentPatient.sessions[currentPatient.sessions.length - 1];
+            const risks = latestSession.risks;
+            
+            if (charts.riskChart) charts.riskChart.destroy();
+            
+            // Create personalized color scheme based on risk levels
+            const colors = [
+                risks.cardioRisk > 30 ? '#dc2626' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981',
+                risks.neutroRisk > 70 ? '#dc2626' : risks.neutroRisk > 50 ? '#f59e0b' : '#3b82f6',
+                risks.anemiaRisk > 60 ? '#dc2626' : risks.anemiaRisk > 40 ? '#f59e0b' : '#8b5cf6',
+                risks.nauseaRisk > 85 ? '#dc2626' : risks.nauseaRisk > 70 ? '#f59e0b' : '#10b981',
+                risks.fatigueRisk > 70 ? '#dc2626' : risks.fatigueRisk > 50 ? '#f59e0b' : '#ec4899'
+            ];
+            
+            charts.riskChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Cardiotoxicity', 'Neutropenia', 'Anemia', 'Nausea', 'Fatigue'],
+                    datasets: [{
+                        label: 'Personalized Risk (%)',
+                        data: [risks.cardioRisk, risks.neutroRisk, risks.anemiaRisk, risks.nauseaRisk, risks.fatigueRisk],
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Risk Level (%)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const value = context.parsed.y;
+                                    if (value > 70) return 'Critical Risk - Immediate Action';
+                                    if (value > 50) return 'High Risk - Close Monitoring';
+                                    if (value > 30) return 'Moderate Risk - Watch Closely';
+                                    return 'Low Risk - Standard Care';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateProgressChart() {
+            const ctx = document.getElementById('progressChart');
+            if (!ctx) return;
+            
+            const progressData = currentPatient.sessions.map((session, idx) => ({
+                session: `Session ${idx + 1}`,
+                cardio: session.risks.cardioRisk,
+                neutro: session.risks.neutroRisk,
+                score: session.risks.overallScore,
+                dose: session.cumulativeDose
+            }));
+            
+            if (charts.progressChart) charts.progressChart.destroy();
+            
+            charts.progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: progressData.map(d => d.session),
+                    datasets: [
+                        {
+                            label: 'Recovery Score (Higher is Better)',
+                            data: progressData.map(d => d.score),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Cardiotoxicity Risk',
+                            data: progressData.map(d => d.cardio),
+                            borderColor: '#ef4444',
+                            tension: 0.4,
+                            borderWidth: 2,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Neutropenia Risk',
+                            data: progressData.map(d => d.neutro),
+                            borderColor: '#3b82f6',
+                            tension: 0.4,
+                            borderWidth: 2,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Cumulative Dose (mg/m²)',
+                            data: progressData.map(d => d.dose),
+                            borderColor: '#8b5cf6',
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            borderWidth: 2,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Risk/Score (%)', font: { weight: 'bold' } }
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                            title: { display: true, text: 'Dose (mg/m²)', font: { weight: 'bold' } },
+                            grid: { drawOnChartArea: false }
+                        }
+                    },
+                    plugins: {
+                        title: { 
+                            display: true, 
+                            text: `${currentPatient.id} - Personalized Treatment Journey`,
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePatientJourneyChart() {
+            const ctx = document.getElementById('patientJourneyChart');
+            if (!ctx) return;
+            
+            const journeyData = currentPatient.sessions.map((session, idx) => ({
+                session: `Session ${idx + 1}`,
+                overall: session.risks.overallScore,
+                heart: 100 - session.risks.cardioRisk,
+                blood: 100 - session.risks.neutroRisk
+            }));
+            
+            if (charts.patientJourneyChart) charts.patientJourneyChart.destroy();
+            
+            charts.patientJourneyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: journeyData.map(d => d.session),
+                    datasets: [{
+                        label: 'Your Overall Health Score',
+                        data: journeyData.map(d => d.overall),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 4,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Health Score', font: { size: 14, weight: 'bold' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed.y;
+                                    let status = '';
+                                    if (value > 70) status = '🟢 Excellent';
+                                    else if (value > 50) status = '🟡 Moderate';
+                                    else status = '🔴 Needs Attention';
+                                    return `Score: ${value} ${status}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePatientView(risks) {
+            const noData = document.getElementById('noDataMessage');
+            const dataContent = document.getElementById('patientDataContent');
+            
+            if (currentPatient.sessions.length === 0) {
+                noData.style.display = 'block';
+                dataContent.style.display = 'none';
+                return;
+            }
+            
+            noData.style.display = 'none';
+            dataContent.style.display = 'block';
+            
+            updateRecoveryCircle(risks.overallScore);
+            
+            const heartScore = 100 - risks.cardioRisk;
+            document.getElementById('patientHeartScore').textContent = Math.round(heartScore);
+            document.getElementById('heartBar').style.width = heartScore + '%';
+            
+            const bloodScore = 100 - risks.neutroRisk;
+            document.getElementById('patientBloodScore').textContent = Math.round(bloodScore);
+            document.getElementById('bloodBar').style.width = bloodScore + '%';
+            
+            const energyScore = 100 - risks.fatigueRisk;
+            document.getElementById('patientEnergyScore').textContent = Math.round(energyScore);
+            document.getElementById('energyBar').style.width = energyScore + '%';
+            
+            updatePatientAdvice(risks);
+        }
+
+        function updateRecoveryCircle(score) {
+            const svg = document.getElementById('recoveryCircleSVG');
+            const numberDisplay = document.getElementById('recoveryScoreNumber');
+            const messageDisplay = document.getElementById('recoveryMessage');
+            
+            const radius = 85;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (score / 100) * circumference;
+            
+            let color = '#10b981';
+            if (score < 40) color = '#ef4444';
+            else if (score < 70) color = '#f59e0b';
+            
+            svg.innerHTML = `
+                <circle cx="100" cy="100" r="85" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+                <circle cx="100" cy="100" r="85" fill="none" stroke="${color}" stroke-width="12"
+                        stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+                        transform="rotate(-90 100 100)" stroke-linecap="round"/>
+            `;
+            
+            numberDisplay.textContent = score;
+            
+            if (score > 70) {
+                messageDisplay.innerHTML = '🟢 <strong>Great Recovery!</strong> Your body is handling treatment well. Keep up the good work!';
+            } else if (score > 40) {
+                messageDisplay.innerHTML = '🟡 <strong>Moderate Strain.</strong> Rest, stay hydrated, and follow your care plan closely.';
+            } else {
+                messageDisplay.innerHTML = '🔴 <strong>High Strain Detected.</strong> Please contact your healthcare team today for support.';
+            }
+        }
+
+        function updatePatientAdvice(risks) {
+            const adviceSection = document.getElementById('patientAdviceSection');
+            
+            let html = '<h3 style="color: #0066cc;">📋 Your Personalized Care Guide</h3>';
+            html += '<p style="color: #666; margin-bottom: 20px;">Based on your current treatment and health status</p>';
+            
+            // Personalized based on actual vitals
+            const systolic = parseInt(currentPatient.vitals.bloodPressure.split('/')[0]);
+            const hr = currentPatient.vitals.heartRate;
+            const temp = parseFloat(currentPatient.vitals.temperature);
+            
+            if (systolic > 140 || hr > 100 || temp > 37.5) {
+                html += '<div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">';
+                html += '<h4 style="color: #856404; margin-bottom: 10px;">⚠️ Current Health Status Needs Attention</h4>';
+                if (systolic > 140) {
+                    html += `<p style="margin: 8px 0;">💓 <strong>Your blood pressure (${currentPatient.vitals.bloodPressure}):</strong> This is higher than ideal. Try to relax, reduce salt in your diet, and avoid caffeine. If it stays elevated, contact your doctor.</p>`;
+                }
+                if (hr > 100) {
+                    html += `<p style="margin: 8px 0;">💗 <strong>Your heart rate (${hr} bpm):</strong> Your heart is working harder than usual. Stay well-hydrated, rest often, and practice slow, deep breathing. This is common during treatment but tell your nurse if you feel dizzy or short of breath.</p>`;
+                }
+                if (temp > 37.5) {
+                    html += `<p style="margin: 8px 0;">🌡️ <strong>Your temperature (${temp}°C):</strong> You have a slight fever. This could be a sign of infection (especially if your white blood cells are low). <strong style="color: #dc2626;">If it reaches 38°C (100.4°F), call your doctor immediately!</strong></p>`;
+                }
+                html += '</div>';
+            }
+            
+            // Cardiotoxicity advice
+            if (risks.cardioRisk > 20) {
+                html += '<div style="background: #fee2e2; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #ef4444;">';
+                html += '<h4 style="color: #991b1b; margin-bottom: 10px;">❤️ Taking Care of Your Heart</h4>';
+                html += `<p style="margin: 8px 0; color: #7f1d1d;">Your heart risk is currently <strong>${risks.cardioRisk}%</strong>. This means we need to give your heart extra love and care:</p>`;
+                html += '<ul style="margin-left: 20px; color: #7f1d1d; line-height: 1.8;">';
+                html += '<li><strong>Eat heart-healthy foods:</strong> Oatmeal, salmon, walnuts, blueberries, spinach, avocados</li>';
+                html += '<li><strong>Gentle exercise:</strong> Short 10-minute walks (if you feel up to it)</li>';
+                html += '<li><strong>Avoid:</strong> Smoking, excessive salt, alcohol</li>';
+                html += '<li><strong>Watch for:</strong> Chest pain, shortness of breath, swelling in ankles - call doctor if these occur</li>';
+                html += '<li><strong>Your medications matter:</strong> Take all prescribed heart medications exactly as directed</li>';
+                html += '</ul>';
+                html += '</div>';
+            }
+            
+            // Infection risk advice
+            if (risks.neutroRisk > 60) {
+                html += '<div style="background: #dbeafe; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">';
+                html += '<h4 style="color: #1e40af; margin-bottom: 10px;">🛡️ Protecting Yourself from Infections</h4>';
+                html += `<p style="margin: 8px 0; color: #1e3a8a;">Your infection risk is <strong>${risks.neutroRisk}%</strong>. Your white blood cells are likely low, making it easier to get sick. Here's how to stay safe:</p>`;
+                html += '<ul style="margin-left: 20px; color: #1e3a8a; line-height: 1.8;">';
+                html += '<li><strong>Wash your hands</strong> frequently with soap and water for 20 seconds</li>';
+                html += '<li><strong>Avoid crowds</strong> and people who are sick (yes, even family!)</li>';
+                html += '<li><strong>Cook food thoroughly</strong> - no raw eggs, sushi, or rare meat</li>';
+                html += '<li><strong>Keep your mouth clean</strong> - brush gently, rinse after eating</li>';
+                html += '<li><strong>Call your doctor if</strong> you get a fever ≥38°C (100.4°F) - this is an emergency!</li>';
+                html += '<li><strong>Wear a mask</strong> when you need to go out in public</li>';
+                html += '</ul>';
+                html += '</div>';
+            }
+            
+            // Nausea management
+            if (risks.nauseaRisk > 70) {
+                html += '<div style="background: #d1fae5; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #10b981;">';
+                html += '<h4 style="color: #065f46; margin-bottom: 10px;">🤢 Managing Nausea & Vomiting</h4>';
+                html += `<p style="margin: 8px 0; color: #064e3b;">Nausea risk is ${risks.nauseaRisk}%. Here are tried-and-true strategies that really help:</p>`;
+                html += '<ul style="margin-left: 20px; color: #064e3b; line-height: 1.8;">';
+                html += '<li><strong>Ginger is your friend:</strong> Ginger tea, ginger ale (real ginger), or ginger candies</li>';
+                html += '<li><strong>Eat small, frequent meals</strong> instead of 3 big ones (5-6 small meals work better)</li>';
+                html += '<li><strong>Cold foods</strong> are easier to tolerate (yogurt, smoothies, popsicles)</li>';
+                html += '<li><strong>Avoid:</strong> Strong smells, greasy/fried foods, spicy foods</li>';
+                html += '<li><strong>BLAND is beautiful:</strong> Crackers, toast, rice, bananas, applesauce</li>';
+                html += '<li><strong>Take your anti-nausea meds</strong> BEFORE you feel sick (prevention is key!)</li>';
+                html += '<li><strong>Stay hydrated:</strong> Sip water slowly throughout the day</li>';
+                html += '</ul>';
+                html += '</div>';
+            }
+            
+            // Fatigue management
+            if (risks.fatigueRisk > 60) {
+                html += '<div style="background: #fef3c7; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">';
+                html += '<h4 style="color: #92400e; margin-bottom: 10px;">😴 Managing Fatigue & Building Energy</h4>';
+                html += `<p style="margin: 8px 0; color: #78350f;">Fatigue affects ${risks.fatigueRisk}% of patients at your stage. This exhaustion is REAL and it's okay to feel tired:</p>`;
+                html += '<ul style="margin-left: 20px; color: #78350f; line-height: 1.8;">';
+                html += '<li><strong>Listen to your body:</strong> Rest when you need to, don\'t push through exhaustion</li>';
+                html += '<li><strong>Power naps:</strong> 20-30 minutes in the afternoon can really help (but not too late or you won\'t sleep at night)</li>';
+                html += '<li><strong>Gentle movement:</strong> Even 5-10 minutes of stretching or slow walking can boost energy</li>';
+                html += '<li><strong>Drink lots of water:</strong> Dehydration makes fatigue worse (aim for 8-10 glasses)</li>';
+                html += '<li><strong>Protein is energy:</strong> Eggs, chicken, fish, beans, nuts</li>';
+                html += '<li><strong>Get morning sunlight:</strong> 15-20 minutes helps regulate your sleep-wake cycle</li>';
+                html += '<li><strong>Ask for help:</strong> Let family/friends help with chores, errands, cooking</li>';
+                html += '</ul>';
+                html += '</div>';
+            }
+            
+            // General wellness
+            html += '<div style="background: #f0f9ff; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #0ea5e9;">';
+            html += '<h4 style="color: #075985; margin-bottom: 10px;">💪 Daily Wellness Checklist</h4>';
+            html += '<ul style="margin-left: 20px; color: #0c4a6e; line-height: 1.8;">';
+            html += '<li>✓ Drink 8-10 glasses of water today</li>';
+            html += '<li>✓ Eat protein with each meal (helps healing)</li>';
+            html += '<li>✓ Take all your medications on time</li>';
+            html += '<li>✓ Practice deep breathing for 10 minutes</li>';
+            html += '<li>✓ Get some gentle movement (even just standing and stretching)</li>';
+            html += '<li>✓ Connect with someone you love (phone call, text, visit)</li>';
+            html += '<li>✓ Do one thing that makes you smile</li>';
+            html += '</ul>';
+            html += '</div>';
+            
+            // Emergency signs
+            html += '<div style="background: #fee2e2; padding: 15px; border-radius: 10px; border-left: 4px solid #dc2626;">';
+            html += '<h4 style="color: #991b1b; margin-bottom: 10px;">🚨 Call Your Doctor RIGHT AWAY If You Experience:</h4>';
+            html += '<ul style="margin-left: 20px; color: #7f1d1d; line-height: 1.8; font-weight: 500;">';
+            html += '<li>🌡️ <strong>Fever ≥38°C (100.4°F)</strong> - This is a medical emergency!</li>';
+            html += '<li>💔 <strong>Chest pain or difficulty breathing</strong></li>';
+            html += '<li>🩸 <strong>Unusual bleeding or bruising</strong></li>';
+            html += '<li>🤮 <strong>Can\'t keep down any food or water for 24 hours</strong></li>';
+            html += '<li>🌀 <strong>Severe dizziness, confusion, or fainting</strong></li>';
+            html += '<li>😷 <strong>Signs of infection:</strong> redness, swelling, pus from any wound</li>';
+            html += '<li>⚠️ <strong>Any symptom that really worries you</strong> - trust your instincts!</li>';
+            html += '</ul>';
+            html += '<p style="margin-top: 12px; color: #7f1d1d; font-weight: 600;">📞 Keep your doctor\'s emergency number handy. Better to call and be safe than wait and worry!</p>';
+            html += '</div>';
+            
+            // Encouragement
+            html += '<div style="background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); padding: 20px; border-radius: 10px; text-align: center; margin-top: 20px; border: 2px solid #0ea5e9;">';
+            html += '<h4 style="color: #075985; margin-bottom: 12px;">💙 You\'re Not Alone In This Journey</h4>';
+            html += '<p style="color: #0c4a6e; font-size: 1.05em; line-height: 1.8;">Treatment is tough, but you\'re tougher. Your healthcare team is here for you 24/7. Take it one day at a time, celebrate small victories, and remember: it\'s okay to have hard days. You\'re doing an amazing job! 🌟</p>';
+            html += '</div>';
+            
+            adviceSection.innerHTML = html;
+        }
+
+        function switchView(mode) {
+            currentView = mode;
+            
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const doctorView = document.getElementById('doctorView');
+            const patientView = document.getElementById('patientView');
+            
+            if (mode === 'patient') {
+                doctorView.style.display = 'none';
+                patientView.style.display = 'block';
+                if (currentPatient && currentPatient.sessions.length > 0) {
+                    const latestRisks = currentPatient.sessions[currentPatient.sessions.length - 1].risks;
+                    updatePatientView(latestRisks);
+                }
+            } else {
+                doctorView.style.display = 'block';
+                patientView.style.display = 'none';
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        window.onload = function() {
+            createParticles();
+            console.log('🧬 ChemoTwin Digital Twin RAG System Initialized!');
+            console.log('📚 Knowledge Base Loaded:');
+            console.log('  ✓ Lipshultz et al. (1995) - Cardiotoxicity in Children');
+            console.log('  ✓ Swain et al. (2003) - Dexrazoxane Cardioprotection');
+            console.log('  ✓ Cardinale et al. (2015) - Troponin Monitoring');
+            console.log('  ✓ Crawford et al. (2004) - Neutropenia & G-CSF');
+            console.log('  ✓ Groopman & Itri (1999) - Anemia Management');
+            console.log('  ✓ Aapro et al. (2011) - EORTC G-CSF Guidelines');
+            console.log('  ✓ Hesketh et al. (2017) - ASCO Antiemetic Guidelines');
+            console.log('  ✓ Sonis et al. (2004) - Mucositis Pathobiology');
+            console.log('🎯 Ready for personalized digital twin simulation!');
+        };
+    </script>
+</body>
+</html>

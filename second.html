@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Digital Twin Cancer Treatment Simulator</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #f5f7fa; /* Light clinical gray-blue background */
+    color: #333; /* Darker text for better readability */
+    overflow-x: hidden;
+}
+
+/* Animated Background */
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e6f0fa 0%, #d0e4ff 100%); /* Subtle medical blue gradient */
+    z-index: -2;
+}
+
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(0, 102, 204, 0.2); /* Soft blue particles */
+    border-radius: 50%;
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateY(100vh) translateX(0); }
+    100% { transform: translateY(-100vh) translateX(100px); }
+}
+
+/* Main Container */
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    padding: 40px 0;
+    animation: fadeInDown 1s ease-out;
+}
+
+.header h1 {
+    font-size: 3.5em;
+    background: linear-gradient(135deg, #0066cc, #3399ff, #0066cc); /* Professional blue gradient */
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+.subtitle {
+    color: #555; /* Subtle gray for subtitle */
+    font-size: 1.2em;
+}
+
+/* Dashboard Layout */
+.dashboard {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+/* Input Panel */
+.input-panel {
+    background: rgba(255, 255, 255, 0.9); /* Clean white with slight transparency */
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 102, 204, 0.2); /* Soft blue border */
+    border-radius: 20px;
+    padding: 30px;
+    animation: fadeInLeft 1s ease-out;
+}
+
+.input-panel h2 {
+    color: #0066cc; /* Professional blue for headings */
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    color: #333; /* Dark text for labels */
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(230, 240, 250, 0.5); /* Light blue-gray input background */
+    border: 2px solid rgba(0, 102, 204, 0.3); /* Soft blue border */
+    border-radius: 10px;
+    color: #333;
+    font-size: 1em;
+    transition: all 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: #0066cc; /* Focus border in professional blue */
+    background: rgba(230, 240, 250, 0.7);
+    box-shadow: 0 0 20px rgba(0, 102, 204, 0.3);
+}
+
+.input-group select option {
+    background: #fff;
+    color: #333;
+}
+
+/* Advanced Options */
+.advanced-toggle {
+    background: rgba(0, 102, 204, 0.1); /* Light blue background */
+    border: 1px solid #0066cc;
+    color: #0066cc;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+.advanced-toggle:hover {
+    background: rgba(0, 102, 204, 0.2);
+    box-shadow: 0 5px 20px rgba(0, 102, 204, 0.3);
+}
+
+.advanced-options {
+    display: none;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 102, 204, 0.2);
+}
+
+.advanced-options.active {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Generate Button */
+.generate-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #0066cc, #3399ff); /* Medical blue gradient */
+    color: white;
+    border: none;
+    padding: 18px;
+    font-size: 1.2em;
+    font-weight: 600;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 102, 204, 0.4);
+}
+
+.generate-btn:active {
+    transform: translateY(0);
+}
+
+.generate-btn.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.generate-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Results Panel */
+.results-panel {
+    background: rgba(255, 255, 255, 0.9); /* Clean white background */
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 102, 204, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    animation: fadeInRight 1s ease-out;
+    min-height: 600px;
+}
+
+.results-panel h2 {
+    color: #0066cc;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(0, 102, 204, 0.2);
+}
+
+.tab {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    font-weight: 500;
+}
+
+.tab.active {
+    color: #0066cc;
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #0066cc, #3399ff);
+}
+
+.tab:hover {
+    color: #333;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Treatment Cards */
+.treatment-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.treatment-card {
+    background: rgba(230, 240, 250, 0.5); /* Light blue-gray */
+    border: 1px solid rgba(0, 102, 204, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.treatment-card:hover {
+    transform: translateY(-5px);
+    background: rgba(230, 240, 250, 0.7);
+    box-shadow: 0 10px 30px rgba(0, 102, 204, 0.2);
+}
+
+.treatment-card.selected {
+    border-color: #0066cc;
+    background: rgba(0, 102, 204, 0.1);
+}
+
+.treatment-card h3 {
+    color: #0066cc;
+    margin-bottom: 10px;
+}
+
+.treatment-card p {
+    color: #555;
+    font-size: 0.9em;
+}
+
+/* Progress Bars */
+.progress-container {
+    margin-bottom: 25px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(0, 102, 204, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0066cc, #3399ff);
+    border-radius: 10px;
+    transition: width 2s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmerProgress 2s infinite;
+}
+
+@keyframes shimmerProgress {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Charts Container */
+.chart-container {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 102, 204, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    height: 300px;
+    position: relative;
+}
+
+canvas {
+    max-width: 100%;
+    max-height: 250px;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background: rgba(230, 240, 250, 0.5);
+    border: 1px solid rgba(0, 102, 204, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.metric-card:hover {
+    background: rgba(230, 240, 250, 0.7);
+    transform: scale(1.05);
+}
+
+.metric-value {
+    font-size: 2.5em;
+    font-weight: bold;
+    background: linear-gradient(135deg, #0066cc, #3399ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.metric-label {
+    color: #555;
+    margin-top: 10px;
+}
+
+/* Alert Box */
+.alert {
+    background: rgba(255, 193, 7, 0.1); /* Keep warning amber for alerts */
+    border: 1px solid #ffca28;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.alert.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+.alert-title {
+    color: #ffca28;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.alert-text {
+    color: #555;
+    font-size: 0.9em;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    display: flex;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 30px;
+    bottom: -30px;
+    width: 2px;
+    background: rgba(0, 102, 204, 0.2);
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+.timeline-marker {
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #0066cc, #3399ff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 20px;
+    box-shadow: 0 0 20px rgba(0, 102, 204, 0.3);
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-content h4 {
+    color: #0066cc;
+    margin-bottom: 5px;
+}
+
+.timeline-content p {
+    color: #555;
+    font-size: 0.9em;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .header h1 {
+        font-size: 2.5em;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+    
+    <div class="main-container">
+        <header class="header">
+            <h1>🧬 Digital Twin Cancer Simulator</h1>
+            <p class="subtitle">AI-Powered Precision Oncology Treatment Planning System</p>
+        </header>
+        
+        <div class="dashboard">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <h2>Patient Parameters</h2>
+                
+                <div class="input-group">
+                    <label>Cancer Type</label>
+                    <select id="cancerType">
+                        <option value="lung">Lung Cancer (NSCLC)</option>
+                        <option value="breast">Breast Cancer (TNBC)</option>
+                        <option value="colorectal">Colorectal Cancer</option>
+                        <option value="prostate">Prostate Cancer</option>
+                        <option value="leukemia">Leukemia (AML)</option>
+                        <option value="brain">Brain Cancer (Glioma)</option>
+                        <option value="pancreatic">Pancreatic Cancer</option>
+                        <option value="ovarian">Ovarian Cancer</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Patient Age</label>
+                    <input type="number" id="patientAge" min="18" max="100" value="52">
+                </div>
+                
+                <div class="input-group">
+                    <label>Disease Stage</label>
+                    <select id="diseaseStage">
+                        <option value="1">Stage I</option>
+                        <option value="2">Stage II</option>
+                        <option value="3">Stage III</option>
+                        <option value="4">Stage IV</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label>Biomarker Status</label>
+                    <select id="biomarkerStatus">
+                        <option value="negative">Negative</option>
+                        <option value="positive">Positive</option>
+                        <option value="unknown">Unknown</option>
+                    </select>
+                </div>
+                
+                <button class="advanced-toggle" onclick="toggleAdvanced()">
+                    ⚙️ Advanced Parameters
+                </button>
+                
+                <div class="advanced-options" id="advancedOptions">
+                    <div class="input-group">
+                        <label>Tumor Size (cm)</label>
+                        <input type="number" id="tumorSize" min="0.1" max="20" step="0.1" value="3.5">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Ki-67 Index (%)</label>
+                        <input type="number" id="ki67" min="0" max="100" value="25">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Performance Status (ECOG)</label>
+                        <select id="performanceStatus">
+                            <option value="0">0 - Fully Active</option>
+                            <option value="1">1 - Restricted</option>
+                            <option value="2">2 - Ambulatory</option>
+                            <option value="3">3 - Limited Self-Care</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Genomic Profile</label>
+                        <select id="genomicProfile">
+                            <option value="wild">Wild Type</option>
+                            <option value="egfr">EGFR Mutation</option>
+                            <option value="alk">ALK Fusion</option>
+                            <option value="kras">KRAS Mutation</option>
+                            <option value="her2">HER2 Amplification</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="generate-btn" id="generateBtn" onclick="generateAnalysis()">
+                    🔬 Generate Digital Twin Analysis
+                </button>
+            </div>
+            
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <h2>Digital Twin Analysis Results</h2>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('overview')">Overview</button>
+                    <button class="tab" onclick="switchTab('treatments')">Treatment Options</button>
+                    <button class="tab" onclick="switchTab('prediction')">Predictions</button>
+                    <button class="tab" onclick="switchTab('timeline')">Timeline</button>
+                </div>
+                
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-content active">
+                    <div class="alert" id="alertBox">
+                        <div class="alert-title">⚠️ Clinical Alert</div>
+                        <div class="alert-text" id="alertText">High-risk patient profile detected</div>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="survivalRate">--</div>
+                            <div class="metric-label">5-Year Survival</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="responseRate">--</div>
+                            <div class="metric-label">Response Rate</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="riskScore">--</div>
+                            <div class="metric-label">Risk Score</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="qualityScore">--</div>
+                            <div class="metric-label">QoL Score</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="survivalChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Treatments Tab -->
+                <div id="treatments" class="tab-content">
+                    <h3 style="margin-bottom: 20px; color: rgba(255, 255, 255, 0.9);">Recommended Treatment Options</h3>
+                    <div class="treatment-cards" id="treatmentCards">
+                        <!-- Dynamically populated -->
+                    </div>
+                    
+                    <h3 style="margin-bottom: 20px; color: rgba(255, 255, 255, 0.9);">Efficacy Comparison</h3>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Chemotherapy</span>
+                            <span id="chemoEff">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="chemoBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Immunotherapy</span>
+                            <span id="immunoEff">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="immunoBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Targeted Therapy</span>
+                            <span id="targetedEff">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="targetedBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Radiation Therapy</span>
+                            <span id="radiationEff">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="radiationBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Predictions Tab -->
+                <div id="prediction" class="tab-content">
+                    <h3 style="margin-bottom: 20px; color: rgba(255, 255, 255, 0.9);">AI Prediction Models</h3>
+                    
+                    <div class="chart-container">
+                        <canvas id="predictionChart"></canvas>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <h4 style="color: #4facfe; margin-bottom: 15px;">Side Effects Risk Analysis</h4>
+                        <div id="sideEffectsAnalysis">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Tab -->
+                <div id="timeline" class="tab-content">
+                    <h3 style="margin-bottom: 20px; color: rgba(255, 255, 255, 0.9);">Treatment Timeline</h3>
+                    <div class="timeline" id="treatmentTimeline">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        createParticles();
+        
+        // Global variables for charts
+        let survivalChart = null;
+        let predictionChart = null;
+        
+        // Toggle advanced options
+        function toggleAdvanced() {
+            const options = document.getElementById('advancedOptions');
+            options.classList.toggle('active');
+        }
+        
+        // Switch tabs
+        function switchTab(tabName) {
+            // Update tab buttons
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // Generate Digital Twin Analysis
+        function generateAnalysis() {
+            const btn = document.getElementById('generateBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = '⏳ Analyzing Digital Twin...';
+            
+            // Simulate processing time
+            setTimeout(() => {
+                performAnalysis();
+                btn.classList.remove('loading');
+                btn.innerHTML = '🔬 Generate Digital Twin Analysis';
+            }, 2000);
+        }
+        
+        function performAnalysis() {
+            // Get input values
+            const cancerType = document.getElementById('cancerType').value;
+            const age = parseInt(document.getElementById('patientAge').value);
+            const stage = parseInt(document.getElementById('diseaseStage').value);
+            const biomarker = document.getElementById('biomarkerStatus').value;
+            const tumorSize = parseFloat(document.getElementById('tumorSize').value) || 3.5;
+            const ki67 = parseInt(document.getElementById('ki67').value) || 25;
+            const performance = parseInt(document.getElementById('performanceStatus').value);
+            const genomic = document.getElementById('genomicProfile').value;
+            
+            // Calculate survival and response rates based on parameters
+            let baseSurvival = 85;
+            let baseResponse = 75;
+            let riskScore = 0;
+            
+            // Adjust based on cancer type
+            const cancerFactors = {
+                lung: { survival: -15, response: -10 },
+                breast: { survival: 5, response: 10 },
+                colorectal: { survival: 0, response: 5 },
+                prostate: { survival: 10, response: 5 },
+                leukemia: { survival: -10, response: 15 },
+                brain: { survival: -25, response: -15 },
+                pancreatic: { survival: -40, response: -20 },
+                ovarian: { survival: -5, response: 0 }
+            };
+            
+            baseSurvival += cancerFactors[cancerType].survival;
+            baseResponse += cancerFactors[cancerType].response;
+            
+            // Adjust for stage
+            baseSurvival -= (stage - 1) * 15;
+            baseResponse -= (stage - 1) * 10;
+            riskScore += stage * 20;
+            
+            // Adjust for age
+            if (age > 65) {
+                baseSurvival -= 10;
+                riskScore += 15;
+            } else if (age < 40) {
+                baseSurvival += 5;
+                riskScore -= 10;
+            }
+            
+            // Adjust for biomarker
+            if (biomarker === 'positive') {
+                baseResponse += 15;
+                baseSurvival += 10;
+                riskScore -= 10;
+            } else if (biomarker === 'unknown') {
+                riskScore += 5;
+            }
+            
+            // Adjust for tumor size
+            if (tumorSize > 5) {
+                baseSurvival -= 10;
+                baseResponse -= 5;
+                riskScore += 15;
+            }
+            
+            // Adjust for Ki-67
+            if (ki67 > 30) {
+                baseSurvival -= 5;
+                riskScore += 10;
+            }
+            
+            // Adjust for performance status
+            baseSurvival -= performance * 8;
+            baseResponse -= performance * 5;
+            riskScore += performance * 10;
+            
+            // Ensure values are within bounds
+            baseSurvival = Math.max(5, Math.min(95, baseSurvival));
+            baseResponse = Math.max(10, Math.min(95, baseResponse));
+            riskScore = Math.max(0, Math.min(100, riskScore));
+
+            // Calculate QoL Score (simplified: inverse relation to risk)
+            let qualityScore = Math.round(100 - (riskScore / 2));
+            qualityScore = Math.max(20, Math.min(95, qualityScore));
+
+            // Adjust based on genomic profile
+            const genomicFactors = {
+                wild: { survival: 0, response: 0, risk: 0 },
+                egfr: { survival: 10, response: 15, risk: -10 },
+                alk: { survival: 8, response: 12, risk: -8 },
+                kras: { survival: -5, response: -5, risk: 10 },
+                her2: { survival: 5, response: 10, risk: -5 }
+            };
+            
+            baseSurvival += genomicFactors[genomic].survival;
+            baseResponse += genomicFactors[genomic].response;
+            riskScore += genomicFactors[genomic].risk;
+            
+            // Re-clamp values after genomic adjustment
+            baseSurvival = Math.max(5, Math.min(95, baseSurvival));
+            baseResponse = Math.max(10, Math.min(95, baseResponse));
+            riskScore = Math.max(0, Math.min(100, riskScore));
+            qualityScore = Math.max(20, Math.min(95, qualityScore));
+
+            // Update metrics
+            document.getElementById('survivalRate').innerText = baseSurvival + '%';
+            document.getElementById('responseRate').innerText = baseResponse + '%';
+            document.getElementById('riskScore').innerText = riskScore;
+            document.getElementById('qualityScore').innerText = qualityScore;
+
+            // Show alert if high risk
+            const alertBox = document.getElementById('alertBox');
+            const alertText = document.getElementById('alertText');
+            if (riskScore > 60) {
+                alertText.innerText = 'High-risk patient profile detected. Consider palliative care options.';
+                alertBox.classList.add('show');
+            } else if (riskScore > 40) {
+                alertText.innerText = 'Moderate risk detected. Monitor closely.';
+                alertBox.classList.add('show');
+            } else {
+                alertBox.classList.remove('show');
+            }
+
+            // Generate treatment efficacies (simplified calculations)
+            let chemoEff = Math.round(baseResponse * 0.7 + (stage * -5));
+            let immunoEff = Math.round(baseResponse * (biomarker === 'positive' ? 1.2 : 0.8) + (genomic === 'kras' ? -10 : 5));
+            let targetedEff = Math.round(baseResponse * (genomic !== 'wild' ? 1.3 : 0.6));
+            let radiationEff = Math.round(baseResponse * (tumorSize < 4 ? 1.1 : 0.9) - (stage * 5));
+
+            // Clamp efficacies
+            [chemoEff, immunoEff, targetedEff, radiationEff] = [chemoEff, immunoEff, targetedEff, radiationEff].map(eff => Math.max(20, Math.min(95, eff)));
+
+            // Update progress bars
+            document.getElementById('chemoEff').innerText = chemoEff + '%';
+            document.getElementById('chemoBar').style.width = chemoEff + '%';
+            document.getElementById('immunoEff').innerText = immunoEff + '%';
+            document.getElementById('immunoBar').style.width = immunoEff + '%';
+            document.getElementById('targetedEff').innerText = targetedEff + '%';
+            document.getElementById('targetedBar').style.width = targetedEff + '%';
+            document.getElementById('radiationEff').innerText = radiationEff + '%';
+            document.getElementById('radiationBar').style.width = radiationEff + '%';
+
+            // Populate treatment cards
+            const treatments = [
+                { name: 'Chemotherapy', desc: 'Standard cytotoxic treatment', efficacy: chemoEff },
+                { name: 'Immunotherapy', desc: 'PD-1/PD-L1 inhibitors', efficacy: immunoEff },
+                { name: 'Targeted Therapy', desc: 'Mutation-specific inhibitors', efficacy: targetedEff },
+                { name: 'Radiation Therapy', desc: 'Localized radiation', efficacy: radiationEff },
+                { name: 'Surgery', desc: 'Tumor resection (if applicable)', efficacy: stage < 3 ? 80 : 40 },
+                { name: 'Combination Therapy', desc: 'Chemo + Immuno', efficacy: Math.round((chemoEff + immunoEff) / 2 + 10) }
+            ];
+
+            const treatmentCards = document.getElementById('treatmentCards');
+            treatmentCards.innerHTML = '';
+            treatments.forEach(treatment => {
+                const card = document.createElement('div');
+                card.className = 'treatment-card';
+                card.innerHTML = `
+                    <h3>${treatment.name}</h3>
+                    <p>${treatment.desc}</p>
+                    <p>Efficacy: ${treatment.efficacy}%</p>
+                `;
+                card.onclick = () => {
+                    document.querySelectorAll('.treatment-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    // Could add more logic here for selection effects
+                };
+                treatmentCards.appendChild(card);
+            });
+
+            // Update survival chart
+            if (survivalChart) survivalChart.destroy();
+            const survivalCtx = document.getElementById('survivalChart').getContext('2d');
+            survivalChart = new Chart(survivalCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    datasets: [{
+                        label: 'Survival Probability',
+                        data: [baseSurvival, baseSurvival * 0.9, baseSurvival * 0.8, baseSurvival * 0.7, baseSurvival * 0.6].map(Math.round),
+                        borderColor: '#4facfe',
+                        backgroundColor: 'rgba(79, 172, 254, 0.2)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+
+            // Update prediction chart (bar chart for treatment efficacies)
+            if (predictionChart) predictionChart.destroy();
+            const predictionCtx = document.getElementById('predictionChart').getContext('2d');
+            predictionChart = new Chart(predictionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Chemo', 'Immuno', 'Targeted', 'Radiation'],
+                    datasets: [{
+                        label: 'Predicted Efficacy',
+                        data: [chemoEff, immunoEff, targetedEff, radiationEff],
+                        backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                        borderColor: '#667eea',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
+            });
+
+            // Populate side effects analysis
+            const sideEffects = [
+                { effect: 'Nausea', risk: riskScore > 50 ? 'High' : 'Medium' },
+                { effect: 'Fatigue', risk: 'High' },
+                { effect: 'Hair Loss', risk: chemoEff > 60 ? 'High' : 'Low' },
+                { effect: 'Immune Reaction', risk: immunoEff > 70 ? 'Medium' : 'Low' },
+                { effect: 'Skin Irritation', risk: radiationEff > 50 ? 'Medium' : 'Low' }
+            ];
+
+            const sideEffectsAnalysis = document.getElementById('sideEffectsAnalysis');
+            sideEffectsAnalysis.innerHTML = '';
+            sideEffects.forEach(se => {
+                const p = document.createElement('p');
+                p.innerHTML = `<strong>${se.effect}:</strong> ${se.risk} risk`;
+                p.style.color = se.risk === 'High' ? '#ffc107' : 'rgba(255, 255, 255, 0.7)';
+                sideEffectsAnalysis.appendChild(p);
+            });
+
+            // Populate treatment timeline
+            const timelineItems = [
+                { week: 0, desc: 'Initial Diagnosis & Staging' },
+                { week: 1, desc: 'Treatment Planning & Digital Twin Simulation' },
+                { week: 2, desc: 'Start Primary Treatment (e.g., Chemo/Immuno)' },
+                { week: 6, desc: 'Mid-Treatment Evaluation' },
+                { week: 12, desc: 'Complete Primary Cycle' },
+                { week: 13, desc: 'Follow-up Imaging & Biomarkers' },
+                { week: 24, desc: 'Maintenance Therapy if Needed' }
+            ];
+
+            const treatmentTimeline = document.getElementById('treatmentTimeline');
+            treatmentTimeline.innerHTML = '';
+            timelineItems.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'timeline-item';
+                div.innerHTML = `
+                    <div class="timeline-marker">${index + 1}</div>
+                    <div class="timeline-content">
+                        <h4>Week ${item.week}</h4>
+                        <p>${item.desc}</p>
+                    </div>
+                `;
+                treatmentTimeline.appendChild(div);
+            });
+
+            // Switch to overview tab by default
+            switchTab('overview');
+        }
+    </script>
+</body>
+</html>

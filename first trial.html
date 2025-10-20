@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Twins in Oncology - Personalized Cancer Care</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .section {
+            background: white;
+            margin: 2rem 0;
+            padding: 3rem 0;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border-radius: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 5px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .card.breast { border-left-color: #e74c3c; }
+        .card.lung { border-left-color: #3498db; }
+        .card.colorectal { border-left-color: #2ecc71; }
+        .card.prostate { border-left-color: #9b59b6; }
+        .card.blood { border-left-color: #f39c12; }
+        .card.brain { border-left-color: #34495e; }
+        .card.head-neck { border-left-color: #e67e22; }
+        .card.ovarian { border-left-color: #8e44ad; }
+        .card.pancreatic { border-left-color: #d35400; }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .stat {
+            padding: 1rem;
+        }
+
+        .stat h3 {
+            font-size: 2.5rem;
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat p {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .treatment-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin: 2rem 0;
+            padding: 3rem 0;
+            border-radius: 20px;
+        }
+
+        .treatment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .treatment-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .treatment-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .side-effects {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .side-effects h4 {
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+
+        .side-effects ul {
+            list-style-type: none;
+            padding-left: 0;
+            color: #2c3e50; /* Added for visibility */
+        }
+
+        .side-effects li {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #eee;
+            color: #2c3e50; /* Added for visibility */
+        }
+
+        .side-effects li:before {
+            content: "⚠️";
+            margin-right: 0.5rem;
+        }
+
+        .digital-twin-demo {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 3rem 0;
+            border-radius: 20px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .patient-input {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .input-group select, .input-group input {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+
+        .simulate-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 2rem 0;
+        }
+
+        .simulate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .results {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            border-radius: 10px;
+            transition: width 2s ease;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #e74c3c;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; }
+            .patient-input { grid-template-columns: 1fr; }
+            .stats { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">🧬 CancerTwin</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#cancer-types">Cancer Types</a></li>
+                <li><a href="#treatments">Treatments</a></li>
+                <li><a href="#demo">Digital Twin Demo</a></li>
+                <li><a href="#research">Research</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h1>Digital Twins in Oncology</h1>
+                <p>Revolutionizing cancer care through personalized virtual patient models and AI-driven treatment optimization</p>
+                <a href="#demo" class="cta-button">Try Digital Twin Demo</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>What are Digital Twins in Cancer Care?</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <h3>3.4%</h3>
+                        <p>Phase I to Approval Success Rate</p>
+                    </div>
+                    <div class="stat">
+                        <h3>20-25%</h3>
+                        <p>Improvement in Treatment Response</p>
+                    </div>
+                    <div class="stat">
+                        <h3>87.35%</h3>
+                        <p>AI Prediction Accuracy</p>
+                    </div>
+                </div>
+                <p style="text-align: center; font-size: 1.2rem; margin-top: 2rem; color: #666;">
+                    Digital twins create virtual replicas of cancer patients, integrating real-time data from imaging, biomarkers, and clinical parameters to predict treatment outcomes and optimize therapy selection.
+                </p>
+            </div>
+        </section>
+
+        <section id="cancer-types" class="section">
+            <div class="container">
+                <h2>Cancer Types & Digital Twin Applications</h2>
+                <div class="grid">
+                    <div class="card breast" onclick="openModal('breast')">
+                        <h3>🎗️ Breast Cancer</h3>
+                        <p><strong>Focus:</strong> Triple-Negative Breast Cancer (TNBC)</p>
+                        <p><strong>Digital Twin Applications:</strong> MRI-based treatment optimization, neoadjuvant therapy prediction</p>
+                        <p><strong>Key Achievement:</strong> 20.95-24.76% improvement in pathological complete response rates</p>
+                    </div>
+
+                    <div class="card lung" onclick="openModal('lung')">
+                        <h3>🫁 Lung Cancer</h3>
+                        <p><strong>Focus:</strong> Non-Small Cell Lung Cancer (NSCLC), Adenocarcinoma</p>
+                        <p><strong>Digital Twin Applications:</strong> Cell electrophysiology modeling, treatment response prediction</p>
+                        <p><strong>Key Achievement:</strong> Digital cell twins for A549 lung adenocarcinoma cells</p>
+                    </div>
+
+                    <div class="card head-neck" onclick="openModal('head-neck')">
+                        <h3>👤 Head & Neck Cancer</h3>
+                        <p><strong>Focus:</strong> Oropharyngeal Squamous Cell Carcinoma</p>
+                        <p><strong>Digital Twin Applications:</strong> Deep Q-learning optimization, radiation therapy planning</p>
+                        <p><strong>Key Achievement:</strong> +3.73% survival improvement, -0.75% dysphagia reduction</p>
+                    </div>
+
+                    <div class="card blood" onclick="openModal('blood')">
+                        <h3>🩸 Blood Cancers</h3>
+                        <p><strong>Focus:</strong> Acute Myeloid Leukemia (AML), Hematopoietic tumors</p>
+                        <p><strong>Digital Twin Applications:</strong> G-CSF scheduling optimization, immunotherapy modeling</p>
+                        <p><strong>Key Achievement:</strong> Optimized neutropenia management protocols</p>
+                    </div>
+
+                    <div class="card brain" onclick="openModal('brain')">
+                        <h3>🧠 Brain Cancer</h3>
+                        <p><strong>Focus:</strong> High-grade Gliomas</p>
+                        <p><strong>Digital Twin Applications:</strong> Radiotherapy optimization, tumor growth prediction</p>
+                        <p><strong>Key Achievement:</strong> 6-day progression delay or 16.7% dose reduction</p>
+                    </div>
+
+                    <div class="card ovarian" onclick="openModal('ovarian')">
+                        <h3>🔬 Gynecologic Cancers</h3>
+                        <p><strong>Focus:</strong> Ovarian, Cervical, Endometrial cancers</p>
+                        <p><strong>Digital Twin Applications:</strong> AI-driven biomarker analysis, treatment response prediction</p>
+                        <p><strong>Key Achievement:</strong> Enhanced diagnostic accuracy through deep learning</p>
+                    </div>
+
+                    <div class="card colorectal" onclick="openModal('colorectal')">
+                        <h3>🎯 Colorectal Cancer</h3>
+                        <p><strong>Focus:</strong> Precision oncology applications</p>
+                        <p><strong>Digital Twin Applications:</strong> Treatment personalization, outcome prediction</p>
+                        <p><strong>Key Achievement:</strong> Improved patient stratification methods</p>
+                    </div>
+
+                    <div class="card prostate" onclick="openModal('prostate')">
+                        <h3>🔵 Prostate Cancer</h3>
+                        <p><strong>Focus:</strong> Hormone-sensitive disease management</p>
+                        <p><strong>Digital Twin Applications:</strong> Therapy selection optimization</p>
+                        <p><strong>Key Achievement:</strong> Personalized treatment timing protocols</p>
+                    </div>
+
+                    <div class="card pancreatic" onclick="openModal('pancreatic')">
+                        <h3>🥞 Pancreatic Cancer</h3>
+                        <p><strong>Focus:</strong> Aggressive tumor management</p>
+                        <p><strong>Digital Twin Applications:</strong> Multi-scale modeling, treatment optimization</p>
+                        <p><strong>Key Achievement:</strong> Improved survival prediction accuracy</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="treatments" class="treatment-section">
+            <div class="container">
+                <h2 style="color: white;">Treatment Modalities & Side Effects</h2>
+                <div class="treatment-grid">
+                    <div class="treatment-card">
+                        <h3>💊 Chemotherapy</h3>
+                        <p>Systemic treatment using cytotoxic drugs to destroy cancer cells throughout the body.</p>
+                        <div class="side-effects">
+                            <h4>Common Side Effects:</h4>
+                            <ul>
+                                <li>Nausea and vomiting</li>
+                                <li>Hair loss (alopecia)</li>
+                                <li>Fatigue and weakness</li>
+                                <li>Neutropenia (low white blood cells)</li>
+                                <li>Anemia (low red blood cells)</li>
+                                <li>Thrombocytopenia (low platelets)</li>
+                                <li>Mucositis (mouth sores)</li>
+                                <li>Diarrhea or constipation</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="treatment-card">
+                        <h3>🎯 Targeted Therapy</h3>
+                        <p>Drugs that specifically target cancer cell proteins, genes, or tissue environment.</p>
+                        <div class="side-effects">
+                            <h4>Common Side Effects:</h4>
+                            <ul>
+                                <li>Skin reactions and rashes</li>
+                                <li>Hypertension</li>
+                                <li>Bleeding and clotting issues</li>
+                                <li>Liver toxicity</li>
+                                <li>Heart problems</li>
+                                <li>Gastrointestinal perforation</li>
+                                <li>Hand-foot syndrome</li>
+                                <li>Thyroid dysfunction</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="treatment-card">
+                        <h3>🛡️ Immunotherapy</h3>
+                        <p>Treatments that harness the body's immune system to fight cancer cells.</p>
+                        <div class="side-effects">
+                            <h4>Common Side Effects:</h4>
+                            <ul>
+                                <li>Immune-related colitis</li>
+                                <li>Pneumonitis</li>
+                                <li>Hepatitis</li>
+                                <li>Endocrine disorders</li>
+                                <li>Skin reactions</li>
+                                <li>Cytokine release syndrome</li>
+                                <li>Neurological toxicity</li>
+                                <li>Infusion reactions</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="treatment-card">
+                        <h3>☢️ Radiation Therapy</h3>
+                        <p>High-energy radiation to destroy cancer cells and shrink tumors.</p>
+                        <div class="side-effects">
+                            <h4>Common Side Effects:</h4>
+                            <ul>
+                                <li>Skin irritation and burns</li>
+                                <li>Fatigue</li>
+                                <li>Hair loss in treated area</li>
+                                <li>Swallowing difficulties</li>
+                                <li>Dry mouth (xerostomia)</li>
+                                <li>Nausea</li>
+                                <li>Radiation fibrosis</li>
+                                <li>Secondary cancers (rare)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="treatment-card">
+                        <h3>🧬 CAR-T Cell Therapy</h3>
+                        <p>Genetically modified patient T-cells programmed to attack cancer cells.</p>
+                        <div class="side-effects">
+                            <h4>Common Side Effects:</h4>
+                            <ul>
+                                <li>Cytokine release syndrome</li>
+                                <li>Neurotoxicity</li>
+                                <li>B-cell aplasia</li>
+                                <li>Tumor lysis syndrome</li>
+                                <li>Infections</li>
+                                <li>Prolonged cytopenias</li>
+                                <li>Hypogammaglobulinemia</li>
+                                <li>On-target, off-tumor toxicity</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="treatment-card">
+                        <h3>🔬 Hormone Therapy</h3>
+                        <p>Blocks or lowers hormones that fuel certain types of cancer growth.</p>
+                        <div class="side-effects">
+                            <h4>Common Side Effects:</h4>
+                            <ul>
+                                <li>Hot flashes</li>
+                                <li>Bone loss (osteoporosis)</li>
+                                <li>Joint pain</li>
+                                <li>Mood changes</li>
+                                <li>Sexual dysfunction</li>
+                                <li>Weight gain</li>
+                                <li>Blood clots</li>
+                                <li>Cognitive changes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo" class="digital-twin-demo">
+            <div class="container">
+                <h2 style="color: white;">Interactive Digital Twin Simulator</h2>
+                <div class="demo-container">
+                    <p>Experience how digital twins personalize cancer treatment using patient-specific data</p>
+                    
+                    <div class="patient-input">
+                        <div class="input-group">
+                            <label>Cancer Type:</label>
+                            <select id="cancerType">
+                                <option value="breast">Breast Cancer (TNBC)</option>
+                                <option value="lung">Lung Cancer (NSCLC)</option>
+                                <option value="head-neck">Head & Neck Cancer</option>
+                                <option value="blood">Blood Cancer (AML)</option>
+                                <option value="brain">Brain Cancer (Glioma)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Patient Age:</label>
+                            <input type="number" id="age" min="18" max="100" value="55">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Disease Stage:</label>
+                            <select id="stage">
+                                <option value="1">Stage I</option>
+                                <option value="2">Stage II</option>
+                                <option value="3">Stage III</option>
+                                <option value="4">Stage IV</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Biomarker Status:</label>
+                            <select id="biomarker">
+                                <option value="positive">Positive</option>
+                                <option value="negative">Negative</option>
+                                <option value="unknown">Unknown</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="simulate-btn" onclick="runSimulation()">🔬 Generate Digital Twin Analysis</button>
+                    
+                    <div id="results" class="results">
+                        <h3>Digital Twin Analysis Results</h3>
+                        <div id="treatmentPlan"></div>
+                        <div>
+                            <h4>Treatment Response Prediction:</h4>
+                            <div class="progress-bar">
+                                <div id="responseRate" class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <p id="responseText"></p>
+                        </div>
+                        <div>
+                            <h4>Side Effect Risk Assessment:</h4>
+                            <div id="sideEffectRisk"></div>
+                        </div>
+                        <div id="optimizationSuggestions"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="research" class="section">
+            <div class="container">
+                <h2>Research Insights & Evidence</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>📈 Clinical Outcomes</h3>
+                        <p>Digital twins have shown significant improvements in treatment outcomes across multiple cancer types, with response rate improvements of 20-25% in breast cancer studies.</p>
+                    </div>
+                    <div class="card">
+                        <h3>🧠 AI & Machine Learning</h3>
+                        <p>Deep Q-learning and reinforcement learning algorithms achieve 87.35% accuracy in treatment prediction, revolutionizing clinical decision-making.</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔬 Precision Medicine</h3>
+                        <p>Integration of multiomics data, imaging biomarkers, and real-time monitoring enables truly personalized cancer care for each patient.</p>
+                    </div>
+                    <div class="card">
+                        <h3>💰 Cost Reduction</h3>
+                        <p>Virtual clinical trials and optimized treatment selection reduce healthcare costs while improving patient outcomes and quality of life.</p>
+                    </div>
+                    <div class="card">
+                        <h3>⚡ Real-time Adaptation</h3>
+                        <p>Digital twins enable continuous monitoring and real-time treatment adjustments based on patient response and disease progression.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal for Cancer Type Details -->
+        <div id="cancerModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CancerTwin. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Modal functionality
+        function openModal(cancerType) {
+            const modal = document.getElementById('cancerModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            const cancerData = {
+                'breast': {
+                    title: 'Breast Cancer (TNBC)',
+                    focus: 'Triple-Negative Breast Cancer',
+                    applications: 'MRI-based treatment optimization, neoadjuvant therapy prediction',
+                    achievement: '20.95-24.76% improvement in pathological complete response rates',
+                    details: 'Digital twins for TNBC integrate MRI imaging and molecular profiling to predict response to neoadjuvant chemotherapy, optimizing treatment plans and reducing unnecessary interventions.'
+                },
+                'lung': {
+                    title: 'Lung Cancer (NSCLC)',
+                    focus: 'Non-Small Cell Lung Cancer, Adenocarcinoma',
+                    applications: 'Cell electrophysiology modeling, treatment response prediction',
+                    achievement: 'Digital cell twins for A549 lung adenocarcinoma cells',
+                    details: 'Lung cancer digital twins model tumor cell behavior and predict responses to targeted therapies, improving precision in treatment selection.'
+                },
+                'head-neck': {
+                    title: 'Head & Neck Cancer',
+                    focus: 'Oropharyngeal Squamous Cell Carcinoma',
+                    applications: 'Deep Q-learning optimization, radiation therapy planning',
+                    achievement: '+3.73% survival improvement, -0.75% dysphagia reduction',
+                    details: 'AI-driven digital twins optimize radiation dosing schedules, minimizing side effects like dysphagia while improving survival outcomes.'
+                },
+                'blood': {
+                    title: 'Blood Cancers (AML)',
+                    focus: 'Acute Myeloid Leukemia, Hematopoietic tumors',
+                    applications: 'G-CSF scheduling optimization, immunotherapy modeling',
+                    achievement: 'Optimized neutropenia management protocols',
+                    details: 'Digital twins for AML optimize growth factor administration and immunotherapy, reducing complications like neutropenia.'
+                },
+                'brain': {
+                    title: 'Brain Cancer (Glioma)',
+                    focus: 'High-grade Gliomas',
+                    applications: 'Radiotherapy optimization, tumor growth prediction',
+                    achievement: '6-day progression delay or 16.7% dose reduction',
+                    details: 'Brain cancer digital twins predict tumor growth patterns and optimize radiotherapy, reducing radiation exposure while delaying disease progression.'
+                },
+                'ovarian': {
+                    title: 'Gynecologic Cancers',
+                    focus: 'Ovarian, Cervical, Endometrial cancers',
+                    applications: 'AI-driven biomarker analysis, treatment response prediction',
+                    achievement: 'Enhanced diagnostic accuracy through deep learning',
+                    details: 'Digital twins analyze multiomics data to improve diagnostic precision and predict treatment responses for gynecologic cancers.'
+                },
+                'colorectal': {
+                    title: 'Colorectal Cancer',
+                    focus: 'Precision oncology applications',
+                    applications: 'Treatment personalization, outcome prediction',
+                    achievement: 'Improved patient stratification methods',
+                    details: 'Digital twins enable precise patient stratification, tailoring treatments to individual tumor profiles for better outcomes.'
+                },
+                'prostate': {
+                    title: 'Prostate Cancer',
+                    focus: 'Hormone-sensitive disease management',
+                    applications: 'Therapy selection optimization',
+                    achievement: 'Personalized treatment timing protocols',
+                    details: 'Prostate cancer digital twins optimize hormone therapy schedules, improving efficacy and patient quality of life.'
+                },
+                'pancreatic': {
+                    title: 'Pancreatic Cancer',
+                    focus: 'Aggressive tumor management',
+                    applications: 'Multi-scale modeling, treatment optimization',
+                    achievement: 'Improved survival prediction accuracy',
+                    details: 'Digital twins for pancreatic cancer use multi-scale modeling to predict survival and optimize aggressive treatment strategies.'
+                }
+            };
+
+            if (cancerData[cancerType]) {
+                modalContent.innerHTML = `
+                    <h2>${cancerData[cancerType].title}</h2>
+                    <p><strong>Focus:</strong> ${cancerData[cancerType].focus}</p>
+                    <p><strong>Digital Twin Applications:</strong> ${cancerData[cancerType].applications}</p>
+                    <p><strong>Key Achievement:</strong> ${cancerData[cancerType].achievement}</p>
+                    <p><strong>Details:</strong> ${cancerData[cancerType].details}</p>
+                `;
+                modal.style.display = 'block';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('cancerModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('cancerModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Simulator functionality
+        function runSimulation() {
+            const cancerType = document.getElementById('cancerType').value;
+            const age = parseInt(document.getElementById('age').value);
+            const stage = parseInt(document.getElementById('stage').value);
+            const biomarker = document.getElementById('biomarker').value;
+
+            // Input validation
+            if (isNaN(age) || age < 18 || age > 100) {
+                alert('Please enter a valid age between 18 and 100.');
+                return;
+            }
+
+            // Simulated digital twin analysis logic
+            const treatmentData = {
+                'breast': {
+                    treatments: ['Chemotherapy', 'Targeted Therapy'],
+                    baseResponseRate: 70,
+                    sideEffects: ['Nausea', 'Hair loss', 'Fatigue'],
+                    optimization: 'Optimize neoadjuvant chemotherapy cycles based on MRI response.'
+                },
+                'lung': {
+                    treatments: ['Targeted Therapy', 'Immunotherapy'],
+                    baseResponseRate: 65,
+                    sideEffects: ['Skin reactions', 'Pneumonitis'],
+                    optimization: 'Adjust targeted therapy based on EGFR mutation status.'
+                },
+                'head-neck': {
+                    treatments: ['Radiation Therapy', 'Immunotherapy'],
+                    baseResponseRate: 60,
+                    sideEffects: ['Dysphagia', 'Skin irritation'],
+                    optimization: 'Use deep Q-learning for radiation dosing.'
+                },
+                'blood': {
+                    treatments: ['Immunotherapy', 'Chemotherapy'],
+                    baseResponseRate: 55,
+                    sideEffects: ['Neutropenia', 'Infections'],
+                    optimization: 'Optimize G-CSF scheduling.'
+                },
+                'brain': {
+                    treatments: ['Radiation Therapy', 'Chemotherapy'],
+                    baseResponseRate: 50,
+                    sideEffects: ['Fatigue', 'Neurological toxicity'],
+                    optimization: 'Reduce radiation dose by 16.7% with tumor growth modeling.'
+                }
+            };
+
+            const data = treatmentData[cancerType] || {
+                treatments: ['Chemotherapy'],
+                baseResponseRate: 50,
+                sideEffects: ['Nausea', 'Fatigue'],
+                optimization: 'General treatment optimization.'
+            };
+
+            // Adjust response rate based on inputs
+            let responseRate = data.baseResponseRate;
+            if (biomarker === 'positive') responseRate += 10;
+            if (biomarker === 'negative') responseRate -= 5;
+            if (stage <= 2) responseRate += 5;
+            if (stage === 4) responseRate -= 10;
+            if (age > 70) responseRate -= 5;
+            responseRate = Math.max(10, Math.min(95, responseRate)); // Clamp between 10% and 95%
+
+            // Generate results
+            document.getElementById('treatmentPlan').innerHTML = `
+                <h4>Recommended Treatment Plan:</h4>
+                <p>${data.treatments.join(' + ')}</p>
+            `;
+            document.getElementById('responseRate').style.width = `${responseRate}%`;
+            document.getElementById('responseText').innerText = `Predicted response rate: ${responseRate}%`;
+            document.getElementById('sideEffectRisk').innerHTML = `
+                <p><strong>Potential Side Effects:</strong> ${data.sideEffects.join(', ')}</p>
+            `;
+            document.getElementById('optimizationSuggestions').innerHTML = `
+                <h4>Optimization Suggestions:</h4>
+                <p>${data.optimization}</p>
+            `;
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
