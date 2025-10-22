@@ -838,22 +838,22 @@
                         
                         <div class="metrics-grid">
                             <div class="metric-card">
-                                <div class="metric-icon">❤️</div>
+                                <div class="metric-icon"></div>
                                 <div class="metric-value" id="cardioRisk">--</div>
                                 <div class="metric-label">Cardiotoxicity Risk (%)</div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-icon">🩸</div>
+                                <div class="metric-icon"></div>
                                 <div class="metric-value" id="neutroRisk">--</div>
                                 <div class="metric-label">Neutropenia Risk (%)</div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-icon">🔴</div>
+                                <div class="metric-icon"></div>
                                 <div class="metric-value" id="anemiaRisk">--</div>
                                 <div class="metric-label">Anemia Risk (%)</div>
                             </div>
                             <div class="metric-card">
-                                <div class="metric-icon">⭐</div>
+                                <div class="metric-icon"></div>
                                 <div class="metric-value" id="qualityScore">--</div>
                                 <div class="metric-label">Recovery Score</div>
                             </div>
@@ -898,7 +898,7 @@
                         
                         <div class="patient-metrics-grid">
                             <div class="patient-metric-card heart">
-                                <div class="metric-icon">❤️</div>
+                                <div class="metric-icon"></div>
                                 <div class="metric-title">Heart Health</div>
                                 <div class="metric-value" id="patientHeartScore">--</div>
                                 <div class="metric-bar">
@@ -907,7 +907,7 @@
                             </div>
                             
                             <div class="patient-metric-card blood">
-                                <div class="metric-icon">🩸</div>
+                                <div class="metric-icon"></div>
                                 <div class="metric-title">Blood Health</div>
                                 <div class="metric-value" id="patientBloodScore">--</div>
                                 <div class="metric-bar">
@@ -916,7 +916,7 @@
                             </div>
                             
                             <div class="patient-metric-card energy">
-                                <div class="metric-icon">⚡</div>
+                                <div class="metric-icon"></div>
                                 <div class="metric-title">Energy Level</div>
                                 <div class="metric-value" id="patientEnergyScore">--</div>
                                 <div class="metric-bar">
@@ -1851,13 +1851,13 @@
                 html += '<div style="background: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">';
                 html += '<h4 style="color: #856404; margin-bottom: 10px;">⚠️ Current Health Status Needs Attention</h4>';
                 if (systolic > 140) {
-                    html += `<p style="margin: 8px 0;">💓 <strong>Your blood pressure (${currentPatient.vitals.bloodPressure}):</strong> This is higher than ideal. Try to relax, reduce salt in your diet, and avoid caffeine. If it stays elevated, contact your doctor.</p>`;
+                    html += `<p style="margin: 8px 0;"> <strong>Your blood pressure (${currentPatient.vitals.bloodPressure}):</strong> This is higher than ideal. Try to relax, reduce salt in your diet, and avoid caffeine. If it stays elevated, contact your doctor.</p>`;
                 }
                 if (hr > 100) {
-                    html += `<p style="margin: 8px 0;">💗 <strong>Your heart rate (${hr} bpm):</strong> Your heart is working harder than usual. Stay well-hydrated, rest often, and practice slow, deep breathing. This is common during treatment but tell your nurse if you feel dizzy or short of breath.</p>`;
+                    html += `<p style="margin: 8px 0;"> <strong>Your heart rate (${hr} bpm):</strong> Your heart is working harder than usual. Stay well-hydrated, rest often, and practice slow, deep breathing. This is common during treatment but tell your nurse if you feel dizzy or short of breath.</p>`;
                 }
                 if (temp > 37.5) {
-                    html += `<p style="margin: 8px 0;">🌡️ <strong>Your temperature (${temp}°C):</strong> You have a slight fever. This could be a sign of infection (especially if your white blood cells are low). <strong style="color: #dc2626;">If it reaches 38°C (100.4°F), call your doctor immediately!</strong></p>`;
+                    html += `<p style="margin: 8px 0;"> <strong>Your temperature (${temp}°C):</strong> You have a slight fever. This could be a sign of infection (especially if your white blood cells are low). <strong style="color: #dc2626;">If it reaches 38°C (100.4°F), call your doctor immediately!</strong></p>`;
                 }
                 html += '</div>';
             }
@@ -2013,8 +2013,8 @@
 
         window.onload = function() {
             createParticles();
-            console.log('🧬 ChemoTwin Digital Twin RAG System Initialized!');
-            console.log('📚 Knowledge Base Loaded:');
+            console.log(' ChemoTwin Digital Twin RAG System Initialized!');
+            console.log(' Knowledge Base Loaded:');
             console.log('  ✓ Lipshultz et al. (1995) - Cardiotoxicity in Children');
             console.log('  ✓ Swain et al. (2003) - Dexrazoxane Cardioprotection');
             console.log('  ✓ Cardinale et al. (2015) - Troponin Monitoring');
@@ -2023,7 +2023,7 @@
             console.log('  ✓ Aapro et al. (2011) - EORTC G-CSF Guidelines');
             console.log('  ✓ Hesketh et al. (2017) - ASCO Antiemetic Guidelines');
             console.log('  ✓ Sonis et al. (2004) - Mucositis Pathobiology');
-            console.log('🎯 Ready for personalized digital twin simulation!');
+            console.log(' Ready for personalized digital twin simulation!');
         };
     </script>
 </body>
