@@ -1272,7 +1272,7 @@
             patientDatabase[randomId] = patient;
             
             updateUI();
-            alert(` Virtual patient generated!\n\n👤 ID: ${randomId}\n📅 Age: ${patient.age} years\n⚧ Sex: ${patient.sex}\n🏥 Cancer: ${patient.cancer}\n💊 Chronic conditions: ${patient.chronicDiseases.length > 0 ? patient.chronicDiseases.join(', ') : 'None'}\n\nDigital twin is ready for treatment simulation!`);
+            alert(` Virtual patient generated!\n\n👤 ID: ${randomId}\n Age: ${patient.age} years\n⚧ Sex: ${patient.sex}\n Cancer: ${patient.cancer}\n Chronic conditions: ${patient.chronicDiseases.length > 0 ? patient.chronicDiseases.join(', ') : 'None'}\n\nDigital twin is ready for treatment simulation!`);
         }
 
         function updateUI() {
@@ -1945,13 +1945,13 @@
             html += '<div style="background: #fee2e2; padding: 15px; border-radius: 10px; border-left: 4px solid #dc2626;">';
             html += '<h4 style="color: #991b1b; margin-bottom: 10px;">🚨 Call Your Doctor RIGHT AWAY If You Experience:</h4>';
             html += '<ul style="margin-left: 20px; color: #7f1d1d; line-height: 1.8; font-weight: 500;">';
-            html += '<li>🌡️ <strong>Fever ≥38°C (100.4°F)</strong> - This is a medical emergency!</li>';
-            html += '<li>💔 <strong>Chest pain or difficulty breathing</strong></li>';
-            html += '<li>🩸 <strong>Unusual bleeding or bruising</strong></li>';
-            html += '<li>🤮 <strong>Can\'t keep down any food or water for 24 hours</strong></li>';
-            html += '<li>🌀 <strong>Severe dizziness, confusion, or fainting</strong></li>';
-            html += '<li>😷 <strong>Signs of infection:</strong> redness, swelling, pus from any wound</li>';
-            html += '<li>⚠️ <strong>Any symptom that really worries you</strong> - trust your instincts!</li>';
+            html += '<li> <strong>Fever ≥38°C (100.4°F)</strong> - This is a medical emergency!</li>';
+            html += '<li> <strong>Chest pain or difficulty breathing</strong></li>';
+            html += '<li> <strong>Unusual bleeding or bruising</strong></li>';
+            html += '<li> <strong>Can\'t keep down any food or water for 24 hours</strong></li>';
+            html += '<li> <strong>Severe dizziness, confusion, or fainting</strong></li>';
+            html += '<li> <strong>Signs of infection:</strong> redness, swelling, pus from any wound</li>';
+            html += '<li> <strong>Any symptom that really worries you</strong> - trust your instincts!</li>';
             html += '</ul>';
             html += '<p style="margin-top: 12px; color: #7f1d1d; font-weight: 600;">📞 Keep your doctor\'s emergency number handy. Better to call and be safe than wait and worry!</p>';
             html += '</div>';
