@@ -866,7 +866,7 @@
                     </div>
                     
                     <div id="rag-insights" class="tab-content">
-                        <h3>Evidence-Based Clinical Insights 📚</h3>
+                        <h3>Evidence-Based Clinical Insights </h3>
                         <p style="color: #666; margin-bottom: 20px;">Studies relevant to this patient's specific risk profile</p>
                         <div id="ragStudiesContainer"></div>
                     </div>
@@ -882,7 +882,7 @@
                 
                 <div id="patientView" style="display: none;">
                     <div id="noDataMessage" class="no-data-message">
-                        <div class="icon">📊</div>
+                        <div class="icon"></div>
                         <p>Add your first treatment session to see your personalized health journey</p>
                     </div>
                     
@@ -1246,7 +1246,7 @@
             } else {
                 currentPatient = initializePatient(patientId);
                 patientDatabase[patientId] = currentPatient;
-                alert(`✨ New patient ${patientId} created!\n\nYou can now add treatment sessions to build their digital twin.`);
+                alert(` New patient ${patientId} created!\n\nYou can now add treatment sessions to build their digital twin.`);
             }
             
             updateUI();
@@ -1272,7 +1272,7 @@
             patientDatabase[randomId] = patient;
             
             updateUI();
-            alert(`🎲 Virtual patient generated!\n\n👤 ID: ${randomId}\n📅 Age: ${patient.age} years\n⚧ Sex: ${patient.sex}\n🏥 Cancer: ${patient.cancer}\n💊 Chronic conditions: ${patient.chronicDiseases.length > 0 ? patient.chronicDiseases.join(', ') : 'None'}\n\nDigital twin is ready for treatment simulation!`);
+            alert(` Virtual patient generated!\n\n👤 ID: ${randomId}\n📅 Age: ${patient.age} years\n⚧ Sex: ${patient.sex}\n🏥 Cancer: ${patient.cancer}\n💊 Chronic conditions: ${patient.chronicDiseases.length > 0 ? patient.chronicDiseases.join(', ') : 'None'}\n\nDigital twin is ready for treatment simulation!`);
         }
 
         function updateUI() {
@@ -1374,13 +1374,13 @@
             
             runSimulation();
             
-            let alertMsg = `✅ Treatment Session ${session.sessionNumber} Completed!\n\n`;
-            alertMsg += `💉 Dose: ${sessionDose} mg/m²\n`;
-            alertMsg += `📊 Cumulative: ${currentPatient.cumulativeDose} mg/m²\n\n`;
-            alertMsg += `🧬 Digital Twin Analysis:\n`;
-            alertMsg += `❤️  Cardiotoxicity: ${risks.cardioRisk}%\n`;
-            alertMsg += `🩸 Neutropenia: ${risks.neutroRisk}%\n`;
-            alertMsg += `⭐ Recovery Score: ${risks.overallScore}\n\n`;
+            let alertMsg = ` Treatment Session ${session.sessionNumber} Completed!\n\n`;
+            alertMsg += ` Dose: ${sessionDose} mg/m²\n`;
+            alertMsg += ` Cumulative: ${currentPatient.cumulativeDose} mg/m²\n\n`;
+            alertMsg += ` Digital Twin Analysis:\n`;
+            alertMsg += `  Cardiotoxicity: ${risks.cardioRisk}%\n`;
+            alertMsg += ` Neutropenia: ${risks.neutroRisk}%\n`;
+            alertMsg += ` Recovery Score: ${risks.overallScore}\n\n`;
             
             if (risks.cardioRisk > 25) {
                 alertMsg += `⚠️ High cardiotoxicity risk detected!\n`;
@@ -1416,7 +1416,7 @@
             const container = document.getElementById('digitalTwinAnalysis');
             
             let html = '<div class="twin-analysis-box">';
-            html += '<h4>🧬 Digital Twin Personalized Analysis</h4>';
+            html += '<h4> Digital Twin Personalized Analysis</h4>';
             html += `<p><strong>${currentPatient.id}</strong> | ${currentPatient.age}yo ${currentPatient.sex} | ${currentPatient.cancer} | ${currentPatient.cumulativeDose} mg/m²</p>`;
             
             if (risks.cardioModifiers && risks.cardioModifiers.length > 0) {
@@ -1532,7 +1532,7 @@
                 mgmtCard.className = 'study-card';
                 mgmtCard.style.background = '#f0fdf4';
                 mgmtCard.innerHTML = `
-                    <h5>💊 Evidence-Based Management</h5>
+                    <h5> Evidence-Based Management</h5>
                     <p>${ragInsights.managementCardio}</p>
                 `;
                 container.appendChild(mgmtCard);
