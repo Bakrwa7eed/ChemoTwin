@@ -1366,29 +1366,30 @@ This is an automated notification from ChemoTwin Platform.
             }
             
             // Send real email using EmailJS
-        const emailParams = {
-            visitor_id: visitorId,
-            timestamp: new Date(timestamp).toLocaleString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            }),
-            user_agent: navigator.userAgent,
-            screen_resolution: `${window.screen.width}x${window.screen.height}`,
-            language: navigator.language
-        };
+            const emailParams = {
+                visitor_id: visitorId,
+                timestamp: new Date(timestamp).toLocaleString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    second: '2-digit'
+                }),
+                user_agent: navigator.userAgent,
+                screen_resolution: `${window.screen.width}x${window.screen.height}`,
+                language: navigator.language
+            };
 
-        try {
-            const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
-            console.log('✅ Visitor email sent successfully!', response.status, response.text);
-        } catch (error) {
-            console.error('❌ Failed to send visitor email:', error);
+            try {
+                const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
+                console.log('✅ Visitor email sent successfully!', response.status, response.text);
+            } catch (error) {
+                console.error('❌ Failed to send visitor email:', error);
+            }
         }
-
+        
         // ENHANCED RAG Knowledge Base with 2022+ studies
         const ragKnowledge = {
             cardiotoxicity: {
