@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChemoTwin: Digital Twins for Chemotherapy Effects</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+    (function(){
+        emailjs.init("zw5gaDMv_koqacN8M");
+    })();
+</script>
     <style>
         * {
             margin: 0;
@@ -204,7 +210,9 @@
             font-size: 2.8em;
             background: linear-gradient(135deg, #0066cc, #3399ff, #0066cc);
             background-size: 200% auto;
+            background-clip: text;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shimmer 3s linear infinite;
             margin-bottom: 10px;
@@ -1269,12 +1277,8 @@
         let bluetoothDevice = null;
         let heartRateCharacteristic = null;
 
-        // EMAIL NOTIFICATION FUNCTION
         async function sendEmailNotification(data) {
-            const emailData = {
-                to: 'bakrwaheed0@gmail.com',
-                subject: `ChemoTwin - New Patient Entry: ${data.patientId}`,
-                body: `
+    const emailBody = `
 NEW PATIENT ENTRY NOTIFICATION
 
 Patient ID: ${data.patientId}
@@ -1304,21 +1308,42 @@ Latest Risk Profile:
 
 ---
 This is an automated notification from ChemoTwin Platform.
-                `
-            };
-            
-            console.log('EMAIL NOTIFICATION:', emailData);
-            
-            try {
-                await window.storage.set(
-                    `email_log:${data.patientId}_${data.timestamp}`,
-                    JSON.stringify(emailData),
-                    true
-                );
-            } catch (error) {
-                console.log('Email log stored in memory');
-            }
-        }
+    `;
+    
+    // Send email using EmailJS
+    const emailParams = {
+        visitor_id: data.patientId,
+        timestamp: new Date(data.timestamp).toLocaleString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit'
+        }),
+        user_agent: `Patient Entry - Age: ${data.age}, Sex: ${data.sex}, Cancer: ${data.cancer}`,
+        screen_resolution: `Sessions: ${data.sessions.length} | Dose: ${data.cumulativeDose} mg/m²`,
+        language: `Chronic Diseases: ${data.chronicDiseases.join(', ') || 'None'}`
+    };
+    
+    try {
+        const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
+        console.log('✅ Patient entry email sent!', response.status);
+    } catch (error) {
+        console.error('❌ Failed to send patient email:', error);
+    }
+    
+    // Also store in storage
+    try {
+        await window.storage.set(
+            `email_log:${data.patientId}_${data.timestamp}`,
+            emailBody,
+            true
+        );
+    } catch (error) {
+        console.log('Email log stored in memory');
+    }
+}
 
         // Track visitor on page load
         async function trackVisitor() {
@@ -1340,12 +1365,28 @@ This is an automated notification from ChemoTwin Platform.
                 console.log('Visitor tracking stored in memory');
             }
             
-            const emailData = {
-                to: 'bakrwaheed0@gmail.com',
-                subject: 'ChemoTwin - New Website Visitor',
-                body: `New visitor accessed ChemoTwin Platform\n\nTime: ${new Date(timestamp).toLocaleString()}\nVisitor ID: ${visitorId}\nUser Agent: ${navigator.userAgent}`
-            };
-            console.log('VISITOR EMAIL:', emailData);
+            // Send real email using EmailJS
+        const emailParams = {
+            visitor_id: visitorId,
+            timestamp: new Date(timestamp).toLocaleString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            }),
+            user_agent: navigator.userAgent,
+            screen_resolution: `${window.screen.width}x${window.screen.height}`,
+            language: navigator.language
+        };
+
+        try {
+            const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
+            console.log('✅ Visitor email sent successfully!', response.status, response.text);
+        } catch (error) {
+            console.error('❌ Failed to send visitor email:', error);
         }
 
         // ENHANCED RAG Knowledge Base with 2022+ studies
