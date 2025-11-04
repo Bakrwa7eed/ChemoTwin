@@ -972,6 +972,67 @@
         .footer-links a:hover {
             color: #60a5fa;
         }
+
+        /* NEW STYLES FOR MODIFICATIONS */
+        .required-field::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        .dose-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .dose-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .risk-detail-panel {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .risk-detail-panel.active {
+            display: block;
+        }
+
+        .calculation-step {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #0066cc;
+        }
+
+        .simulation-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .simulation-dose-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .simulation-results {
+            background: #f0f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -982,7 +1043,7 @@
     <div class="bluetooth-sidebar" id="bluetoothSidebar">
         <div class="bluetooth-header">
             <div class="bluetooth-icon">🔵</div>
-            <div class="bluetooth-title">Device Monitor if you want to test</div>
+            <div class="bluetooth-title">Device Monitor</div>
         </div>
         
         <div class="device-status">
@@ -1003,6 +1064,10 @@
                 <span class="vital-label">Temperature</span>
                 <span class="vital-value" id="sidebarTemp">-- °C</span>
             </div>
+            <div class="vital-item">
+                <span class="vital-label">Ejection Fraction</span>
+                <span class="vital-value" id="sidebarEF">-- %</span>
+            </div>
         </div>
         
         <button class="btn-connect" id="connectBtn" onclick="connectBluetoothDevice()">
@@ -1013,7 +1078,7 @@
     <div class="main-container">
         <header class="header">
             <h1>ChemoTwin Clinical Platform</h1>
-            <p class="subtitle">Evidence-Based Digital Twins for Chemotherapy Effects with RAG-Powered Insights</p>
+            <p class="subtitle">Evidence-Based Digital Twins for Chemotherapy Effects with Research-Powered Insights</p>
             <div class="view-toggle">
                 <button class="view-btn active" onclick="switchView('doctor')">Clinical Dashboard</button>
                 <button class="view-btn" onclick="switchView('patient')">Patient View</button>
@@ -1025,7 +1090,7 @@
             <div class="id-controls">
                 <input type="text" id="patientId" placeholder="Enter Patient ID (e.g., PT-2025-001)" class="patient-id-input">
                 <button onclick="loadPatient()" class="btn btn-primary">Load Patient</button>
-                <button onclick="generateVirtualPatient()" class="btn btn-success">Generate Virtual Patient</button>
+                <button onclick="generateNewPatient()" class="btn btn-success">Generate New Patient</button>
                 <button onclick="exportPatientReport()" class="btn btn-secondary" id="exportBtn" style="display:none;">Export Report</button>
             </div>
         </div>
@@ -1037,12 +1102,12 @@
                 <div class="form-section">
                     <h3>Demographics</h3>
                     <div class="input-group">
-                        <label>Age (years)</label>
+                        <label class="required-field">Age (years)</label>
                         <input type="number" id="age" min="1" max="100" value="45" oninput="updatePatientRealtime()">
                     </div>
                     
                     <div class="input-group">
-                        <label>Sex</label>
+                        <label class="required-field">Sex</label>
                         <select id="sex" onchange="updatePatientRealtime()">
                             <option value="male">Male</option>
                             <option value="female">Female</option>
@@ -1051,29 +1116,30 @@
                     </div>
                     
                     <div class="input-group">
-                        <label>Cancer Type</label>
+                        <label class="required-field">Cancer Type</label>
                         <select id="cancer" onchange="updatePatientRealtime()">
                             <option value="leukemia">Leukemia</option>
                             <option value="lymphoma">Lymphoma</option>
-                            
+                            <option value="breast">Breast Cancer</option>
                         </select>
                     </div>
                     
                     <div class="input-group">
-                            <label>Chronic Diseases</label>
-                            <select id="chronicDiseases" multiple size="6" onchange="updatePatientRealtime()">
-                                <option value="none">None</option>
-                                <option value="diabetes">Diabetes</option>
-                                <option value="hypertension">Hypertension</option>
-                                <option value="heart_disease">Heart Disease</option>
-                                <option value="kidney_disease">Kidney Disease</option>
-                                <option value="liver_disease">Liver Disease</option>
-                                <option value="copd">COPD (chronic lung disease)</option>
-                                <option value="asthma">Asthma</option>
-                                <option value="obesity">Obesity (BMI > 30)</option>
-                            </select>
-                            <small style="color: #666; display: block; margin-top: 5px;">Hold Ctrl/Cmd to select multiple</small>
-                        </div>
+                        <label class="required-field">Chronic Diseases</label>
+                        <select id="chronicDiseases" multiple size="6" onchange="updatePatientRealtime()">
+                            <option value="none">None</option>
+                            <option value="diabetes">Diabetes</option>
+                            <option value="hypertension">Hypertension</option>
+                            <option value="heart_disease">Heart Disease</option>
+                            <option value="kidney_disease">Kidney Disease</option>
+                            <option value="liver_disease">Liver Disease</option>
+                            <option value="copd">COPD (chronic lung disease)</option>
+                            <option value="asthma">Asthma</option>
+                            <option value="obesity">Obesity (BMI > 30)</option>
+                            <option value="anemia">Anemia</option>
+                        </select>
+                        <small style="color: #666; display: block; margin-top: 5px;">Hold Ctrl/Cmd to select multiple</small>
+                    </div>
                 </div>
                 
                 <div class="form-section">
@@ -1092,6 +1158,11 @@
                         <label>Heart Rate (bpm)</label>
                         <input type="number" id="heartRate" min="40" max="200" value="75" oninput="updatePatientRealtime()">
                     </div>
+                    
+                    <div class="input-group">
+                        <label>Ejection Fraction (%)</label>
+                        <input type="number" id="ejectionFraction" min="20" max="80" value="60" oninput="updatePatientRealtime()">
+                    </div>
                 </div>
                 
                 <div class="form-section">
@@ -1105,9 +1176,12 @@
                         <small>Maximum recommended: 550 mg/m²</small>
                     </div>
                     
-                    <button class="btn-add-session" onclick="addTreatmentSession()">
-                        Add Treatment Session (60 mg/m²)
-                    </button>
+                    <div class="dose-input-group">
+                        <input type="number" id="sessionDose" class="dose-input" placeholder="Enter dose in mg/m²" value="60" min="1" max="100">
+                        <button class="btn-add-session" onclick="addTreatmentSession()">
+                            Add Treatment Session
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="session-count">
@@ -1121,8 +1195,9 @@
                 <div id="doctorView">
                     <div class="tabs">
                         <button class="tab active" onclick="switchTab('overview')">Overview</button>
-                        <button class="tab" onclick="switchTab('rag-insights')">RAG Insights</button>
+                        <button class="tab" onclick="switchTab('research-calculations')">Research Calculations</button>
                         <button class="tab" onclick="switchTab('history')">Patient History</button>
+                        <button class="tab" onclick="switchTab('virtual-simulator')">Virtual Simulator</button>
                     </div>
                     
                     <div id="overview" class="tab-content active">
@@ -1155,13 +1230,14 @@
                         <div class="chart-container">
                             <h3>Personalized Risk Distribution <span class="digital-twin-badge">Patient-Specific</span></h3>
                             <canvas id="riskChart"></canvas>
+                            <div id="riskDetailPanel" class="risk-detail-panel"></div>
                         </div>
                     </div>
                     
-                    <div id="rag-insights" class="tab-content">
-                        <h3>Evidence-Based Clinical Insights</h3>
-                        <p style="color: #666; margin-bottom: 20px;">Studies relevant to this patient's specific risk profile</p>
-                        <div id="ragStudiesContainer"></div>
+                    <div id="research-calculations" class="tab-content">
+                        <h3>Evidence-Based Clinical Calculations</h3>
+                        <p style="color: #666; margin-bottom: 20px;">Calculations based on this patient's specific risk profile</p>
+                        <div id="researchCalculationsContainer"></div>
                     </div>
                     
                     <div id="history" class="tab-content">
@@ -1170,6 +1246,22 @@
                             <canvas id="progressChart"></canvas>
                         </div>
                         <div id="sessionHistoryList"></div>
+                    </div>
+                    
+                    <div id="virtual-simulator" class="tab-content">
+                        <h3>Virtual Treatment Simulator</h3>
+                        <p style="color: #666; margin-bottom: 20px;">Simulate future treatment sessions to predict patient outcomes</p>
+                        
+                        <div class="simulation-controls">
+                            <input type="number" id="simulationDose" class="simulation-dose-input" placeholder="Enter dose for simulation (mg/m²)" value="60" min="1" max="100">
+                            <button class="btn btn-primary" onclick="runSimulationForDose()">Simulate Treatment</button>
+                            <button class="btn btn-secondary" onclick="runMultipleSimulations()">Run Multiple Scenarios</button>
+                        </div>
+                        
+                        <div id="simulationResults" class="simulation-results" style="display: none;">
+                            <h4>Simulation Results</h4>
+                            <div id="simulationContent"></div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1242,14 +1334,14 @@
             <div class="footer-section">
                 <h3>Contact Information</h3>
                 <div class="contact-info">
-                    <span class="contact-icon">👤</span>
+                    <span class="contact-icon"></span>
                     <div>
                         <p><strong>Bakr Waheed</strong></p>
                         <p>Developer & Researcher</p>
                     </div>
                 </div>
                 <div class="contact-info">
-                    <span class="contact-icon">✉️</span>
+                    <span class="contact-icon"></span>
                     <div>
                         <a href="mailto:bakrwaheed0@gmail.com">bakrwaheed0@gmail.com</a>
                         <a href="mailto:bakr.salheen@student.giu-uni.de">bakr.salheen@student.giu-uni.de</a>
@@ -1259,10 +1351,10 @@
             
             <div class="footer-section">
                 <h3>Resources</h3>
-                <a href="https://github.com/Bakrwa7eed/ChemoTwin/blob/main/documentation.pdf" target="_blank">📄 Documentation</a>
-                <a href="https://github.com/Bakrwa7eed/ChemoTwin" target="_blank">💻 GitHub Repository</a>
-                <a href="https://www.linkedin.com/in/bakr-waheed-1a127a30a/" target="_blank">🔗 LinkedIn Profile</a>
-                <a href="#" onclick="alert('Research papers available upon request'); return false;">📚 Research Papers</a>
+                <a href="https://github.com/Bakrwa7eed/ChemoTwin/blob/main/documentation.pdf" target="_blank">Documentation</a>
+                <a href="https://github.com/Bakrwa7eed/ChemoTwin" target="_blank">GitHub Repository</a>
+                <a href="https://www.linkedin.com/in/bakr-waheed-1a127a30a/" target="_blank">LinkedIn Profile</a>
+                <a href="#" onclick="alert('Research papers available upon request'); return false;">Research Papers</a>
             </div>
             
             <div class="footer-section">
@@ -1297,9 +1389,11 @@
         let charts = {};
         let bluetoothDevice = null;
         let heartRateCharacteristic = null;
+        let selectedRiskType = null;
 
+        // Email notification function
         async function sendEmailNotification(data) {
-    const emailBody = `
+            const emailBody = `
 NEW PATIENT ENTRY NOTIFICATION
 
 Patient ID: ${data.patientId}
@@ -1315,6 +1409,7 @@ Current Vitals:
 - Temperature: ${data.vitals.temperature}°C
 - Blood Pressure: ${data.vitals.bloodPressure}
 - Heart Rate: ${data.vitals.heartRate} bpm
+- Ejection Fraction: ${data.ejectionFraction || 'N/A'}%
 
 Treatment Status:
 - Total Sessions: ${data.sessions.length}
@@ -1331,40 +1426,29 @@ Latest Risk Profile:
 This is an automated notification from ChemoTwin Platform.
     `;
     
-    // Send email using EmailJS
-    const emailParams = {
-        visitor_id: data.patientId,
-        timestamp: new Date(data.timestamp).toLocaleString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit'
-        }),
-        user_agent: `Patient Entry - Age: ${data.age}, Sex: ${data.sex}, Cancer: ${data.cancer}`,
-        screen_resolution: `Sessions: ${data.sessions.length} | Dose: ${data.cumulativeDose} mg/m²`,
-        language: `Chronic Diseases: ${data.chronicDiseases.join(', ') || 'None'}`
-    };
-    
-    try {
-        const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
-        console.log('✅ Patient entry email sent!', response.status);
-    } catch (error) {
-        console.error('❌ Failed to send patient email:', error);
-    }
-    
-    // Also store in storage
-    try {
-        await window.storage.set(
-            `email_log:${data.patientId}_${data.timestamp}`,
-            emailBody,
-            true
-        );
-    } catch (error) {
-        console.log('Email log stored in memory');
-    }
-}
+            // Send email using EmailJS
+            const emailParams = {
+                visitor_id: data.patientId,
+                timestamp: new Date(data.timestamp).toLocaleString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                }),
+                user_agent: `Patient Entry - Age: ${data.age}, Sex: ${data.sex}, Cancer: ${data.cancer}`,
+                screen_resolution: `Sessions: ${data.sessions.length} | Dose: ${data.cumulativeDose} mg/m²`,
+                language: `Chronic Diseases: ${data.chronicDiseases.join(', ') || 'None'}`
+            };
+            
+            try {
+                const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
+                console.log('Patient entry email sent!', response.status);
+            } catch (error) {
+                console.error('Failed to send patient email:', error);
+            }
+        }
 
         // Track visitor on page load
         async function trackVisitor() {
@@ -1378,13 +1462,6 @@ This is an automated notification from ChemoTwin Platform.
                 screenResolution: `${window.screen.width}x${window.screen.height}`,
                 language: navigator.language
             };
-            
-            try {
-                await window.storage.set(`visitor:${visitorId}`, JSON.stringify(visitorData), true);
-                console.log('Visitor tracked:', visitorId);
-            } catch (error) {
-                console.log('Visitor tracking stored in memory');
-            }
             
             // Send real email using EmailJS
             const emailParams = {
@@ -1405,113 +1482,18 @@ This is an automated notification from ChemoTwin Platform.
 
             try {
                 const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
-                console.log('✅ Visitor email sent successfully!', response.status, response.text);
+                console.log('Visitor email sent successfully!', response.status, response.text);
             } catch (error) {
-                console.error('❌ Failed to send visitor email:', error);
+                console.error('Failed to send visitor email:', error);
             }
         }
         
-        // ENHANCED RAG Knowledge Base with 2022+ studies
-        const ragKnowledge = {
-            cardiotoxicity: {
-                studies: [
-                    {
-                        title: "Wu et al. (2022) - MRI-based Digital Twins for TNBC Treatment Optimization",
-                        findings: "Framework integrates dynamic contrast-enhanced and diffusion-weighted MRI with biology-based mathematical models to predict triple-negative breast cancer response to neoadjuvant chemotherapy. Study of 105 ARTEMIS trial patients showed digital twins achieved AUC 0.89 for pathological complete response prediction with 72% sensitivity and 95% specificity. Patient-specific optimization from 128 treatment schedules improved pCR rates by 20.95-24.76%.",
-                        dosageThreshold: 180,
-                        highRiskDose: 480,
-                        citation: "Wu C, et al. npj Digital Medicine. 2025;8(195). doi:10.1038/s41746-025-01579-1",
-                        relevance: "High relevance for breast cancer patients receiving anthracycline-based therapy",
-                        year: 2022,
-                        cancerType: ['breast']
-                    },
-                    {
-                        title: "Sager (2023) - Digital Twins in Oncology for Hematopoietic Tumors",
-                        findings: "Conceptual framework for mathematical modeling of cancer dynamics in hematopoietic and lymphoid tissues. Discusses three-component digital twin architecture: physical entity (patient), digital representation (mathematical models), and bidirectional information exchange. Advocates for patient-specific models to optimize drug administration and immune modulation.",
-                        dosageThreshold: 200,
-                        citation: "Sager S. J Cancer Res Clin Oncol. 2023;149(9):5475-5477. doi:10.1007/s00432-023-04633-1",
-                        relevance: "Applicable to leukemia and lymphoma patients",
-                        year: 2023,
-                        cancerType: ['leukemia', 'lymphoma']
-                    },
-                    {
-                        title: "Wang et al. (2024) - Virtual Patients to Digital Twins in Immuno-Oncology",
-                        findings: "Mechanistic QSP modeling evolution from virtual patients to personalized digital twins. Addresses oncology's 3.4% Phase I to approval success rate. Digital twins enable real-time treatment optimization. Over one-fifth of FDA-submitted QSP models (2013-2020) were for oncology.",
-                        dosageThreshold: 240,
-                        citation: "Wang H, et al. npj Digital Medicine. 2024;7(189). doi:10.1038/s41746-024-01188-4",
-                        relevance: "Universal applicability for treatment optimization",
-                        year: 2024,
-                        cancerType: ['leukemia', 'lymphoma', 'breast']
-                    },
-                    {
-                        title: "Heudel et al. (2025) - AI Digital Twins for Geriatric Breast Cancer",
-                        findings: "AI and digital twins for women 70+ with HER2-negative breast cancer. Analyzed 793 patients achieving mean AUC 0.81 for 5-year mortality prediction. Digital twins map patient profiles into 3D space estimating chemotherapy benefits. Outperforms PREDICT and Adjuvant! Online tools.",
-                        dosageThreshold: 200,
-                        citation: "Heudel P, et al. JMIR Cancer. 2025;11:e64000. doi:10.2196/64000",
-                        relevance: "Critical for elderly patients (70+) with comorbidities",
-                        year: 2025,
-                        cancerType: ['breast']
-                    }
-                ]
-            },
-            hematotoxicity: {
-                studies: [
-                    {
-                        title: "Reimann et al. (2025) - Digital Twin G-CSF Optimization in AML",
-                        findings: "Physiologically-based digital twin models optimize G-CSF schedules in AML patients undergoing cytarabine consolidation. Patient-specific calibration explores alternative regimens to accelerate WBC recovery while minimizing costs and side effects. Enables virtual clinical trials for treatment efficiency.",
-                        riskPercentage: 65,
-                        citation: "Reimann AM, et al. medRxiv. 2025. doi:10.1101/2025.07.17.25331695",
-                        relevance: "Essential for AML and leukemia patients on consolidation therapy",
-                        year: 2025,
-                        cancerType: ['leukemia']
-                    },
-                    {
-                        title: "Kaul et al. (2023) - AI Digital Twins for Cancer Care",
-                        findings: "Framework combining digital twins with AI for patient-centric cancer care. Integrates heterogeneous data (imaging, genomics) for real-time simulation. AI facilitates diagnosis, treatment planning, and toxicity prediction. Advocates for high-value care through interdisciplinary collaboration.",
-                        riskPercentage: 70,
-                        citation: "Kaul R, et al. WIREs Data Mining Knowl Discov. 2023;13:e1480. doi:10.1002/widm.1480",
-                        relevance: "Framework applicable to all cancer types",
-                        year: 2023,
-                        cancerType: ['leukemia', 'lymphoma', 'breast']
-                    },
-                    {
-                        title: "Bouriga et al. (2025) - Digital Twins in Anticancer Drug Development",
-                        findings: "Digital twins as dynamic, AI-driven platforms replicating patient/tumor characteristics. Enable virtual trials, comparing in-silico with real data. Applications include immunotherapy simulation and FDA-mandated R&D. Advocates interdisciplinary approach to accelerate personalized oncology.",
-                        riskPercentage: 60,
-                        citation: "Bouriga R, et al. Brief Bioinform. 2025;26(3):bbaf237. doi:10.1093/bib/bbaf237",
-                        relevance: "Methodological framework for trial design",
-                        year: 2025,
-                        cancerType: ['leukemia', 'lymphoma', 'breast']
-                    }
-                ]
-            },
-            advanced: {
-                studies: [
-                    {
-                        title: "Baumgartner (2022) - Digital Cell Twin in Cancer Electrophysiology",
-                        findings: "First digital twin of A549 cell electrophysiology in lung adenocarcinoma. Simulates ion channel dynamics and membrane potential oscillations. Enables virtual testing of ion channel modulation for cell cycle arrest. Complements in-vivo/in-vitro with 'dry lab' simulations.",
-                        citation: "Baumgartner C. J Exp Clin Cancer Res. 2022;41(298). doi:10.1186/s13046-022-02507-x",
-                        relevance: "Cellular-level digital twin for mechanism-based therapy",
-                        year: 2022,
-                        cancerType: ['leukemia', 'lymphoma', 'breast']
-                    },
-                    {
-                        title: "Shen et al. (2025) - Digital Twins in Tumor Therapy Review",
-                        findings: "Systematic review of digital twin trends through 2024. Research surged post-2020, led by US, Germany, Switzerland, China. DTs integrate multimodal data with AI for dynamic modeling. Challenges: data heterogeneity, bias, privacy. Advocates international collaboration and unified standards.",
-                        citation: "Shen S, et al. J Transl Med. 2025;23(348). doi:10.1186/s12967-025-06371-z",
-                        relevance: "Comprehensive overview of digital twin applications",
-                        year: 2025,
-                        cancerType: ['leukemia', 'lymphoma', 'breast']
-                    }
-                ]
-            }
-        };
-
-        // DIGITAL TWIN RISK CALCULATOR
+        // ENHANCED DIGITAL TWIN RISK CALCULATOR WITH EJECTION FRACTION
         function calculateDigitalTwinRisks(patient) {
-            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer } = patient;
+            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, ejectionFraction } = patient;
             const dose = cumulativeDose;
             
+            // Cardiotoxicity calculation with ejection fraction
             let cardioBase = 0;
             if (dose > 550) cardioBase = 36;
             else if (dose > 450) cardioBase = 24;
@@ -1534,71 +1516,90 @@ This is an automated notification from ChemoTwin Platform.
                 cardioModifiers.push("Female sex adds +4% risk");
             }
             
-            if (chronicDiseases.includes('diabetes')) {
-    cardioBase += 12;
-    cardioModifiers.push("Diabetes adds +12% risk (damages blood vessels)");
-}
-
-if (chronicDiseases.includes('hypertension')) {
-    cardioBase += 10;
-    cardioModifiers.push("Hypertension adds +10% risk (strains heart)");
-}
-if (chronicDiseases.includes('heart_disease')) {
-    cardioBase += 15;
-    cardioModifiers.push("Pre-existing heart disease adds +15% risk");
-}
-if (chronicDiseases.includes('kidney_disease')) {
-    cardioBase += 8;
-    cardioModifiers.push("Kidney disease adds +8% risk (fluid retention)");
-}
-if (chronicDiseases.includes('obesity')) {
-    cardioBase += 7;
-    cardioModifiers.push("Obesity adds +7% risk (cardiac strain)");
-}
+            // Ejection fraction impact
+            if (ejectionFraction < 50) {
+                cardioBase += 15;
+                cardioModifiers.push(`Low ejection fraction (${ejectionFraction}%) adds +15% risk`);
+            } else if (ejectionFraction < 55) {
+                cardioBase += 5;
+                cardioModifiers.push(`Borderline ejection fraction (${ejectionFraction}%) adds +5% risk`);
+            }
             
+            // Chronic diseases
+            if (chronicDiseases.includes('diabetes')) {
+                cardioBase += 12;
+                cardioModifiers.push("Diabetes adds +12% risk (damages blood vessels)");
+            }
+            if (chronicDiseases.includes('hypertension')) {
+                cardioBase += 10;
+                cardioModifiers.push("Hypertension adds +10% risk (strains heart)");
+            }
+            if (chronicDiseases.includes('heart_disease')) {
+                cardioBase += 15;
+                cardioModifiers.push("Pre-existing heart disease adds +15% risk");
+            }
+            if (chronicDiseases.includes('kidney_disease')) {
+                cardioBase += 8;
+                cardioModifiers.push("Kidney disease adds +8% risk (fluid retention)");
+            }
+            if (chronicDiseases.includes('obesity')) {
+                cardioBase += 7;
+                cardioModifiers.push("Obesity adds +7% risk (cardiac strain)");
+            }
+            
+            // Vital signs
             const systolic = parseInt(vitals.bloodPressure.split('/')[0]);
             if (systolic > 140) {
                 cardioBase += 6;
-                cardioModifiers.push(`Elevated BP adds +6% risk`);
+                cardioModifiers.push(`Elevated BP (${systolic} mmHg) adds +6% risk`);
             }
             
             if (vitals.heartRate > 100) {
                 cardioBase += 5;
-                cardioModifiers.push(`Tachycardia adds +5% risk`);
+                cardioModifiers.push(`Tachycardia (${vitals.heartRate} bpm) adds +5% risk`);
             }
             
             const cardioRisk = Math.min(95, Math.round(cardioBase));
             
+            // Neutropenia calculation
             let neutroBase = 35 + (dose / 600 * 45);
-                let neutroModifiers = [];
+            let neutroModifiers = [];
 
-                if (age > 65) {
-                    neutroBase += 12;
-                    neutroModifiers.push(`Age ${age} adds +12% (elderly immune system)`);
-                }
-                if (cancer === 'leukemia') {
-                    neutroBase += 18;
-                    neutroModifiers.push("Leukemia adds +18% (blood cancer affects WBC production)");
-                }
-                if (chronicDiseases.includes('diabetes')) {
-                    neutroBase += 8;
-                    neutroModifiers.push("Diabetes adds +8% (impaired immune function)");
-                }
-                if (chronicDiseases.includes('kidney_disease')) {
-                    neutroBase += 10;
-                    neutroModifiers.push("Kidney disease adds +10% (reduced drug clearance)");
-                }
-                if (chronicDiseases.includes('liver_disease')) {
-                    neutroBase += 9;
-                    neutroModifiers.push("Liver disease adds +9% (impaired drug metabolism)");
-                }
+            if (age > 65) {
+                neutroBase += 12;
+                neutroModifiers.push(`Age ${age} adds +12% (elderly immune system)`);
+            }
+            if (cancer === 'leukemia') {
+                neutroBase += 18;
+                neutroModifiers.push("Leukemia adds +18% (blood cancer affects WBC production)");
+            }
+            if (chronicDiseases.includes('diabetes')) {
+                neutroBase += 8;
+                neutroModifiers.push("Diabetes adds +8% (impaired immune function)");
+            }
+            if (chronicDiseases.includes('kidney_disease')) {
+                neutroBase += 10;
+                neutroModifiers.push("Kidney disease adds +10% (reduced drug clearance)");
+            }
+            if (chronicDiseases.includes('liver_disease')) {
+                neutroBase += 9;
+                neutroModifiers.push("Liver disease adds +9% (impaired drug metabolism)");
+            }
             
             const neutroRisk = Math.min(95, Math.round(neutroBase));
             
+            // Anemia calculation with pre-existing condition
             let anemiaBase = 30 + (dose / 600 * 45);
             if (sex === 'female') anemiaBase += 8;
+            
+            // Pre-existing anemia significantly increases risk
+            if (chronicDiseases.includes('anemia')) {
+                anemiaBase += 25;
+            }
+            
             const anemiaRisk = Math.min(90, Math.round(anemiaBase));
             
+            // Other side effects
             let nauseaBase = 82;
             if (sex === 'female') nauseaBase += 10;
             const nauseaRisk = Math.min(98, Math.round(nauseaBase));
@@ -1618,53 +1619,7 @@ if (chronicDiseases.includes('obesity')) {
             };
         }
 
-        // SMART RAG QUERY
-        function queryRAG(patient) {
-            const risks = calculateDigitalTwinRisks(patient);
-            const dose = patient.cumulativeDose;
-            let relevantStudies = [];
-            
-            if (dose >= 180 || risks.cardioRisk > 15) {
-                ragKnowledge.cardiotoxicity.studies.forEach(study => {
-                    if (study.cancerType.includes(patient.cancer) && 
-                        (!study.dosageThreshold || dose >= study.dosageThreshold)) {
-                        relevantStudies.push({
-                            ...study,
-                            category: 'Cardiotoxicity',
-                            patientRelevance: `Dose: ${dose} mg/m², Cancer: ${patient.cancer}`
-                        });
-                    }
-                });
-            }
-            
-            if (dose > 0 || risks.neutroRisk > 40) {
-                ragKnowledge.hematotoxicity.studies.forEach(study => {
-                    if (study.cancerType.includes(patient.cancer)) {
-                        relevantStudies.push({
-                            ...study,
-                            category: 'Hematotoxicity',
-                            patientRelevance: `${patient.cancer} with ${risks.neutroRisk}% neutropenia risk`
-                        });
-                    }
-                });
-            }
-            
-            if (dose >= 120) {
-                ragKnowledge.advanced.studies.forEach(study => {
-                    if (study.cancerType.includes(patient.cancer)) {
-                        relevantStudies.push({
-                            ...study,
-                            category: 'Advanced Methods',
-                            patientRelevance: `Methodology for ${patient.cancer} treatment`
-                        });
-                    }
-                });
-            }
-            
-            return { studies: relevantStudies };
-        }
-
-        // Initialize patient
+        // Initialize patient with ejection fraction
         function initializePatient(id) {
             return {
                 id: id,
@@ -1677,12 +1632,14 @@ if (chronicDiseases.includes('obesity')) {
                     bloodPressure: '120/80',
                     heartRate: 75
                 },
+                ejectionFraction: 60,
                 cumulativeDose: 0,
                 sessions: [],
                 createdAt: new Date().toISOString()
             };
         }
 
+        // Load patient function
         async function loadPatient() {
             const patientId = document.getElementById('patientId').value.trim();
             
@@ -1692,13 +1649,14 @@ if (chronicDiseases.includes('obesity')) {
             }
             
             try {
-                const result = await window.storage.get(`patient:${patientId}`);
-                if (result) {
-                    currentPatient = JSON.parse(result.value);
+                // Try to use localStorage if available
+                const storedPatient = localStorage.getItem(`patient:${patientId}`);
+                if (storedPatient) {
+                    currentPatient = JSON.parse(storedPatient);
                     alert(`Patient ${patientId} loaded!\n\nSessions: ${currentPatient.sessions.length}\nDose: ${currentPatient.cumulativeDose} mg/m²`);
                 } else {
                     currentPatient = initializePatient(patientId);
-                    await window.storage.set(`patient:${patientId}`, JSON.stringify(currentPatient));
+                    localStorage.setItem(`patient:${patientId}`, JSON.stringify(currentPatient));
                     
                     await sendEmailNotification({
                         patientId: currentPatient.id,
@@ -1708,6 +1666,7 @@ if (chronicDiseases.includes('obesity')) {
                         cancer: currentPatient.cancer,
                         chronicDiseases: currentPatient.chronicDiseases,
                         vitals: currentPatient.vitals,
+                        ejectionFraction: currentPatient.ejectionFraction,
                         sessions: currentPatient.sessions,
                         cumulativeDose: currentPatient.cumulativeDose,
                         latestRisks: {}
@@ -1721,23 +1680,30 @@ if (chronicDiseases.includes('obesity')) {
             }
             
             updateUI();
+            // Calculate current status immediately
+            if (currentPatient) {
+                runSimulation();
+            }
         }
 
-        function generateVirtualPatient() {
+        // Generate new patient (renamed from generateVirtualPatient)
+        function generateNewPatient() {
             const randomId = 'PT-2025-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
             document.getElementById('patientId').value = randomId;
             
             const patient = initializePatient(randomId);
             patient.age = Math.floor(Math.random() * 60) + 20;
             patient.sex = Math.random() > 0.5 ? 'male' : 'female';
-            patient.cancer = ['leukemia', 'lymphoma'][Math.floor(Math.random() * 3)];
+            patient.cancer = ['leukemia', 'lymphoma', 'breast'][Math.floor(Math.random() * 3)];
             
             if (Math.random() > 0.7) patient.chronicDiseases.push('diabetes');
             if (Math.random() > 0.6) patient.chronicDiseases.push('hypertension');
+            if (Math.random() > 0.8) patient.chronicDiseases.push('anemia');
             
             patient.vitals.temperature = (36.5 + Math.random() * 1.5).toFixed(1);
             patient.vitals.bloodPressure = `${Math.floor(Math.random() * 40) + 110}/${Math.floor(Math.random() * 30) + 70}`;
             patient.vitals.heartRate = Math.floor(Math.random() * 40) + 60;
+            patient.ejectionFraction = Math.floor(Math.random() * 30) + 45; // 45-75%
             
             currentPatient = patient;
             savePatientData();
@@ -1750,25 +1716,31 @@ if (chronicDiseases.includes('obesity')) {
                 cancer: currentPatient.cancer,
                 chronicDiseases: currentPatient.chronicDiseases,
                 vitals: currentPatient.vitals,
+                ejectionFraction: currentPatient.ejectionFraction,
                 sessions: currentPatient.sessions,
                 cumulativeDose: currentPatient.cumulativeDose,
                 latestRisks: {}
             });
             
             updateUI();
-            alert(`Virtual patient generated!\n\nID: ${randomId}\nAge: ${patient.age}\nSex: ${patient.sex}\nCancer: ${patient.cancer}`);
+            // Calculate current status immediately
+            runSimulation();
+            
+            alert(`New patient generated!\n\nID: ${randomId}\nAge: ${patient.age}\nSex: ${patient.sex}\nCancer: ${patient.cancer}`);
         }
 
+        // Save patient data function
         async function savePatientData() {
             if (!currentPatient) return;
             
             try {
-                await window.storage.set(`patient:${currentPatient.id}`, JSON.stringify(currentPatient));
+                localStorage.setItem(`patient:${currentPatient.id}`, JSON.stringify(currentPatient));
             } catch (error) {
                 console.log('Data stored in session');
             }
         }
 
+        // Update UI with ejection fraction
         function updateUI() {
             if (!currentPatient) return;
             
@@ -1784,36 +1756,36 @@ if (chronicDiseases.includes('obesity')) {
             document.getElementById('temperature').value = currentPatient.vitals.temperature;
             document.getElementById('bloodPressure').value = currentPatient.vitals.bloodPressure;
             document.getElementById('heartRate').value = currentPatient.vitals.heartRate;
+            document.getElementById('ejectionFraction').value = currentPatient.ejectionFraction;
             
             updateSidebarVitals();
             
             const chronicSelect = document.getElementById('chronicDiseases');
-Array.from(chronicSelect.options).forEach(option => {
-    option.selected = currentPatient.chronicDiseases.includes(option.value);
-});
+            Array.from(chronicSelect.options).forEach(option => {
+                option.selected = currentPatient.chronicDiseases.includes(option.value);
+            });
 
-// Deselect "none" if other diseases are selected
-if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases.includes('none')) {
-    Array.from(chronicSelect.options).forEach(option => {
-        if (option.value === 'none') option.selected = false;
-    });
-}
+            // Deselect "none" if other diseases are selected
+            if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases.includes('none')) {
+                Array.from(chronicSelect.options).forEach(option => {
+                    if (option.value === 'none') option.selected = false;
+                });
+            }
             
             updateDoseDisplay();
             document.getElementById('sessionCount').textContent = currentPatient.sessions.length;
-            
-            if (currentPatient.sessions.length > 0) {
-                runSimulation();
-            }
         }
 
+        // Update sidebar vitals with ejection fraction
         function updateSidebarVitals() {
             if (!currentPatient) return;
             document.getElementById('sidebarHR').textContent = currentPatient.vitals.heartRate + ' bpm';
             document.getElementById('sidebarBP').textContent = currentPatient.vitals.bloodPressure;
             document.getElementById('sidebarTemp').textContent = currentPatient.vitals.temperature + ' °C';
+            document.getElementById('sidebarEF').textContent = currentPatient.ejectionFraction + ' %';
         }
 
+        // Update patient realtime with ejection fraction
         function updatePatientRealtime() {
             if (!currentPatient) return;
             
@@ -1823,6 +1795,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             currentPatient.vitals.temperature = parseFloat(document.getElementById('temperature').value) || 37.0;
             currentPatient.vitals.bloodPressure = document.getElementById('bloodPressure').value || '120/80';
             currentPatient.vitals.heartRate = parseInt(document.getElementById('heartRate').value) || 75;
+            currentPatient.ejectionFraction = parseInt(document.getElementById('ejectionFraction').value) || 60;
             
             const chronicSelect = document.getElementById('chronicDiseases');
             currentPatient.chronicDiseases = Array.from(chronicSelect.selectedOptions).map(opt => opt.value).filter(v => v !== 'none');
@@ -1830,12 +1803,13 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             updateSidebarVitals();
             savePatientData();
             
-            if (currentPatient.sessions.length > 0) {
-                runSimulation();
-            }
+            // Calculate current status immediately when inputs change
+            runSimulation();
         }
 
+        // Update dose display
         function updateDoseDisplay() {
+            if (!currentPatient) return;
             const dose = currentPatient.cumulativeDose;
             const maxDose = 550;
             const percentage = Math.min(100, (dose / maxDose) * 100);
@@ -1853,13 +1827,20 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             }
         }
 
+        // Add treatment session with custom dose
         async function addTreatmentSession() {
             if (!currentPatient) {
                 alert('Please load or create a patient first!');
                 return;
             }
             
-            const sessionDose = 60;
+            const sessionDoseInput = document.getElementById('sessionDose');
+            const sessionDose = parseInt(sessionDoseInput.value) || 60;
+            
+            if (sessionDose <= 0) {
+                alert('Please enter a valid dose greater than 0');
+                return;
+            }
             
             if (currentPatient.cumulativeDose + sessionDose > 600) {
                 if (!confirm(`WARNING: High Dose Alert!\n\nCumulative dose will reach ${currentPatient.cumulativeDose + sessionDose} mg/m²\n\nThis EXCEEDS 550 mg/m² maximum.\n\nContinue?`)) {
@@ -1870,7 +1851,6 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             currentPatient.cumulativeDose += sessionDose;
             
             const risks = calculateDigitalTwinRisks(currentPatient);
-            const ragInsights = queryRAG(currentPatient);
             
             const session = {
                 date: new Date().toISOString(),
@@ -1878,8 +1858,8 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                 dose: sessionDose,
                 cumulativeDose: currentPatient.cumulativeDose,
                 vitals: { ...currentPatient.vitals },
-                risks: risks,
-                ragInsights: ragInsights
+                ejectionFraction: currentPatient.ejectionFraction,
+                risks: risks
             };
             
             currentPatient.sessions.push(session);
@@ -1894,6 +1874,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                 cancer: currentPatient.cancer,
                 chronicDiseases: currentPatient.chronicDiseases,
                 vitals: currentPatient.vitals,
+                ejectionFraction: currentPatient.ejectionFraction,
                 sessions: currentPatient.sessions,
                 cumulativeDose: currentPatient.cumulativeDose,
                 latestRisks: risks
@@ -1907,12 +1888,11 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             alert(`Session ${session.sessionNumber} Completed!\n\nDose: ${sessionDose} mg/m²\nCumulative: ${currentPatient.cumulativeDose} mg/m²\n\nCardio Risk: ${risks.cardioRisk}%\nNeutro Risk: ${risks.neutroRisk}%\nRecovery: ${risks.overallScore}`);
         }
 
+        // Run simulation for current patient
         function runSimulation() {
-            if (!currentPatient || currentPatient.sessions.length === 0) return;
+            if (!currentPatient) return;
             
-            const latestSession = currentPatient.sessions[currentPatient.sessions.length - 1];
-            const risks = latestSession.risks;
-            const ragInsights = latestSession.ragInsights;
+            const risks = calculateDigitalTwinRisks(currentPatient);
             
             document.getElementById('cardioRisk').textContent = risks.cardioRisk + '%';
             document.getElementById('neutroRisk').textContent = risks.neutroRisk + '%';
@@ -1920,54 +1900,61 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             document.getElementById('qualityScore').textContent = risks.overallScore;
             
             displayDigitalTwinAnalysis(risks);
-            displayAlerts(risks, ragInsights);
-            displayRAGInsights(ragInsights);
-            displaySessionHistory();
+            displayAlerts(risks);
+            displayResearchCalculations(risks);
+            if (currentPatient.sessions.length > 0) {
+                displaySessionHistory();
+            }
             updateCharts();
             updatePatientView(risks);
         }
 
+        // Display digital twin analysis with ejection fraction
         function displayDigitalTwinAnalysis(risks) {
             const container = document.getElementById('digitalTwinAnalysis');
             
             let html = '<div class="twin-analysis-box">';
-            html += '<h4> Digital Twin Personalized Analysis</h4>';
-            html += `<p><strong>${currentPatient.id}</strong> | ${currentPatient.age}yo ${currentPatient.sex} | ${currentPatient.cancer} | ${currentPatient.cumulativeDose} mg/m²</p>`;
+            html += '<h4>Digital Twin Personalized Analysis</h4>';
+            html += `<p><strong>${currentPatient.id}</strong> | ${currentPatient.age}yo ${currentPatient.sex} | ${currentPatient.cancer} | ${currentPatient.cumulativeDose} mg/m² | EF: ${currentPatient.ejectionFraction}%</p>`;
             
             if (risks.cardioModifiers && risks.cardioModifiers.length > 0) {
-                html += '<p><strong>Cardiotoxicity Factors:</strong></p><ul>';
-                risks.cardioModifiers.forEach(mod => html += `<li>${mod}</li>`);
-                html += '</ul>';
+                html += '<p><strong>Cardiotoxicity Factors:</strong></p>';
+                risks.cardioModifiers.forEach(mod => html += `<div class="calculation-step">${mod}</div>`);
             }
             
             if (risks.neutroModifiers && risks.neutroModifiers.length > 0) {
-                html += '<p><strong>Neutropenia Factors:</strong></p><ul>';
-                risks.neutroModifiers.forEach(mod => html += `<li>${mod}</li>`);
-                html += '</ul>';
+                html += '<p><strong>Neutropenia Factors:</strong></p>';
+                risks.neutroModifiers.forEach(mod => html += `<div class="calculation-step">${mod}</div>`);
             }
             
             html += '</div>';
             container.innerHTML = html;
         }
 
-        function displayAlerts(risks, ragInsights) {
+        // Display alerts with ejection fraction considerations
+        function displayAlerts(risks) {
             const alertsContainer = document.getElementById('clinicalAlerts');
             alertsContainer.innerHTML = '';
             
-            if (risks.cardioRisk > 20) {
+            if (risks.cardioRisk > 20 || currentPatient.ejectionFraction < 50) {
                 const alert = document.createElement('div');
                 alert.className = 'alert';
-                alert.innerHTML = `
-                    <h4> HIGH CARDIOTOXICITY RISK</h4>
-                    <p><strong>Risk: ${risks.cardioRisk}%</strong></p>
-                    <p><strong>Actions Required:</strong></p>
-                    <ul>
-                        <li>Consider dexrazoxane cardioprotection</li>
-                        <li>Schedule echocardiogram within 1 week</li>
-                        <li>Monitor troponin I levels</li>
-                        <li>Evaluate ACE inhibitor prophylaxis</li>
-                    </ul>
-                `;
+                let alertText = '<h4>CARDIOTOXICITY ALERT</h4>';
+                alertText += `<p><strong>Risk: ${risks.cardioRisk}%</strong></p>`;
+                if (currentPatient.ejectionFraction < 50) {
+                    alertText += `<p><strong>Critical Ejection Fraction: ${currentPatient.ejectionFraction}% (Normal: 55-70%)</strong></p>`;
+                }
+                alertText += '<p><strong>Actions Required:</strong></p>';
+                alertText += '<ul>';
+                alertText += '<li>Consider dexrazoxane cardioprotection</li>';
+                alertText += '<li>Schedule echocardiogram within 1 week</li>';
+                alertText += '<li>Monitor troponin I levels</li>';
+                alertText += '<li>Evaluate ACE inhibitor prophylaxis</li>';
+                if (currentPatient.ejectionFraction < 50) {
+                    alertText += '<li>CARDIOLOGY CONSULT URGENTLY REQUIRED</li>';
+                }
+                alertText += '</ul>';
+                alert.innerHTML = alertText;
                 alertsContainer.appendChild(alert);
             }
             
@@ -1975,7 +1962,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                 const alert = document.createElement('div');
                 alert.className = 'alert';
                 alert.innerHTML = `
-                    <h4> HIGH NEUTROPENIA RISK</h4>
+                    <h4>NEUTROPENIA ALERT</h4>
                     <p><strong>Risk: ${risks.neutroRisk}%</strong></p>
                     <p><strong>Actions Required:</strong></p>
                     <ul>
@@ -1987,136 +1974,199 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                 `;
                 alertsContainer.appendChild(alert);
             }
+            
+            if (risks.anemiaRisk > 70 || currentPatient.chronicDiseases.includes('anemia')) {
+                const alert = document.createElement('div');
+                alert.className = 'alert';
+                alert.innerHTML = `
+                    <h4>ANEMIA ALERT</h4>
+                    <p><strong>Risk: ${risks.anemiaRisk}%</strong></p>
+                    ${currentPatient.chronicDiseases.includes('anemia') ? '<p><strong>Pre-existing anemia condition detected</strong></p>' : ''}
+                    <p><strong>Actions Required:</strong></p>
+                    <ul>
+                        <li>Monitor hemoglobin levels weekly</li>
+                        <li>Consider erythropoietin stimulating agents</li>
+                        <li>Evaluate for iron supplementation</li>
+                        <li>Plan for potential transfusion needs</li>
+                    </ul>
+                `;
+                alertsContainer.appendChild(alert);
+            }
         }
 
-        function displayRAGInsights(ragInsights) {
-    const container = document.getElementById('ragStudiesContainer');
-    container.innerHTML = '';
-    
-    if (!ragInsights || !ragInsights.studies || ragInsights.studies.length === 0) {
-        container.innerHTML = '<p style="color: #666; padding: 20px; text-align: center;">No high-risk factors identified. Patient within safe parameters.</p>';
-        return;
-    }
-    
-    // Add educational calculation breakdown first
-    const calcSection = document.createElement('div');
-    calcSection.className = 'twin-analysis-box';
-    calcSection.style.marginBottom = '25px';
-    calcSection.innerHTML = `
-        <h4> How The Risks Were Calculated</h4>
-        <p style="margin-bottom: 15px;">Understanding the mathematics behind personalized risk assessment:</p>
-        
-        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <h5 style="color: #dc2626; margin-bottom: 10px;"> Cardiotoxicity Risk Calculation</h5>
-            <p><strong>Formula:</strong> Base Risk (from dose) + Age Factor + Sex Factor + Disease Factors + Vital Signs</p>
+        // Display research calculations (replaces RAG insights)
+        function displayResearchCalculations(risks) {
+            const container = document.getElementById('researchCalculationsContainer');
+            container.innerHTML = '';
             
-            <div style="margin-left: 20px; margin-top: 10px;">
-                <p><strong>Step 1 - Cumulative Dose Effect:</strong></p>
-                <p style="margin-left: 15px; color: #555;">
-                    Current dose: ${currentPatient.cumulativeDose} mg/m²<br>
-                    ${currentPatient.cumulativeDose <= 200 ? '≤200 mg/m² → Base risk: 1%' :
-                      currentPatient.cumulativeDose <= 300 ? '200-300 mg/m² → Base risk: 5%' :
-                      currentPatient.cumulativeDose <= 450 ? '300-450 mg/m² → Base risk: 12%' :
-                      currentPatient.cumulativeDose <= 550 ? '450-550 mg/m² → Base risk: 24%' :
-                      '>550 mg/m² → Base risk: 36%  Above safe limit!'}
-                </p>
-                
-                <p style="margin-top: 10px;"><strong>Step 2 - Patient-Specific Modifiers:</strong></p>
-                <ul style="margin-left: 15px; color: #555;">
-                    ${currentPatient.age < 18 ? `<li>Pediatric age (${currentPatient.age}): +8% (developing heart more vulnerable)</li>` :
-                      currentPatient.age > 65 ? `<li>Elderly (${currentPatient.age}): +10% (age-related cardiac decline)</li>` : ''}
-                    ${currentPatient.sex === 'female' ? '<li>Female sex: +4% (hormonal factors)</li>' : ''}
-                    ${currentPatient.chronicDiseases.includes('diabetes') ? '<li>Diabetes: +12% (vascular damage, inflammation)</li>' : ''}
-                    ${currentPatient.chronicDiseases.includes('hypertension') ? '<li>Hypertension: +10% (cardiac workload)</li>' : ''}
-                    ${currentPatient.chronicDiseases.includes('heart_disease') ? '<li>Heart disease: +15% (pre-existing damage)</li>' : ''}
-                    ${currentPatient.chronicDiseases.includes('kidney_disease') ? '<li>Kidney disease: +8% (fluid retention affects heart)</li>' : ''}
-                    ${currentPatient.chronicDiseases.includes('obesity') ? '<li>Obesity: +7% (increased cardiac strain)</li>' : ''}
-                </ul>
-                
-                <p style="margin-top: 10px;"><strong>Step 3 - Current Vital Signs Impact:</strong></p>
-                <ul style="margin-left: 15px; color: #555;">
-                    ${parseInt(currentPatient.vitals.bloodPressure.split('/')[0]) > 140 ? 
-                      `<li>Elevated BP (${currentPatient.vitals.bloodPressure}): +6%</li>` : 
-                      `<li>Normal BP (${currentPatient.vitals.bloodPressure}): No additional risk</li>`}
-                    ${currentPatient.vitals.heartRate > 100 ? 
-                      `<li>Tachycardia (${currentPatient.vitals.heartRate} bpm): +5%</li>` : 
-                      `<li>Normal HR (${currentPatient.vitals.heartRate} bpm): No additional risk</li>`}
-                </ul>
-                
-                <p style="margin-top: 15px; padding: 10px; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 5px;">
-                    <strong>Final Cardiotoxicity Risk: ${currentPatient.sessions.length > 0 ? 
-                      currentPatient.sessions[currentPatient.sessions.length - 1].risks.cardioRisk + '%' : 
-                      'Add treatment session to calculate'}</strong><br>
-                    ${currentPatient.sessions.length > 0 && currentPatient.sessions[currentPatient.sessions.length - 1].risks.cardioRisk > 20 ?
-                      '<span style="color: #991b1b;"> HIGH RISK - Cardioprotective measures recommended</span>' :
-                      '<span style="color: #059669;">Risk within acceptable range</span>'}
-                </p>
-            </div>
-        </div>
-        
-        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <h5 style="color: #3b82f6; margin-bottom: 10px;">Neutropenia Risk Calculation</h5>
-            <p><strong>Formula:</strong> 35% (baseline) + (Dose/600 × 45%) + Age Factor + Cancer Type + Disease Factors</p>
+            let html = '<div class="twin-analysis-box">';
+            html += '<h4>How The Risks Were Calculated</h4>';
+            html += '<p>Understanding the mathematics behind personalized risk assessment:</p>';
             
-            <div style="margin-left: 20px; margin-top: 10px;">
-                <p><strong>Calculation Breakdown:</strong></p>
-                <p style="margin-left: 15px; color: #555;">
-                    Baseline neutropenia risk: 35%<br>
-                    Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%<br>
-                    ${currentPatient.age > 65 ? `Age factor (${currentPatient.age}): +12% (bone marrow decline)<br>` : ''}
-                    ${currentPatient.cancer === 'leukemia' ? 'Leukemia factor: +18% (blood cancer affects WBC production)<br>' : ''}
-                    ${currentPatient.chronicDiseases.includes('diabetes') ? 'Diabetes: +8% (impaired immune function)<br>' : ''}
-                    ${currentPatient.chronicDiseases.includes('kidney_disease') ? 'Kidney disease: +10% (reduced drug clearance)<br>' : ''}
-                    ${currentPatient.chronicDiseases.includes('liver_disease') ? 'Liver disease: +9% (impaired drug metabolism)<br>' : ''}
-                </p>
-                
-                <p style="margin-top: 15px; padding: 10px; background: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 5px;">
-                    <strong>Final Neutropenia Risk: ${currentPatient.sessions.length > 0 ? 
-                      currentPatient.sessions[currentPatient.sessions.length - 1].risks.neutroRisk + '%' : 
-                      'Add treatment session to calculate'}</strong><br>
-                    ${currentPatient.sessions.length > 0 && currentPatient.sessions[currentPatient.sessions.length - 1].risks.neutroRisk > 60 ?
-                      '<span style="color: #1e40af;"> HIGH RISK - G-CSF prophylaxis recommended</span>' :
-                      '<span style="color: #059669;">Risk manageable with standard monitoring</span>'}
-                </p>
-            </div>
-        </div>
-        
-        <div style="background: #f0f9ff; padding: 15px; border-radius: 10px; border-left: 4px solid #0ea5e9;">
-            <h5 style="color: #0369a1; margin-bottom: 10px;"> Why These Calculations Matter</h5>
-            <ul style="color: #075985; line-height: 1.8;">
-                <li><strong>Personalization:</strong> Each patient is unique - same dose affects people differently based on age, sex, health conditions</li>
-                <li><strong>Prevention:</strong> By calculating risks early, we can take protective measures BEFORE problems occur</li>
-                <li><strong>Evidence-Based:</strong> All calculations based on peer-reviewed clinical studies (see below)</li>
-                <li><strong>Dynamic:</strong> Risks update in real-time as treatment progresses and vitals change</li>
-            </ul>
-        </div>
-    `;
-    container.appendChild(calcSection);
-    
-    // Then show relevant studies
-    const studiesHeader = document.createElement('h4');
-    studiesHeader.style.marginTop = '30px';
-    studiesHeader.style.marginBottom = '15px';
-    studiesHeader.style.color = '#0066cc';
-    studiesHeader.innerHTML = 'Evidence-Based Studies Supporting These Calculations';
-    container.appendChild(studiesHeader);
-    
-    ragInsights.studies.forEach(study => {
-        const card = document.createElement('div');
-        card.className = 'study-card';
-        card.innerHTML = `
-            <h5>${study.title}</h5>
-            <span class="relevance-tag">${study.category}</span>
-            <p style="margin-top: 12px;"><strong>Key Findings:</strong> ${study.findings}</p>
-            <p style="background: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 10px;">
-                <strong>Clinical Relevance for This Patient:</strong> ${study.patientRelevance}
-            </p>
-            <cite>${study.citation}</cite>
-        `;
-        container.appendChild(card);
-    });
-}
+            // Cardiotoxicity calculation breakdown
+            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
+            html += '<h5 style="color: #dc2626; margin-bottom: 10px;">Cardiotoxicity Risk Calculation</h5>';
+            html += '<p><strong>Formula:</strong> Base Risk (from dose) + Age Factor + Sex Factor + Disease Factors + Ejection Fraction Impact + Vital Signs</p>';
+            
+            html += '<div style="margin-left: 20px; margin-top: 10px;">';
+            html += '<p><strong>Step 1 - Cumulative Dose Effect:</strong></p>';
+            html += '<div class="calculation-step">';
+            html += `Current dose: ${currentPatient.cumulativeDose} mg/m²<br>`;
+            if (currentPatient.cumulativeDose <= 200) {
+                html += '≤200 mg/m² → Base risk: 1%';
+            } else if (currentPatient.cumulativeDose <= 300) {
+                html += '200-300 mg/m² → Base risk: 5%';
+            } else if (currentPatient.cumulativeDose <= 450) {
+                html += '300-450 mg/m² → Base risk: 12%';
+            } else if (currentPatient.cumulativeDose <= 550) {
+                html += '450-550 mg/m² → Base risk: 24%';
+            } else {
+                html += '>550 mg/m² → Base risk: 36%  Above safe limit!';
+            }
+            html += '</div>';
+            
+            html += '<p style="margin-top: 10px;"><strong>Step 2 - Patient-Specific Modifiers:</strong></p>';
+            html += '<div class="calculation-step">';
+            if (currentPatient.age < 18) {
+                html += `Pediatric age (${currentPatient.age}): +8% (developing heart more vulnerable)<br>`;
+            } else if (currentPatient.age > 65) {
+                html += `Elderly (${currentPatient.age}): +10% (age-related cardiac decline)<br>`;
+            }
+            if (currentPatient.sex === 'female') {
+                html += 'Female sex: +4% (hormonal factors)<br>';
+            }
+            if (currentPatient.ejectionFraction < 50) {
+                html += `Low ejection fraction (${currentPatient.ejectionFraction}%): +15% (impaired cardiac function)<br>`;
+            } else if (currentPatient.ejectionFraction < 55) {
+                html += `Borderline ejection fraction (${currentPatient.ejectionFraction}%): +5%<br>`;
+            }
+            html += '</div>';
+            
+            html += '<p style="margin-top: 10px;"><strong>Step 3 - Chronic Disease Factors:</strong></p>';
+            html += '<div class="calculation-step">';
+            if (currentPatient.chronicDiseases.includes('diabetes')) {
+                html += 'Diabetes: +12% (vascular damage, inflammation)<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('hypertension')) {
+                html += 'Hypertension: +10% (cardiac workload)<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('heart_disease')) {
+                html += 'Heart disease: +15% (pre-existing damage)<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('kidney_disease')) {
+                html += 'Kidney disease: +8% (fluid retention affects heart)<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('obesity')) {
+                html += 'Obesity: +7% (increased cardiac strain)<br>';
+            }
+            html += '</div>';
+            
+            html += '<p style="margin-top: 10px;"><strong>Step 4 - Current Vital Signs Impact:</strong></p>';
+            html += '<div class="calculation-step">';
+            const systolic = parseInt(currentPatient.vitals.bloodPressure.split('/')[0]);
+            if (systolic > 140) {
+                html += `Elevated BP (${currentPatient.vitals.bloodPressure}): +6%<br>`;
+            } else {
+                html += `Normal BP (${currentPatient.vitals.bloodPressure}): No additional risk<br>`;
+            }
+            if (currentPatient.vitals.heartRate > 100) {
+                html += `Tachycardia (${currentPatient.vitals.heartRate} bpm): +5%<br>`;
+            } else {
+                html += `Normal HR (${currentPatient.vitals.heartRate} bpm): No additional risk<br>`;
+            }
+            html += '</div>';
+            
+            html += '<div style="margin-top: 15px; padding: 10px; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 5px;">';
+            html += `<strong>Final Cardiotoxicity Risk: ${risks.cardioRisk}%</strong><br>`;
+            if (risks.cardioRisk > 20) {
+                html += '<span style="color: #991b1b;">HIGH RISK - Cardioprotective measures recommended</span>';
+            } else {
+                html += '<span style="color: #059669;">Risk within acceptable range</span>';
+            }
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+            
+            // Neutropenia calculation breakdown
+            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
+            html += '<h5 style="color: #3b82f6; margin-bottom: 10px;">Neutropenia Risk Calculation</h5>';
+            html += '<p><strong>Formula:</strong> 35% (baseline) + (Dose/600 × 45%) + Age Factor + Cancer Type + Disease Factors</p>';
+            
+            html += '<div style="margin-left: 20px; margin-top: 10px;">';
+            html += '<p><strong>Calculation Breakdown:</strong></p>';
+            html += '<div class="calculation-step">';
+            html += `Baseline neutropenia risk: 35%<br>`;
+            html += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%<br>`;
+            if (currentPatient.age > 65) {
+                html += `Age factor (${currentPatient.age}): +12% (bone marrow decline)<br>`;
+            }
+            if (currentPatient.cancer === 'leukemia') {
+                html += 'Leukemia factor: +18% (blood cancer affects WBC production)<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('diabetes')) {
+                html += 'Diabetes: +8% (impaired immune function)<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('kidney_disease')) {
+                html += 'Kidney disease: +10% (reduced drug clearance)<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('liver_disease')) {
+                html += 'Liver disease: +9% (impaired drug metabolism)<br>';
+            }
+            html += '</div>';
+            
+            html += '<div style="margin-top: 15px; padding: 10px; background: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 5px;">';
+            html += `<strong>Final Neutropenia Risk: ${risks.neutroRisk}%</strong><br>`;
+            if (risks.neutroRisk > 60) {
+                html += '<span style="color: #1e40af;">HIGH RISK - G-CSF prophylaxis recommended</span>';
+            } else {
+                html += '<span style="color: #059669;">Risk manageable with standard monitoring</span>';
+            }
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+            
+            // Anemia calculation breakdown
+            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
+            html += '<h5 style="color: #8b5cf6; margin-bottom: 10px;">Anemia Risk Calculation</h5>';
+            html += '<p><strong>Formula:</strong> 30% (baseline) + (Dose/600 × 45%) + Sex Factor + Pre-existing Anemia</p>';
+            
+            html += '<div style="margin-left: 20px; margin-top: 10px;">';
+            html += '<p><strong>Calculation Breakdown:</strong></p>';
+            html += '<div class="calculation-step">';
+            html += `Baseline anemia risk: 30%<br>`;
+            html += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%<br>`;
+            if (currentPatient.sex === 'female') {
+                html += 'Female sex: +8%<br>';
+            }
+            if (currentPatient.chronicDiseases.includes('anemia')) {
+                html += 'Pre-existing anemia: +25%<br>';
+            }
+            html += '</div>';
+            
+            html += '<div style="margin-top: 15px; padding: 10px; background: #f3e8ff; border-left: 4px solid #8b5cf6; border-radius: 5px;">';
+            html += `<strong>Final Anemia Risk: ${risks.anemiaRisk}%</strong><br>`;
+            if (risks.anemiaRisk > 70 || currentPatient.chronicDiseases.includes('anemia')) {
+                html += '<span style="color: #6b21a8;">HIGH RISK - Monitor hemoglobin closely</span>';
+            } else {
+                html += '<span style="color: #059669;">Risk manageable with standard monitoring</span>';
+            }
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div style="background: #f0f9ff; padding: 15px; border-radius: 10px; border-left: 4px solid #0ea5e9;">';
+            html += '<h5 style="color: #0369a1; margin-bottom: 10px;">Why These Calculations Matter</h5>';
+            html += '<div class="calculation-step">Personalization: Each patient is unique - same dose affects people differently based on age, sex, health conditions</div>';
+            html += '<div class="calculation-step">Prevention: By calculating risks early, we can take protective measures BEFORE problems occur</div>';
+            html += '<div class="calculation-step">Evidence-Based: All calculations based on peer-reviewed clinical studies</div>';
+            html += '<div class="calculation-step">Dynamic: Risks update in real-time as treatment progresses and vitals change</div>';
+            html += '</div>';
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
 
+        // Display session history
         function displaySessionHistory() {
             const container = document.getElementById('sessionHistoryList');
             container.innerHTML = '';
@@ -2129,124 +2179,263 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                 item.innerHTML = `
                     <h4>Session ${session.sessionNumber} - ${date} at ${time}</h4>
                     <p><strong>Dose:</strong> ${session.dose} mg/m² | <strong>Cumulative:</strong> ${session.cumulativeDose} mg/m²</p>
-                    <p><strong>Vitals:</strong> BP: ${session.vitals.bloodPressure} | HR: ${session.vitals.heartRate} bpm | Temp: ${session.vitals.temperature}°C</p>
+                    <p><strong>Vitals:</strong> BP: ${session.vitals.bloodPressure} | HR: ${session.vitals.heartRate} bpm | Temp: ${session.vitals.temperature}°C | EF: ${session.ejectionFraction || 'N/A'}%</p>
                     <p><strong>Risks:</strong> Cardio: ${session.risks.cardioRisk}% | Neutro: ${session.risks.neutroRisk}% | Recovery: ${session.risks.overallScore}</p>
                 `;
                 container.appendChild(item);
             });
         }
 
+        // Update charts with clickable functionality
         function updateCharts() {
             updateRiskChart();
+            if (currentPatient.sessions.length > 0) {
             updateProgressChart();
             updatePatientJourneyChart();
+            }
         }
 
+        // Update risk chart with clickable bars (robust, fast, repeatable clicks)
         function updateRiskChart() {
             const ctx = document.getElementById('riskChart');
             if (!ctx) return;
-            
-            const latestSession = currentPatient.sessions[currentPatient.sessions.length - 1];
-            const risks = latestSession.risks;
-            
-            if (charts.riskChart) charts.riskChart.destroy();
-            
+
+            const risks = calculateDigitalTwinRisks(currentPatient);
+
+            if (charts.riskChart) {
+            // remove previous click handler to avoid multiple handlers stacking
+            try { charts.riskChart.canvas.onclick = null; } catch (e) {}
+            charts.riskChart.destroy();
+            }
+
             const colors = [
-                risks.cardioRisk > 30 ? '#dc2626' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981',
-                risks.neutroRisk > 70 ? '#dc2626' : risks.neutroRisk > 50 ? '#f59e0b' : '#3b82f6',
-                risks.anemiaRisk > 60 ? '#dc2626' : risks.anemiaRisk > 40 ? '#f59e0b' : '#8b5cf6',
-                risks.nauseaRisk > 85 ? '#dc2626' : risks.nauseaRisk > 70 ? '#f59e0b' : '#10b981',
-                risks.fatigueRisk > 70 ? '#dc2626' : risks.fatigueRisk > 50 ? '#f59e0b' : '#ec4899'
+            risks.cardioRisk > 30 ? '#dc2626' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981',
+            risks.neutroRisk > 70 ? '#dc2626' : risks.neutroRisk > 50 ? '#f59e0b' : '#3b82f6',
+            risks.anemiaRisk > 60 ? '#dc2626' : risks.anemiaRisk > 40 ? '#f59e0b' : '#8b5cf6',
+            risks.nauseaRisk > 85 ? '#dc2626' : risks.nauseaRisk > 70 ? '#f59e0b' : '#10b981',
+            risks.fatigueRisk > 70 ? '#dc2626' : risks.fatigueRisk > 50 ? '#f59e0b' : '#ec4899'
             ];
-            
+
             charts.riskChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Cardiotoxicity', 'Neutropenia', 'Anemia', 'Nausea', 'Fatigue'],
-                    datasets: [{
-                        label: 'Risk (%)',
-                        data: [risks.cardioRisk, risks.neutroRisk, risks.anemiaRisk, risks.nauseaRisk, risks.fatigueRisk],
-                        backgroundColor: colors,
-                        borderWidth: 2
-                    }]
+            type: 'bar',
+            data: {
+                labels: ['Cardiotoxicity', 'Neutropenia', 'Anemia', 'Nausea', 'Fatigue'],
+                datasets: [{
+                label: 'Risk (%)',
+                data: [risks.cardioRisk, risks.neutroRisk, risks.anemiaRisk, risks.nauseaRisk, risks.fatigueRisk],
+                backgroundColor: colors,
+                borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                y: { beginAtZero: true, max: 100 }
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, max: 100 }
-                    },
-                    plugins: { legend: { display: false } }
-                }
+                plugins: { legend: { display: false } },
+                // keep lightweight internal click (fallback) but primary handling uses canvas listener below
+                onClick: undefined
+            }
             });
+
+            // Attach a single, robust click handler to the chart canvas.
+            // Use getElementsAtEventForMode to reliably detect the bar under the pointer.
+            charts.riskChart.canvas.onclick = function (evt) {
+            try {
+                const points = charts.riskChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (!points || points.length === 0) return;
+
+                const index = points[0].index;
+                const riskTypes = ['cardiotoxicity', 'neutropenia', 'anemia', 'nausea', 'fatigue'];
+                selectedRiskType = riskTypes[index];
+
+                // Recompute fresh risks (avoid stale closure) and show details asynchronously
+                const freshRisks = calculateDigitalTwinRisks(currentPatient);
+                // Use requestAnimationFrame to keep UI responsive for rapid clicks
+                requestAnimationFrame(() => showRiskDetails(selectedRiskType, freshRisks));
+            } catch (err) {
+                console.error('Risk chart click handler error:', err);
+            }
+            };
         }
 
+        // Show risk details when bar is clicked - FIXED VERSION (fast, repeatable)
+        function showRiskDetails(riskType, risks) {
+            const panel = document.getElementById('riskDetailPanel');
+            panel.classList.add('active');
+
+            // Build HTML in a local variable and assign once for better performance
+            let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <h4 style="margin:0;">${riskType.charAt(0).toUpperCase() + riskType.slice(1)} Risk Details</h4>
+                    <button onclick="document.getElementById('riskDetailPanel').classList.remove('active')" style="background:#efefef;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Close</button>
+                </div>`;
+
+            if (riskType === 'cardiotoxicity') {
+            html += `<p><strong>Current Risk: ${risks.cardioRisk}%</strong></p>`;
+            html += '<p><strong>Calculation Factors:</strong></p>';
+            if (risks.cardioModifiers && risks.cardioModifiers.length > 0) {
+                risks.cardioModifiers.forEach(mod => {
+                html += `<div class="calculation-step">${mod}</div>`;
+                });
+            } else {
+                html += '<div class="calculation-step">Baseline risk based on cumulative dose</div>';
+            }
+            html += '<p><strong>Clinical Implications:</strong></p>';
+            if (risks.cardioRisk > 30) {
+                html += '<div class="calculation-step" style="border-left-color: #dc2626;">HIGH RISK: Requires immediate cardioprotective intervention</div>';
+            } else if (risks.cardioRisk > 15) {
+                html += '<div class="calculation-step" style="border-left-color: #f59e0b;">MODERATE RISK: Monitor closely and consider prophylaxis</div>';
+            } else {
+                html += '<div class="calculation-step" style="border-left-color: #10b981;">LOW RISK: Continue standard monitoring</div>';
+            }
+            } 
+            else if (riskType === 'neutropenia') {
+            html += `<p><strong>Current Risk: ${risks.neutroRisk}%</strong></p>`;
+            html += '<p><strong>Calculation Factors:</strong></p>';
+            if (risks.neutroModifiers && risks.neutroModifiers.length > 0) {
+                risks.neutroModifiers.forEach(mod => {
+                html += `<div class="calculation-step">${mod}</div>`;
+                });
+            } else {
+                html += '<div class="calculation-step">Baseline risk: 35%</div>';
+                html += `<div class="calculation-step">Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%</div>`;
+                if (currentPatient.age > 65) {
+                html += `<div class="calculation-step">Age factor (${currentPatient.age}): +12%</div>`;
+                }
+                if (currentPatient.cancer === 'leukemia') {
+                html += '<div class="calculation-step">Leukemia factor: +18%</div>';
+                }
+            }
+            html += '<p><strong>Clinical Implications:</strong></p>';
+            if (risks.neutroRisk > 60) {
+                html += '<div class="calculation-step" style="border-left-color: #dc2626;">HIGH RISK: G-CSF prophylaxis recommended</div>';
+            } else if (risks.neutroRisk > 40) {
+                html += '<div class="calculation-step" style="border-left-color: #f59e0b;">MODERATE RISK: Monitor CBC closely</div>';
+            } else {
+                html += '<div class="calculation-step" style="border-left-color: #10b981;">LOW RISK: Standard monitoring</div>';
+            }
+            }
+            else if (riskType === 'anemia') {
+            html += `<p><strong>Current Risk: ${risks.anemiaRisk}%</strong></p>`;
+            html += '<p><strong>Calculation Factors:</strong></p>';
+            html += `<div class="calculation-step">Baseline risk: 30%</div>`;
+            html += `<div class="calculation-step">Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%</div>`;
+            if (currentPatient.sex === 'female') {
+                html += '<div class="calculation-step">Female sex: +8%</div>';
+            }
+            if (currentPatient.chronicDiseases.includes('anemia')) {
+                html += '<div class="calculation-step">Pre-existing anemia: +25%</div>';
+            }
+            html += '<p><strong>Clinical Implications:</strong></p>';
+            if (risks.anemiaRisk > 70 || currentPatient.chronicDiseases.includes('anemia')) {
+                html += '<div class="calculation-step" style="border-left-color: #dc2626;">HIGH RISK: Monitor hemoglobin weekly, consider ESA therapy</div>';
+            } else if (risks.anemiaRisk > 50) {
+                html += '<div class="calculation-step" style="border-left-color: #f59e0b;">MODERATE RISK: Monitor hemoglobin bi-weekly</div>';
+            } else {
+                html += '<div class="calculation-step" style="border-left-color: #10b981;">LOW RISK: Standard monitoring</div>';
+            }
+            }
+            else if (riskType === 'nausea') {
+            html += `<p><strong>Current Risk: ${risks.nauseaRisk}%</strong></p>`;
+            html += '<p><strong>Calculation Factors:</strong></p>';
+            html += '<div class="calculation-step">Baseline chemotherapy-induced nausea: 82%</div>';
+            if (currentPatient.sex === 'female') {
+                html += '<div class="calculation-step">Female sex: +10% (hormonal factors increase susceptibility)</div>';
+            }
+            html += '<p><strong>Clinical Implications:</strong></p>';
+            html += '<div class="calculation-step" style="border-left-color: #f59e0b;">STANDARD PROPHYLAXIS: Administer 5-HT3 antagonist + dexamethasone pre-treatment</div>';
+            }
+            else if (riskType === 'fatigue') {
+            html += `<p><strong>Current Risk: ${risks.fatigueRisk}%</strong></p>`;
+            html += '<p><strong>Calculation Factors:</strong></p>';
+            html += `<div class="calculation-step">Baseline fatigue: 55%</div>`;
+            html += `<div class="calculation-step">Dose contribution: (${currentPatient.cumulativeDose}/600) × 35% = ${Math.round((currentPatient.cumulativeDose/600)*35)}%</div>`;
+            if (currentPatient.age > 60) {
+                html += `<div class="calculation-step">Age factor (${currentPatient.age}): +10%</div>`;
+            }
+            html += '<p><strong>Clinical Implications:</strong></p>';
+            if (risks.fatigueRisk > 70) {
+                html += '<div class="calculation-step" style="border-left-color: #dc2626;">HIGH RISK: Implement fatigue management program, consider dose modification</div>';
+            } else if (risks.fatigueRisk > 50) {
+                html += '<div class="calculation-step" style="border-left-color: #f59e0b;">MODERATE RISK: Educate on energy conservation techniques</div>';
+            } else {
+                html += '<div class="calculation-step" style="border-left-color: #10b981;">LOW RISK: Standard fatigue monitoring</div>';
+            }
+            }
+
+            panel.innerHTML = html;
+            // Ensure panel scroll resets for quick subsequent clicks
+            panel.scrollTop = 0;
+        }
+
+        // Update progress chart
         function updateProgressChart() {
             const ctx = document.getElementById('progressChart');
-            if (!ctx) return;
-            
+            if (!ctx || currentPatient.sessions.length === 0) return;
+
             const progressData = currentPatient.sessions.map((session, idx) => ({
-                session: `S${idx + 1}`,
-                cardio: session.risks.cardioRisk,
-                neutro: session.risks.neutroRisk,
-                score: session.risks.overallScore,
-                dose: session.cumulativeDose
+            session: `S${idx + 1}`,
+            cardio: session.risks.cardioRisk,
+            neutro: session.risks.neutroRisk,
+            score: session.risks.overallScore,
+            dose: session.cumulativeDose
             }));
-            
+
             if (charts.progressChart) charts.progressChart.destroy();
-            
+
             charts.progressChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: progressData.map(d => d.session),
-                    datasets: [
-                        {
-                            label: 'Recovery Score',
-                            data: progressData.map(d => d.score),
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            borderWidth: 3,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Cardiotoxicity',
-                            data: progressData.map(d => d.cardio),
-                            borderColor: '#ef4444',
-                            tension: 0.4,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Neutropenia',
-                            data: progressData.map(d => d.neutro),
-                            borderColor: '#3b82f6',
-                            tension: 0.4,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Cumulative Dose',
-                            data: progressData.map(d => d.dose),
-                            borderColor: '#8b5cf6',
-                            borderDash: [5, 5],
-                            yAxisID: 'y1'
-                        }
-                    ]
+            type: 'line',
+            data: {
+                labels: progressData.map(d => d.session),
+                datasets: [
+                {
+                    label: 'Recovery Score',
+                    data: progressData.map(d => d.score),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    yAxisID: 'y'
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { position: 'left', max: 100 },
-                        y1: { position: 'right', grid: { drawOnChartArea: false } }
-                    }
+                {
+                    label: 'Cardiotoxicity',
+                    data: progressData.map(d => d.cardio),
+                    borderColor: '#ef4444',
+                    tension: 0.4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Neutropenia',
+                    data: progressData.map(d => d.neutro),
+                    borderColor: '#3b82f6',
+                    tension: 0.4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Cumulative Dose',
+                    data: progressData.map(d => d.dose),
+                    borderColor: '#8b5cf6',
+                    borderDash: [5, 5],
+                    yAxisID: 'y1'
                 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                y: { position: 'left', max: 100 },
+                y1: { position: 'right', grid: { drawOnChartArea: false } }
+                }
+            }
             });
         }
-
+        // Update patient journey chart
         function updatePatientJourneyChart() {
             const ctx = document.getElementById('patientJourneyChart');
-            if (!ctx) return;
+            if (!ctx || currentPatient.sessions.length === 0) return;
             
             const journeyData = currentPatient.sessions.map((session, idx) => ({
                 session: `S${idx + 1}`,
@@ -2278,6 +2467,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             });
         }
 
+        // Update patient view
         function updatePatientView(risks) {
             const noData = document.getElementById('noDataMessage');
             const dataContent = document.getElementById('patientDataContent');
@@ -2308,6 +2498,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             updatePatientAdvice(risks);
         }
 
+        // Update recovery circle
         function updateRecoveryCircle(score) {
             const svg = document.getElementById('recoveryCircleSVG');
             const numberDisplay = document.getElementById('recoveryScoreNumber');
@@ -2329,25 +2520,26 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             numberDisplay.textContent = score;
             
             if (score > 70) {
-                messageDisplay.innerHTML = ' <strong>Great Recovery!</strong> Your body is handling treatment well.';
+                messageDisplay.innerHTML = '<strong>Great Recovery!</strong> Your body is handling treatment well.';
             } else if (score > 40) {
-                messageDisplay.innerHTML = ' <strong>Moderate Strain.</strong> Rest and follow your care plan.';
+                messageDisplay.innerHTML = '<strong>Moderate Strain.</strong> Rest and follow your care plan.';
             } else {
-                messageDisplay.innerHTML = ' <strong>High Strain.</strong> Contact your healthcare team today.';
+                messageDisplay.innerHTML = '<strong>High Strain.</strong> Contact your healthcare team today.';
             }
         }
 
+        // Update patient advice
         function updatePatientAdvice(risks) {
             const adviceSection = document.getElementById('patientAdviceSection');
             
-            let html = '<h3 style="color: #0066cc;"> Your Personalized Care Guide</h3>';
+            let html = '<h3 style="color: #0066cc;">Your Personalized Care Guide</h3>';
             html += '<p style="color: #666; margin-bottom: 20px;">Based on your current treatment</p>';
             
             const systolic = parseInt(currentPatient.vitals.bloodPressure.split('/')[0]);
             
             if (systolic > 140 || currentPatient.vitals.heartRate > 100) {
                 html += '<div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #f59e0b;">';
-                html += '<h4 style="color: #856404; margin-bottom: 10px;"> Health Status Alert</h4>';
+                html += '<h4 style="color: #856404; margin-bottom: 10px;">Health Status Alert</h4>';
                 if (systolic > 140) {
                     html += `<p>Blood pressure (${currentPatient.vitals.bloodPressure}) is elevated. Reduce salt and contact your doctor.</p>`;
                 }
@@ -2356,7 +2548,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             
             if (risks.cardioRisk > 20) {
                 html += '<div style="background: #fee2e2; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #ef4444;">';
-                html += '<h4 style="color: #991b1b; margin-bottom: 10px;"> Heart Care</h4>';
+                html += '<h4 style="color: #991b1b; margin-bottom: 10px;">Heart Care</h4>';
                 html += `<p>Heart risk: ${risks.cardioRisk}%</p>`;
                 html += '<ul style="margin-left: 20px; color: #7f1d1d;">';
                 html += '<li>Eat heart-healthy foods</li>';
@@ -2368,7 +2560,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             
             if (risks.neutroRisk > 60) {
                 html += '<div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">';
-                html += '<h4 style="color: #1e40af; margin-bottom: 10px;"> Infection Prevention</h4>';
+                html += '<h4 style="color: #1e40af; margin-bottom: 10px;">Infection Prevention</h4>';
                 html += `<p>Infection risk: ${risks.neutroRisk}%</p>`;
                 html += '<ul style="margin-left: 20px; color: #1e3a8a;">';
                 html += '<li>Wash hands frequently</li>';
@@ -2380,7 +2572,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             }
             
             html += '<div style="background: #fee2e2; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626;">';
-            html += '<h4 style="color: #991b1b; margin-bottom: 10px;"> Call Doctor If:</h4>';
+            html += '<h4 style="color: #991b1b; margin-bottom: 10px;">Call Doctor If:</h4>';
             html += '<ul style="margin-left: 20px; color: #7f1d1d; font-weight: 500;">';
             html += '<li>Fever ≥38°C (100.4°F)</li>';
             html += '<li>Chest pain or breathing difficulty</li>';
@@ -2392,6 +2584,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             adviceSection.innerHTML = html;
         }
 
+        // Switch view function
         function switchView(mode) {
             currentView = mode;
             
@@ -2414,6 +2607,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             }
         }
 
+        // Switch tab function
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -2422,6 +2616,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             document.getElementById(tabName).classList.add('active');
         }
 
+        // Export patient report
         function exportPatientReport() {
             if (!currentPatient) return;
             
@@ -2429,7 +2624,8 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             report += `Patient: ${currentPatient.id}\n`;
             report += `Date: ${new Date().toLocaleString()}\n\n`;
             report += `Age: ${currentPatient.age} | Sex: ${currentPatient.sex} | Cancer: ${currentPatient.cancer}\n`;
-            report += `Chronic Diseases: ${currentPatient.chronicDiseases.join(', ') || 'None'}\n\n`;
+            report += `Chronic Diseases: ${currentPatient.chronicDiseases.join(', ') || 'None'}\n`;
+            report += `Ejection Fraction: ${currentPatient.ejectionFraction}%\n\n`;
             report += `Cumulative Dose: ${currentPatient.cumulativeDose} mg/m²\n`;
             report += `Total Sessions: ${currentPatient.sessions.length}\n\n`;
             
@@ -2445,7 +2641,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                 currentPatient.sessions.forEach(s => {
                     report += `\nSession ${s.sessionNumber} - ${new Date(s.date).toLocaleString()}\n`;
                     report += `  Dose: ${s.dose} mg/m² | Cumulative: ${s.cumulativeDose} mg/m²\n`;
-                    report += `  Vitals: BP ${s.vitals.bloodPressure} | HR ${s.vitals.heartRate} | Temp ${s.vitals.temperature}°C\n`;
+                    report += `  Vitals: BP ${s.vitals.bloodPressure} | HR ${s.vitals.heartRate} | Temp ${s.vitals.temperature}°C | EF ${s.ejectionFraction || 'N/A'}%\n`;
                     report += `  Risks: Cardio ${s.risks.cardioRisk}% | Neutro ${s.risks.neutroRisk}% | Recovery ${s.risks.overallScore}\n`;
                 });
             }
@@ -2464,9 +2660,103 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             URL.revokeObjectURL(url);
         }
 
-        // Bluetooth connection functions
+        // VIRTUAL SIMULATOR FUNCTIONS
+        function runSimulationForDose() {
+            if (!currentPatient) {
+                alert('Please load or create a patient first!');
+                return;
+            }
+            
+            const simulationDose = parseInt(document.getElementById('simulationDose').value) || 60;
+            const simulatedPatient = JSON.parse(JSON.stringify(currentPatient));
+            
+            // Add simulated session
+            simulatedPatient.cumulativeDose += simulationDose;
+            const risks = calculateDigitalTwinRisks(simulatedPatient);
+            
+            // Display results
+            const resultsContainer = document.getElementById('simulationContent');
+            const resultsPanel = document.getElementById('simulationResults');
+            
+            let html = `<h5>Simulation Results for ${simulationDose} mg/m² Dose</h5>`;
+            html += `<p><strong>Projected Cumulative Dose:</strong> ${simulatedPatient.cumulativeDose} mg/m²</p>`;
+            html += `<div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); margin: 15px 0;">`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.cardioRisk}%</div><div class="metric-label">Cardiotoxicity</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.neutroRisk}%</div><div class="metric-label">Neutropenia</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.anemiaRisk}%</div><div class="metric-label">Anemia</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.overallScore}</div><div class="metric-label">Recovery Score</div></div>`;
+            html += `</div>`;
+            
+            // Add alerts based on risks
+            if (risks.cardioRisk > 30 || simulatedPatient.cumulativeDose > 550) {
+                html += '<div class="alert" style="margin-top: 15px;">';
+                html += '<h4>SIMULATION ALERT: High Risk Projected</h4>';
+                if (simulatedPatient.cumulativeDose > 550) {
+                    html += `<p>Cumulative dose (${simulatedPatient.cumulativeDose} mg/m²) exceeds maximum recommended (550 mg/m²)</p>`;
+                }
+                if (risks.cardioRisk > 30) {
+                    html += `<p>Cardiotoxicity risk projected at ${risks.cardioRisk}% - consider dose reduction or cardioprotection</p>`;
+                }
+                html += '</div>';
+            }
+            
+            resultsContainer.innerHTML = html;
+            resultsPanel.style.display = 'block';
+        }
+
+        function runMultipleSimulations() {
+            if (!currentPatient) {
+                alert('Please load or create a patient first!');
+                return;
+            }
+            
+            const doses = [30, 60, 90, 120];
+            let html = '<h5>Multiple Scenario Analysis</h5>';
+            html += '<p>Comparison of different dose strategies:</p>';
+            html += '<table style="width: 100%; border-collapse: collapse; margin-top: 15px;">';
+            html += '<thead><tr style="background: #f1f5f9;">';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Dose (mg/m²)</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cumulative</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cardio Risk</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Neutro Risk</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Recovery Score</th>';
+            html += '</tr></thead><tbody>';
+            
+            doses.forEach(dose => {
+                const simulatedPatient = JSON.parse(JSON.stringify(currentPatient));
+                simulatedPatient.cumulativeDose += dose;
+                const risks = calculateDigitalTwinRisks(simulatedPatient);
+                
+                const cardioColor = risks.cardioRisk > 30 ? '#ef4444' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981';
+                const neutroColor = risks.neutroRisk > 60 ? '#ef4444' : risks.neutroRisk > 40 ? '#f59e0b' : '#3b82f6';
+                
+                html += `<tr>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${dose}</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${simulatedPatient.cumulativeDose}</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${cardioColor}; font-weight: bold;">${risks.cardioRisk}%</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${neutroColor}; font-weight: bold;">${risks.neutroRisk}%</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">${risks.overallScore}</td>`;
+                html += `</tr>`;
+            });
+            
+            html += '</tbody></table>';
+            
+            const resultsContainer = document.getElementById('simulationContent');
+            const resultsPanel = document.getElementById('simulationResults');
+            resultsContainer.innerHTML = html;
+            resultsPanel.style.display = 'block';
+        }
+
+        // FIXED BLUETOOTH CONNECTION FUNCTIONS
         async function connectBluetoothDevice() {
             const connectBtn = document.getElementById('connectBtn');
+            
+            // Check if Bluetooth is available
+            if (!navigator.bluetooth) {
+                alert('Bluetooth is not supported in this browser. Using simulated data instead.');
+                startSimulatedVitals();
+                return;
+            }
             
             if (bluetoothDevice && bluetoothDevice.gatt.connected) {
                 bluetoothDevice.gatt.disconnect();
@@ -2510,9 +2800,11 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             } catch (error) {
                 console.error('Bluetooth connection error:', error);
                 if (error.name === 'NotFoundError') {
-                    alert('No Bluetooth device selected. Please try again and select a device from the list.');
+                    alert('No Bluetooth device selected. Using simulated data instead.');
+                    startSimulatedVitals();
                 } else {
-                    alert('Failed to connect to device: ' + error.message);
+                    alert('Failed to connect to device. Using simulated data instead. Error: ' + error.message);
+                    startSimulatedVitals();
                 }
                 connectBtn.textContent = 'Connect Device';
             }
@@ -2523,8 +2815,15 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
         function startSimulatedVitals() {
             if (simulatedInterval) clearInterval(simulatedInterval);
             
+            // Update UI to show simulated connection
+            document.getElementById('deviceStatusDot').classList.add('connected');
+            document.getElementById('deviceStatusText').textContent = 'Connected: Simulated Device';
+            document.getElementById('vitalsDisplay').style.display = 'block';
+            document.getElementById('connectBtn').textContent = 'Disconnect';
+            document.getElementById('connectBtn').classList.add('btn-disconnect');
+            
             simulatedInterval = setInterval(() => {
-                if (currentPatient && bluetoothDevice && bluetoothDevice.gatt.connected) {
+                if (currentPatient) {
                     // Simulate realistic heart rate variations
                     const baseHR = parseInt(currentPatient.vitals.heartRate) || 75;
                     const variation = Math.floor(Math.random() * 10) - 5;
@@ -2538,8 +2837,14 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                     const bpParts = currentPatient.vitals.bloodPressure.split('/');
                     const systolic = parseInt(bpParts[0]) + (Math.random() > 0.5 ? 1 : -1);
                     const diastolic = parseInt(bpParts[1]) + (Math.random() > 0.5 ? 1 : -1);
-                    currentPatient.vitals.bloodPressure = `${systolic}/${diastolic}`;
+                    currentPatient.vitals.bloodPressure = `${Math.max(90, systolic)}/${Math.max(60, diastolic)}`;
                     document.getElementById('bloodPressure').value = currentPatient.vitals.bloodPressure;
+                    
+                    // Simulate slight temperature variations
+                    const baseTemp = parseFloat(currentPatient.vitals.temperature) || 37.0;
+                    const tempVariation = (Math.random() * 0.4) - 0.2;
+                    currentPatient.vitals.temperature = (baseTemp + tempVariation).toFixed(1);
+                    document.getElementById('temperature').value = currentPatient.vitals.temperature;
                     
                     savePatientData();
                     
@@ -2547,7 +2852,7 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
                         runSimulation();
                     }
                 }
-            }, 2000);
+            }, 3000);
         }
 
         function handleHeartRateChange(event) {
@@ -2572,6 +2877,11 @@ if (currentPatient.chronicDiseases.length > 0 && !currentPatient.chronicDiseases
             document.getElementById('vitalsDisplay').style.display = 'none';
             document.getElementById('connectBtn').textContent = 'Connect Device';
             document.getElementById('connectBtn').classList.remove('btn-disconnect');
+            
+            if (simulatedInterval) {
+                clearInterval(simulatedInterval);
+                simulatedInterval = null;
+            }
         }
 
         // Particle animation
