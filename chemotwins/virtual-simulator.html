@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Treatment Simulator - ChemoTwin</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #fafbfc;
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            z-index: -1;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 40px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e5e7eb;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1em;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 28px;
+            height: fit-content;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .input-panel h2 {
+            color: #1e293b;
+            margin-bottom: 24px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .form-section {
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section h3 {
+            color: #1e293b;
+            margin-bottom: 18px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .horizontal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .horizontal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #475569;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 11px 14px;
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            color: #1e293b;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #1e293b;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+        }
+
+        .results-panel {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .results-panel h2 {
+            color: #1e293b;
+            margin-bottom: 24px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .simulation-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .simulation-dose-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }
+
+        .simulation-dose-input:focus {
+            outline: none;
+            border-color: #1e293b;
+            box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95em;
+        }
+
+        .btn-primary {
+            background: #1e293b;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #334155;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30, 41, 59, 0.2);
+        }
+
+        .btn-secondary {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #6d28d9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+        }
+
+        .simulation-results {
+            background: #f0f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            color: #64748b;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .alert {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .alert h4 {
+            color: #dc2626;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .alert p {
+            color: #7f1d1d;
+            line-height: 1.6;
+        }
+
+        .digital-twin-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .dose-display {
+            background: rgba(230, 240, 250, 0.5);
+            border: 2px solid rgba(0, 102, 204, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .dose-display label {
+            display: block;
+            color: #0066cc;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .dose-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+</style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="main-container">
+        <header class="header">
+            <h1>Virtual Treatment Simulator</h1>
+            <p class="subtitle">Simulate future treatment sessions to predict patient outcomes</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="input-panel">
+                <h2>Virtual Patient Configuration</h2>
+
+                <div class="form-section">
+                    <h3>Demographics</h3>
+                    <div class="horizontal-grid">
+                        <div class="input-group">
+                            <label>Age (years)</label>
+                            <input type="number" id="simAge" min="1" max="100" value="45" oninput="updateSimulation()">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Sex</label>
+                            <select id="simSex" onchange="updateSimulation()">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Cancer Type</label>
+                            <select id="simCancer" onchange="updateSimulation()">
+                                <option value="leukemia">Leukemia</option>
+                                <option value="lymphoma">Lymphoma</option>
+                                <option value="breast">Breast Cancer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Chronic Diseases</label>
+                        <select id="simChronicDiseases" multiple size="6" onchange="updateSimulation()">
+                            <option value="none">None</option>
+                            <option value="diabetes">Diabetes</option>
+                            <option value="hypertension">Hypertension</option>
+                            <option value="heart_disease">Heart Disease</option>
+                            <option value="kidney_disease">Kidney Disease</option>
+                            <option value="liver_disease">Liver Disease</option>
+                            <option value="copd">COPD (chronic lung disease)</option>
+                            <option value="asthma">Asthma</option>
+                            <option value="obesity">Obesity (BMI > 30)</option>
+                            <option value="anemia">Anemia</option>
+                        </select>
+                        <small style="color: #666; display: block; margin-top: 5px;">Hold Ctrl/Cmd to select multiple</small>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Current Vitals</h3>
+                    <div class="horizontal-grid">
+                        <div class="input-group">
+                            <label>Temperature (°C)</label>
+                            <input type="number" id="simTemperature" step="0.1" min="35" max="42" value="37.0" oninput="updateSimulation()">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Blood Pressure (mmHg)</label>
+                            <input type="text" id="simBloodPressure" placeholder="120/80" value="120/80" oninput="updateSimulation()">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Heart Rate (bpm)</label>
+                            <input type="number" id="simHeartRate" min="40" max="200" value="75" oninput="updateSimulation()">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Ejection Fraction (%)</label>
+                            <input type="number" id="simEjectionFraction" min="20" max="80" value="60" oninput="updateSimulation()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Current Treatment Status</h3>
+                    <div class="dose-display">
+                        <label>Current Cumulative Dose</label>
+                        <div class="dose-value" id="simCumulativeDoseDisplay">0 mg/m²</div>
+                        <small>Maximum recommended: 550 mg/m²</small>
+                    </div>
+                    <div class="input-group">
+                        <label>Cumulative Dose (mg/m²)</label>
+                        <input type="number" id="simCumulativeDose" min="0" max="600" value="0" oninput="updateSimulation()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel">
+                <h2>Simulation Results <span class="digital-twin-badge">Virtual Patient</span></h2>
+
+                <div class="simulation-controls">
+                    <input type="number" id="simulationDose" class="simulation-dose-input" placeholder="Enter dose for simulation (mg/m²)" value="60" min="1" max="100">
+                    <button class="btn btn-primary" onclick="runSimulationForDose()">Simulate Treatment</button>
+                    <button class="btn btn-secondary" onclick="runMultipleSimulations()">Run Multiple Scenarios</button>
+                </div>
+
+                <div id="simulationResults" class="simulation-results" style="display: none;">
+                    <div id="simulationContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Virtual patient state
+        let virtualPatient = null;
+
+        // Initialize from real patient data or create new virtual patient
+        function initializeVirtualPatient() {
+            const savedData = localStorage.getItem('simulatorPatientData');
+            if (savedData) {
+                const realPatient = JSON.parse(savedData);
+                // Populate form with real patient data
+                document.getElementById('simAge').value = realPatient.age || 45;
+                document.getElementById('simSex').value = realPatient.sex || 'male';
+                document.getElementById('simCancer').value = realPatient.cancer || 'lymphoma';
+                document.getElementById('simTemperature').value = realPatient.vitals?.temperature || 37.0;
+                document.getElementById('simBloodPressure').value = realPatient.vitals?.bloodPressure || '120/80';
+                document.getElementById('simHeartRate').value = realPatient.vitals?.heartRate || 75;
+                document.getElementById('simEjectionFraction').value = realPatient.vitals?.ejectionFraction || 60;
+                document.getElementById('simCumulativeDose').value = realPatient.cumulativeDose || 0;
+
+                // Set chronic diseases
+                const select = document.getElementById('simChronicDiseases');
+                for (let option of select.options) {
+                    option.selected = realPatient.chronicDiseases?.includes(option.value) || false;
+                }
+            }
+            updateSimulation();
+        }
+
+        function updateSimulation() {
+            const chronicDiseasesSelect = document.getElementById('simChronicDiseases');
+            const selectedDiseases = Array.from(chronicDiseasesSelect.selectedOptions).map(opt => opt.value);
+
+            virtualPatient = {
+                age: parseInt(document.getElementById('simAge').value),
+                sex: document.getElementById('simSex').value,
+                cancer: document.getElementById('simCancer').value,
+                chronicDiseases: selectedDiseases,
+                vitals: {
+                    temperature: parseFloat(document.getElementById('simTemperature').value),
+                    bloodPressure: document.getElementById('simBloodPressure').value,
+                    heartRate: parseInt(document.getElementById('simHeartRate').value),
+                    ejectionFraction: parseInt(document.getElementById('simEjectionFraction').value)
+                },
+                cumulativeDose: parseInt(document.getElementById('simCumulativeDose').value) || 0
+            };
+
+            document.getElementById('simCumulativeDoseDisplay').textContent = `${virtualPatient.cumulativeDose} mg/m²`;
+        }
+
+        function calculateDigitalTwinRisks(patient) {
+            const age = patient.age;
+            const cumulativeDose = patient.cumulativeDose;
+            const ef = patient.vitals.ejectionFraction;
+            const chronicDiseases = patient.chronicDiseases || [];
+
+            // Cardiotoxicity Risk (0-100%)
+            let cardioRisk = 35; // baseline
+            cardioRisk += (cumulativeDose / 600) * 45; // dose contribution
+            if (age > 65) cardioRisk += 15;
+            else if (age > 50) cardioRisk += 8;
+            if (ef < 50) cardioRisk += 20;
+            if (chronicDiseases.includes('heart_disease')) cardioRisk += 15;
+            if (chronicDiseases.includes('hypertension')) cardioRisk += 10;
+            if (chronicDiseases.includes('diabetes')) cardioRisk += 8;
+            cardioRisk = Math.min(Math.round(cardioRisk), 100);
+
+            // Neutropenia Risk (0-100%)
+            let neutroRisk = 45;
+            neutroRisk += (cumulativeDose / 400) * 30;
+            if (age > 70) neutroRisk += 10;
+            if (chronicDiseases.includes('anemia')) neutroRisk += 12;
+            if (patient.cancer === 'leukemia') neutroRisk += 8;
+            neutroRisk = Math.min(Math.round(neutroRisk), 100);
+
+            // Anemia Risk (0-100%)
+            let anemiaRisk = 40;
+            anemiaRisk += (cumulativeDose / 500) * 35;
+            if (chronicDiseases.includes('kidney_disease')) anemiaRisk += 15;
+            if (chronicDiseases.includes('anemia')) anemiaRisk += 20;
+            if (age > 65) anemiaRisk += 8;
+            anemiaRisk = Math.min(Math.round(anemiaRisk), 100);
+
+            // Overall Recovery Score (0-100, higher is better)
+            let overallScore = 85;
+            overallScore -= (cardioRisk / 100) * 30;
+            overallScore -= (neutroRisk / 100) * 25;
+            overallScore -= (anemiaRisk / 100) * 20;
+            overallScore -= chronicDiseases.filter(d => d !== 'none').length * 3;
+            overallScore = Math.max(Math.round(overallScore), 0);
+
+            return {
+                cardioRisk,
+                neutroRisk,
+                anemiaRisk,
+                overallScore
+            };
+        }
+
+        function runSimulationForDose() {
+            if (!virtualPatient) {
+                alert('Please configure virtual patient first!');
+                return;
+            }
+
+            const simulationDose = parseInt(document.getElementById('simulationDose').value) || 60;
+            const simulatedPatient = JSON.parse(JSON.stringify(virtualPatient));
+
+            // Add simulated session
+            simulatedPatient.cumulativeDose += simulationDose;
+            const risks = calculateDigitalTwinRisks(simulatedPatient);
+
+            // Display results
+            const resultsContainer = document.getElementById('simulationContent');
+            const resultsPanel = document.getElementById('simulationResults');
+
+            let html = `<h5>Simulation Results for ${simulationDose} mg/m² Dose</h5>`;
+            html += `<p><strong>Projected Cumulative Dose:</strong> ${simulatedPatient.cumulativeDose} mg/m²</p>`;
+            html += `<div class="metrics-grid" style="margin: 15px 0;">`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.cardioRisk}%</div><div class="metric-label">Cardiotoxicity</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.neutroRisk}%</div><div class="metric-label">Neutropenia</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.anemiaRisk}%</div><div class="metric-label">Anemia</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value">${risks.overallScore}</div><div class="metric-label">Recovery Score</div></div>`;
+            html += `</div>`;
+
+            // Add alerts based on risks
+            if (risks.cardioRisk > 30 || simulatedPatient.cumulativeDose > 550) {
+                html += '<div class="alert">';
+                html += '<h4>SIMULATION ALERT: High Risk Projected</h4>';
+                if (simulatedPatient.cumulativeDose > 550) {
+                    html += `<p>Cumulative dose (${simulatedPatient.cumulativeDose} mg/m²) exceeds maximum recommended (550 mg/m²)</p>`;
+                }
+                if (risks.cardioRisk > 30) {
+                    html += `<p>Cardiotoxicity risk projected at ${risks.cardioRisk}% - consider dose reduction or cardioprotection</p>`;
+                }
+                html += '</div>';
+            }
+
+            resultsContainer.innerHTML = html;
+            resultsPanel.style.display = 'block';
+        }
+
+        function runMultipleSimulations() {
+            if (!virtualPatient) {
+                alert('Please configure virtual patient first!');
+                return;
+            }
+
+            const doses = [30, 60, 90, 120];
+            let html = '<h5>Multiple Scenario Analysis</h5>';
+            html += '<p>Comparison of different dose strategies:</p>';
+            html += '<table style="width: 100%; border-collapse: collapse; margin-top: 15px;">';
+            html += '<thead><tr style="background: #f1f5f9;">';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Dose (mg/m²)</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cumulative</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cardio Risk</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Neutro Risk</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Recovery Score</th>';
+            html += '</tr></thead><tbody>';
+
+            doses.forEach(dose => {
+                const simulatedPatient = JSON.parse(JSON.stringify(virtualPatient));
+                simulatedPatient.cumulativeDose += dose;
+                const risks = calculateDigitalTwinRisks(simulatedPatient);
+
+                const cardioColor = risks.cardioRisk > 30 ? '#ef4444' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981';
+                const neutroColor = risks.neutroRisk > 60 ? '#ef4444' : risks.neutroRisk > 40 ? '#f59e0b' : '#3b82f6';
+
+                html += `<tr>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${dose}</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${simulatedPatient.cumulativeDose}</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${cardioColor}; font-weight: bold;">${risks.cardioRisk}%</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${neutroColor}; font-weight: bold;">${risks.neutroRisk}%</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">${risks.overallScore}</td>`;
+                html += `</tr>`;
+            });
+
+            html += '</tbody></table>';
+
+            const resultsContainer = document.getElementById('simulationContent');
+            const resultsPanel = document.getElementById('simulationResults');
+            resultsContainer.innerHTML = html;
+            resultsPanel.style.display = 'block';
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initializeVirtualPatient);
+    </script>
+</body>
+</html>
