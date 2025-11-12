@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChemoTwin: Digital Twins for Chemotherapy Effects</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script type="text/javascript">
-    (function(){
-        emailjs.init("zw5gaDMv_koqacN8M");
-    })();
-</script>
-<style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("zw5gaDMv_koqacN8M");
+        })();
+    </script>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -284,6 +284,49 @@
             flex-wrap: wrap;
         }
 
+        /* Patient Profile Section - Matches Patient ID Section */
+        .patient-profile-section {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e5e7eb;
+        }
+
+        .patient-profile-section h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .patient-profile-section h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        #currentPatientId {
+            color: #059669;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
         .patient-id-input {
             flex: 1;
             min-width: 250px;
@@ -388,12 +431,6 @@
             font-weight: 600;
         }
 
-        #currentPatientId {
-            color: #059669;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
-        }
-
         .form-section {
             margin-bottom: 28px;
             padding-bottom: 24px;
@@ -441,6 +478,20 @@
             border-color: #1e293b;
             background: white;
             box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1);
+        }
+
+        /* Horizontal Grid Layout for Demographics and Vitals */
+        .horizontal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .horizontal-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .dose-display {
@@ -1033,6 +1084,145 @@
             padding: 20px;
             margin-top: 20px;
         }
+
+        /* Custom Dropdown Styling */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-display {
+            background: white;
+            border: none;
+            border-radius: 12px 12px 0 0;
+            padding: 25px 30px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .select-display.active {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #666;
+            transition: transform 0.3s ease;
+        }
+
+        .arrow.rotate {
+            transform: rotate(180deg);
+        }
+
+        .select-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            z-index: 10;
+        }
+
+        .select-options.show {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .option-item {
+            padding: 25px 30px;
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .option-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .option-item:last-child {
+            border-radius: 0 0 12px 12px;
+        }
+
+        .custom-select.show .select-display {
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* Close button for Bluetooth sidebar */
+        .bluetooth-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .bluetooth-close-btn:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        /* Cancer subtype styling */
+        .cancer-subtype-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .cancer-subtype-section h4 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .subtype-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .subtype-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subtype-option input {
+            margin: 0;
+        }
+
+        .subtype-option label {
+            margin: 0;
+            font-weight: 500;
+            color: #475569;
+        }
     </style>
 </head>
 <body>
@@ -1041,6 +1231,7 @@
     
     <!-- BLUETOOTH SIDEBAR -->
     <div class="bluetooth-sidebar" id="bluetoothSidebar">
+        <button class="bluetooth-close-btn" onclick="closeBluetooth()" title="Close">✕</button>
         <div class="bluetooth-header">
             <div class="bluetooth-icon">🔵</div>
             <div class="bluetooth-title">Device Monitor</div>
@@ -1094,36 +1285,77 @@
                 <button onclick="exportPatientReport()" class="btn btn-secondary" id="exportBtn" style="display:none;">Export Report</button>
             </div>
         </div>
-        
-        <div class="dashboard">
-            <div class="input-panel" id="patientForm">
-                <h2>Patient Profile - <span id="currentPatientId">No Patient Loaded</span></h2>
-                
-                <div class="form-section">
+
+        <div class="patient-profile-section">
+            <h2>Patient Profile - <span id="currentPatientId">No Patient Loaded</span></h2>
+
+            <div class="profile-content">
+                <div class="profile-column">
                     <h3>Demographics</h3>
-                    <div class="input-group">
-                        <label class="required-field">Age (years)</label>
-                        <input type="number" id="age" min="1" max="100" value="45" oninput="updatePatientRealtime()">
+                    <div class="horizontal-grid">
+                        <div class="input-group">
+                            <label class="required-field">Age (years)</label>
+                            <input type="number" id="age" min="1" max="100" value="45" oninput="updatePatientRealtime()">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="required-field">Sex</label>
+                            <select id="sex" onchange="updatePatientRealtime()">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="required-field">Cancer Type</label>
+                            <select id="cancer" onchange="toggleCancerSubtypes()">
+                                <option value="leukemia">Leukemia</option>
+                                <option value="lymphoma">Lymphoma</option>
+                            </select>
+                        </div>
                     </div>
-                    
-                    <div class="input-group">
-                        <label class="required-field">Sex</label>
-                        <select id="sex" onchange="updatePatientRealtime()">
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
+
+                    <div class="cancer-subtype-section" id="cancerSubtypeSection" style="display: none;">
+                        <h4>Cancer Subtype</h4>
+                        <div class="subtype-options" id="leukemiaSubtypes">
+                            <div class="subtype-option">
+                                <input type="radio" id="leukemia_all" name="cancerSubtype" value="ALL">
+                                <label for="leukemia_all">Acute Lymphoblastic Leukemia (ALL)</label>
+                            </div>
+                            <div class="subtype-option">
+                                <input type="radio" id="leukemia_aml" name="cancerSubtype" value="AML">
+                                <label for="leukemia_aml">Acute Myeloid Leukemia (AML)</label>
+                            </div>
+                            <div class="subtype-option">
+                                <input type="radio" id="leukemia_cll" name="cancerSubtype" value="CLL">
+                                <label for="leukemia_cll">Chronic Lymphocytic Leukemia (CLL)</label>
+                            </div>
+                            <div class="subtype-option">
+                                <input type="radio" id="leukemia_cml" name="cancerSubtype" value="CML">
+                                <label for="leukemia_cml">Chronic Myeloid Leukemia (CML)</label>
+                            </div>
+                            <div class="subtype-option">
+                                <input type="radio" id="leukemia_other" name="cancerSubtype" value="Other Leukemia">
+                                <label for="leukemia_other">Other Leukemia</label>
+                            </div>
+                        </div>
+                        <div class="subtype-options" id="lymphomaSubtypes" style="display: none;">
+                            <div class="subtype-option">
+                                <input type="radio" id="lymphoma_hl" name="cancerSubtype" value="HL">
+                                <label for="lymphoma_hl">Hodgkin Lymphoma (HL)</label>
+                            </div>
+                            <div class="subtype-option">
+                                <input type="radio" id="lymphoma_nhl" name="cancerSubtype" value="NHL">
+                                <label for="lymphoma_nhl">Non-Hodgkin Lymphoma (NHL)</label>
+                            </div>
+                            <div class="subtype-option">
+                                <input type="radio" id="lymphoma_other" name="cancerSubtype" value="Other Lymphoma">
+                                <label for="lymphoma_other">Other Lymphoma</label>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="input-group">
-                        <label class="required-field">Cancer Type</label>
-                        <select id="cancer" onchange="updatePatientRealtime()">
-                            <option value="leukemia">Leukemia</option>
-                            <option value="lymphoma">Lymphoma</option>
-                            <option value="breast">Breast Cancer</option>
-                        </select>
-                    </div>
-                    
+
                     <div class="input-group">
                         <label class="required-field">Chronic Diseases</label>
                         <select id="chronicDiseases" multiple size="6" onchange="updatePatientRealtime()">
@@ -1141,32 +1373,40 @@
                         <small style="color: #666; display: block; margin-top: 5px;">Hold Ctrl/Cmd to select multiple</small>
                     </div>
                 </div>
-                
-                <div class="form-section">
+
+                <div class="profile-column">
                     <h3>Current Vitals</h3>
-                    <div class="input-group">
-                        <label>Temperature (°C)</label>
-                        <input type="number" id="temperature" step="0.1" min="35" max="42" value="37.0" oninput="updatePatientRealtime()">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Blood Pressure (mmHg)</label>
-                        <input type="text" id="bloodPressure" placeholder="120/80" value="120/80" oninput="updatePatientRealtime()">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Heart Rate (bpm)</label>
-                        <input type="number" id="heartRate" min="40" max="200" value="75" oninput="updatePatientRealtime()">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Ejection Fraction (%)</label>
-                        <input type="number" id="ejectionFraction" min="20" max="80" value="60" oninput="updatePatientRealtime()">
+                    <div class="horizontal-grid">
+                        <div class="input-group">
+                            <label>Temperature (°C)</label>
+                            <input type="number" id="temperature" step="0.1" min="35" max="42" value="37.0" oninput="updatePatientRealtime()">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Blood Pressure (mmHg)</label>
+                            <input type="text" id="bloodPressure" placeholder="120/80" value="120/80" oninput="updatePatientRealtime()">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Heart Rate (bpm)</label>
+                            <input type="number" id="heartRate" min="40" max="200" value="75" oninput="updatePatientRealtime()">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Ejection Fraction (%)</label>
+                            <input type="number" id="ejectionFraction" min="20" max="80" value="60" oninput="updatePatientRealtime()">
+                        </div>
                     </div>
                 </div>
-                
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="input-panel" id="patientForm">
+                <h2>Treatment Management</h2>
+
                 <div class="form-section">
-                    <h3>Treatment Information</h3>
+                    <h3>Dosage & Sessions</h3>
                     <div class="dose-display">
                         <label>Cumulative Dose</label>
                         <div class="dose-value" id="cumulativeDoseDisplay">0 mg/m²</div>
@@ -1197,7 +1437,7 @@
                         <button class="tab active" onclick="switchTab('overview')">Overview</button>
                         <button class="tab" onclick="switchTab('research-calculations')">Research Calculations</button>
                         <button class="tab" onclick="switchTab('history')">Patient History</button>
-                        <button class="tab" onclick="switchTab('virtual-simulator')">Virtual Simulator</button>
+                        <button class="tab" onclick="openVirtualSimulator()">Virtual Simulator</button>
                     </div>
                     
                     <div id="overview" class="tab-content active">
@@ -1235,7 +1475,7 @@
                     </div>
                     
                     <div id="research-calculations" class="tab-content">
-                        <h3Calculations></h3>
+                        <h3>Calculations</h3>
                         <p style="color: #666; margin-bottom: 20px;">Calculations based on this patient's profile</p>
                         <div id="researchCalculationsContainer"></div>
                     </div>
@@ -1246,22 +1486,6 @@
                             <canvas id="progressChart"></canvas>
                         </div>
                         <div id="sessionHistoryList"></div>
-                    </div>
-                    
-                    <div id="virtual-simulator" class="tab-content">
-                        <h3>Virtual Treatment Simulator</h3>
-                        <p style="color: #666; margin-bottom: 20px;">Simulate future treatment sessions to predict patient outcomes</p>
-                        
-                        <div class="simulation-controls">
-                            <input type="number" id="simulationDose" class="simulation-dose-input" placeholder="Enter dose for simulation (mg/m²)" value="60" min="1" max="100">
-                            <button class="btn btn-primary" onclick="runSimulationForDose()">Simulate Treatment</button>
-                            <button class="btn btn-secondary" onclick="runMultipleSimulations()">Run Multiple Scenarios</button>
-                        </div>
-                        
-                        <div id="simulationResults" class="simulation-results" style="display: none;">
-                            <h4>Simulation Results</h4>
-                            <div id="simulationContent"></div>
-                        </div>
                     </div>
                 </div>
                 
@@ -1391,8 +1615,56 @@
         let heartRateCharacteristic = null;
         let selectedRiskType = null;
 
+        // Close Bluetooth sidebar
+        function closeBluetooth() {
+            document.getElementById('bluetoothSidebar').classList.remove('active');
+        }
+
+        // Toggle cancer subtype selection
+        function toggleCancerSubtypes() {
+            const cancerType = document.getElementById('cancer').value;
+            const subtypeSection = document.getElementById('cancerSubtypeSection');
+            const leukemiaSubtypes = document.getElementById('leukemiaSubtypes');
+            const lymphomaSubtypes = document.getElementById('lymphomaSubtypes');
+            
+            if (cancerType === 'leukemia' || cancerType === 'lymphoma') {
+                subtypeSection.style.display = 'block';
+                
+                if (cancerType === 'leukemia') {
+                    leukemiaSubtypes.style.display = 'grid';
+                    lymphomaSubtypes.style.display = 'none';
+                } else {
+                    leukemiaSubtypes.style.display = 'none';
+                    lymphomaSubtypes.style.display = 'grid';
+                }
+            } else {
+                subtypeSection.style.display = 'none';
+            }
+            
+            updatePatientRealtime();
+        }
+
+        // Open Virtual Simulator in new window
+        function openVirtualSimulator() {
+            if (currentPatient) {
+                // Pass patient data to simulator
+                localStorage.setItem('simulatorPatientData', JSON.stringify(currentPatient));
+                window.open('virtual-simulator.html', 'VirtualSimulator', 'width=1400,height=900');
+            } else {
+                alert('Please load or create a patient first');
+            }
+        }
+
         // Email notification function
         async function sendEmailNotification(data) {
+            console.log('📧 Attempting to send email notification for patient:', data.patientId);
+
+            // Validate EmailJS is loaded
+            if (typeof emailjs === 'undefined') {
+                console.error('❌ EmailJS library not loaded! Check your internet connection.');
+                return;
+            }
+
             const emailBody = `
 NEW PATIENT ENTRY NOTIFICATION
 
@@ -1403,6 +1675,7 @@ Demographics:
 - Age: ${data.age} years
 - Sex: ${data.sex}
 - Cancer Type: ${data.cancer}
+- Cancer Subtype: ${data.cancerSubtype || 'Not specified'}
 - Chronic Diseases: ${data.chronicDiseases.join(', ') || 'None'}
 
 Current Vitals:
@@ -1425,36 +1698,59 @@ Latest Risk Profile:
 ---
 This is an automated notification from ChemoTwin Platform.
     `;
-    
+
             // Send email using EmailJS
             const emailParams = {
                 visitor_id: data.patientId,
-                timestamp: new Date(data.timestamp).toLocaleString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric', 
-                    hour: '2-digit', 
+                timestamp: new Date(data.timestamp).toLocaleString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
                     minute: '2-digit'
                 }),
-                user_agent: `Patient Entry - Age: ${data.age}, Sex: ${data.sex}, Cancer: ${data.cancer}`,
+                user_agent: `Patient Entry - Age: ${data.age}, Sex: ${data.sex}, Cancer: ${data.cancer}, Subtype: ${data.cancerSubtype || 'Not specified'}`,
                 screen_resolution: `Sessions: ${data.sessions.length} | Dose: ${data.cumulativeDose} mg/m²`,
                 language: `Chronic Diseases: ${data.chronicDiseases.join(', ') || 'None'}`
             };
-            
+
+            console.log('📨 Email parameters prepared:', emailParams);
+
             try {
+                console.log('⏳ Sending email via EmailJS...');
                 const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
-                console.log('Patient entry email sent!', response.status);
+                console.log('✅ Email sent successfully! Status:', response.status, 'Response:', response);
             } catch (error) {
-                console.error('Failed to send patient email:', error);
+                console.error('❌ Failed to send patient email!');
+                console.error('Error details:', error);
+                console.error('Error message:', error.text || error.message);
+                console.error('Error status:', error.status);
+
+                // Provide helpful debugging info
+                if (error.status === 400) {
+                    console.error('💡 Bad Request - Check your EmailJS template parameters match the ones being sent');
+                } else if (error.status === 401 || error.status === 403) {
+                    console.error('💡 Unauthorized - Check your EmailJS public key and service/template IDs');
+                } else if (error.status === 422) {
+                    console.error('💡 Invalid parameters - Verify template variable names in EmailJS dashboard');
+                }
             }
         }
 
         // Track visitor on page load
         async function trackVisitor() {
+            console.log('👤 Tracking visitor access...');
+
+            // Validate EmailJS is loaded
+            if (typeof emailjs === 'undefined') {
+                console.error('❌ EmailJS library not loaded for visitor tracking! Check your internet connection.');
+                return;
+            }
+
             const visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             const timestamp = new Date().toISOString();
-            
+
             const visitorData = {
                 id: visitorId,
                 timestamp: timestamp,
@@ -1462,16 +1758,16 @@ This is an automated notification from ChemoTwin Platform.
                 screenResolution: `${window.screen.width}x${window.screen.height}`,
                 language: navigator.language
             };
-            
+
             // Send real email using EmailJS
             const emailParams = {
                 visitor_id: visitorId,
-                timestamp: new Date(timestamp).toLocaleString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric', 
-                    hour: '2-digit', 
+                timestamp: new Date(timestamp).toLocaleString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit'
                 }),
@@ -1480,17 +1776,23 @@ This is an automated notification from ChemoTwin Platform.
                 language: navigator.language
             };
 
+            console.log('📨 Visitor tracking email parameters:', emailParams);
+
             try {
+                console.log('⏳ Sending visitor tracking email...');
                 const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
-                console.log('Visitor email sent successfully!', response.status, response.text);
+                console.log('✅ Visitor tracking email sent successfully!', response.status, response.text);
             } catch (error) {
-                console.error('Failed to send visitor email:', error);
+                console.error('❌ Failed to send visitor email!');
+                console.error('Error details:', error);
+                console.error('Error message:', error.text || error.message);
+                console.error('Error status:', error.status);
             }
         }
         
-        // ENHANCED DIGITAL TWIN RISK CALCULATOR WITH EJECTION FRACTION
+        // ENHANCED DIGITAL TWIN RISK CALCULATOR WITH CANCER SUBTYPES
         function calculateDigitalTwinRisks(patient) {
-            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, ejectionFraction } = patient;
+            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, cancerSubtype, ejectionFraction } = patient;
             const dose = cumulativeDose;
             
             // Cardiotoxicity calculation with ejection fraction
@@ -1523,6 +1825,22 @@ This is an automated notification from ChemoTwin Platform.
             } else if (ejectionFraction < 55) {
                 cardioBase += 5;
                 cardioModifiers.push(`Borderline ejection fraction (${ejectionFraction}%) adds +5% risk`);
+            }
+            
+            // Cancer subtype-specific risks
+            if (cancer === 'leukemia') {
+                if (cancerSubtype === 'AML') {
+                    cardioBase += 6;
+                    cardioModifiers.push("AML subtype adds +6% cardiotoxicity risk");
+                } else if (cancerSubtype === 'CML') {
+                    cardioBase += 4;
+                    cardioModifiers.push("CML subtype adds +4% cardiotoxicity risk");
+                }
+            } else if (cancer === 'lymphoma') {
+                if (cancerSubtype === 'HL') {
+                    cardioBase += 5;
+                    cardioModifiers.push("Hodgkin Lymphoma adds +5% cardiotoxicity risk");
+                }
             }
             
             // Chronic diseases
@@ -1561,7 +1879,7 @@ This is an automated notification from ChemoTwin Platform.
             
             const cardioRisk = Math.min(95, Math.round(cardioBase));
             
-            // Neutropenia calculation
+            // Neutropenia calculation with cancer subtype considerations
             let neutroBase = 35 + (dose / 600 * 45);
             let neutroModifiers = [];
 
@@ -1569,10 +1887,29 @@ This is an automated notification from ChemoTwin Platform.
                 neutroBase += 12;
                 neutroModifiers.push(`Age ${age} adds +12% (elderly immune system)`);
             }
+            
+            // Cancer subtype-specific neutropenia risks
             if (cancer === 'leukemia') {
                 neutroBase += 18;
                 neutroModifiers.push("Leukemia adds +18% (blood cancer affects WBC production)");
+                
+                if (cancerSubtype === 'ALL') {
+                    neutroBase += 8;
+                    neutroModifiers.push("ALL subtype adds +8% neutropenia risk");
+                } else if (cancerSubtype === 'AML') {
+                    neutroBase += 12;
+                    neutroModifiers.push("AML subtype adds +12% neutropenia risk");
+                }
+            } else if (cancer === 'lymphoma') {
+                neutroBase += 10;
+                neutroModifiers.push("Lymphoma adds +10% neutropenia risk");
+                
+                if (cancerSubtype === 'NHL') {
+                    neutroBase += 6;
+                    neutroModifiers.push("NHL subtype adds +6% neutropenia risk");
+                }
             }
+            
             if (chronicDiseases.includes('diabetes')) {
                 neutroBase += 8;
                 neutroModifiers.push("Diabetes adds +8% (impaired immune function)");
@@ -1588,9 +1925,17 @@ This is an automated notification from ChemoTwin Platform.
             
             const neutroRisk = Math.min(95, Math.round(neutroBase));
             
-            // Anemia calculation with pre-existing condition
+            // Anemia calculation with pre-existing condition and cancer subtype
             let anemiaBase = 30 + (dose / 600 * 45);
             if (sex === 'female') anemiaBase += 8;
+            
+            // Cancer subtype-specific anemia risks
+            if (cancer === 'leukemia') {
+                anemiaBase += 15;
+                if (cancerSubtype === 'AML') {
+                    anemiaBase += 8;
+                }
+            }
             
             // Pre-existing anemia significantly increases risk
             if (chronicDiseases.includes('anemia')) {
@@ -1619,13 +1964,14 @@ This is an automated notification from ChemoTwin Platform.
             };
         }
 
-        // Initialize patient with ejection fraction
+        // Initialize patient with cancer subtype
         function initializePatient(id) {
             return {
                 id: id,
                 age: 45,
                 sex: 'male',
-                cancer: 'lymphoma',
+                cancer: 'leukemia',
+                cancerSubtype: 'ALL',
                 chronicDiseases: [],
                 vitals: {
                     temperature: 37.0,
@@ -1657,22 +2003,28 @@ This is an automated notification from ChemoTwin Platform.
                 } else {
                     currentPatient = initializePatient(patientId);
                     localStorage.setItem(`patient:${patientId}`, JSON.stringify(currentPatient));
-                    
-                    await sendEmailNotification({
-                        patientId: currentPatient.id,
-                        timestamp: currentPatient.createdAt,
-                        age: currentPatient.age,
-                        sex: currentPatient.sex,
-                        cancer: currentPatient.cancer,
-                        chronicDiseases: currentPatient.chronicDiseases,
-                        vitals: currentPatient.vitals,
-                        ejectionFraction: currentPatient.ejectionFraction,
-                        sessions: currentPatient.sessions,
-                        cumulativeDose: currentPatient.cumulativeDose,
-                        latestRisks: {}
-                    });
-                    
-                    alert(`New patient ${patientId} created!\n\nEmail notification sent.`);
+
+                    console.log('📋 New patient created, sending email notification...');
+                    try {
+                        await sendEmailNotification({
+                            patientId: currentPatient.id,
+                            timestamp: currentPatient.createdAt,
+                            age: currentPatient.age,
+                            sex: currentPatient.sex,
+                            cancer: currentPatient.cancer,
+                            cancerSubtype: currentPatient.cancerSubtype,
+                            chronicDiseases: currentPatient.chronicDiseases,
+                            vitals: currentPatient.vitals,
+                            ejectionFraction: currentPatient.ejectionFraction,
+                            sessions: currentPatient.sessions,
+                            cumulativeDose: currentPatient.cumulativeDose,
+                            latestRisks: {}
+                        });
+                        alert(`New patient ${patientId} created!\n\nEmail notification sent.`);
+                    } catch (error) {
+                        console.error('Failed to send email for new patient:', error);
+                        alert(`New patient ${patientId} created!\n\n(Email notification failed - check console)`);
+                    }
                 }
             } catch (error) {
                 currentPatient = initializePatient(patientId);
@@ -1694,7 +2046,16 @@ This is an automated notification from ChemoTwin Platform.
             const patient = initializePatient(randomId);
             patient.age = Math.floor(Math.random() * 60) + 20;
             patient.sex = Math.random() > 0.5 ? 'male' : 'female';
-            patient.cancer = ['leukemia', 'lymphoma', 'breast'][Math.floor(Math.random() * 3)];
+            patient.cancer = ['leukemia', 'lymphoma'][Math.floor(Math.random() * 2)];
+            
+            // Set random cancer subtype based on cancer type
+            if (patient.cancer === 'leukemia') {
+                const leukemiaSubtypes = ['ALL', 'AML', 'CLL', 'CML', 'Other Leukemia'];
+                patient.cancerSubtype = leukemiaSubtypes[Math.floor(Math.random() * leukemiaSubtypes.length)];
+            } else {
+                const lymphomaSubtypes = ['HL', 'NHL', 'Other Lymphoma'];
+                patient.cancerSubtype = lymphomaSubtypes[Math.floor(Math.random() * lymphomaSubtypes.length)];
+            }
             
             if (Math.random() > 0.7) patient.chronicDiseases.push('diabetes');
             if (Math.random() > 0.6) patient.chronicDiseases.push('hypertension');
@@ -1707,26 +2068,35 @@ This is an automated notification from ChemoTwin Platform.
             
             currentPatient = patient;
             savePatientData();
-            
-            sendEmailNotification({
-                patientId: currentPatient.id,
-                timestamp: currentPatient.createdAt,
-                age: currentPatient.age,
-                sex: currentPatient.sex,
-                cancer: currentPatient.cancer,
-                chronicDiseases: currentPatient.chronicDiseases,
-                vitals: currentPatient.vitals,
-                ejectionFraction: currentPatient.ejectionFraction,
-                sessions: currentPatient.sessions,
-                cumulativeDose: currentPatient.cumulativeDose,
-                latestRisks: {}
-            });
-            
+
+            // Send email notification with await and error handling
+            (async () => {
+                try {
+                    await sendEmailNotification({
+                        patientId: currentPatient.id,
+                        timestamp: currentPatient.createdAt,
+                        age: currentPatient.age,
+                        sex: currentPatient.sex,
+                        cancer: currentPatient.cancer,
+                        cancerSubtype: currentPatient.cancerSubtype,
+                        chronicDiseases: currentPatient.chronicDiseases,
+                        vitals: currentPatient.vitals,
+                        ejectionFraction: currentPatient.ejectionFraction,
+                        sessions: currentPatient.sessions,
+                        cumulativeDose: currentPatient.cumulativeDose,
+                        latestRisks: {}
+                    });
+                    console.log('✅ Email notification sent for new patient:', randomId);
+                } catch (error) {
+                    console.error('❌ Failed to send email for new patient:', error);
+                }
+            })();
+
             updateUI();
             // Calculate current status immediately
             runSimulation();
             
-            alert(`New patient generated!\n\nID: ${randomId}\nAge: ${patient.age}\nSex: ${patient.sex}\nCancer: ${patient.cancer}`);
+            alert(`New patient generated!\n\nID: ${randomId}\nAge: ${patient.age}\nSex: ${patient.sex}\nCancer: ${patient.cancer}\nSubtype: ${patient.cancerSubtype}`);
         }
 
         // Save patient data function
@@ -1740,7 +2110,7 @@ This is an automated notification from ChemoTwin Platform.
             }
         }
 
-        // Update UI with ejection fraction
+        // Update UI with cancer subtype
         function updateUI() {
             if (!currentPatient) return;
             
@@ -1758,6 +2128,15 @@ This is an automated notification from ChemoTwin Platform.
             document.getElementById('heartRate').value = currentPatient.vitals.heartRate;
             document.getElementById('ejectionFraction').value = currentPatient.ejectionFraction;
             
+            // Set cancer subtype
+            const subtypeRadios = document.getElementsByName('cancerSubtype');
+            for (let radio of subtypeRadios) {
+                if (radio.value === currentPatient.cancerSubtype) {
+                    radio.checked = true;
+                    break;
+                }
+            }
+            
             updateSidebarVitals();
             
             const chronicSelect = document.getElementById('chronicDiseases');
@@ -1774,6 +2153,9 @@ This is an automated notification from ChemoTwin Platform.
             
             updateDoseDisplay();
             document.getElementById('sessionCount').textContent = currentPatient.sessions.length;
+            
+            // Show appropriate cancer subtype section
+            toggleCancerSubtypes();
         }
 
         // Update sidebar vitals with ejection fraction
@@ -1785,7 +2167,7 @@ This is an automated notification from ChemoTwin Platform.
             document.getElementById('sidebarEF').textContent = currentPatient.ejectionFraction + ' %';
         }
 
-        // Update patient realtime with ejection fraction
+        // Update patient realtime with cancer subtype
         function updatePatientRealtime() {
             if (!currentPatient) return;
             
@@ -1796,6 +2178,15 @@ This is an automated notification from ChemoTwin Platform.
             currentPatient.vitals.bloodPressure = document.getElementById('bloodPressure').value || '120/80';
             currentPatient.vitals.heartRate = parseInt(document.getElementById('heartRate').value) || 75;
             currentPatient.ejectionFraction = parseInt(document.getElementById('ejectionFraction').value) || 60;
+            
+            // Get cancer subtype
+            const subtypeRadios = document.getElementsByName('cancerSubtype');
+            for (let radio of subtypeRadios) {
+                if (radio.checked) {
+                    currentPatient.cancerSubtype = radio.value;
+                    break;
+                }
+            }
             
             const chronicSelect = document.getElementById('chronicDiseases');
             currentPatient.chronicDiseases = Array.from(chronicSelect.selectedOptions).map(opt => opt.value).filter(v => v !== 'none');
@@ -1859,32 +2250,40 @@ This is an automated notification from ChemoTwin Platform.
                 cumulativeDose: currentPatient.cumulativeDose,
                 vitals: { ...currentPatient.vitals },
                 ejectionFraction: currentPatient.ejectionFraction,
+                cancerSubtype: currentPatient.cancerSubtype,
                 risks: risks
             };
             
             currentPatient.sessions.push(session);
-            
+
             await savePatientData();
-            
-            await sendEmailNotification({
-                patientId: currentPatient.id,
-                timestamp: session.date,
-                age: currentPatient.age,
-                sex: currentPatient.sex,
-                cancer: currentPatient.cancer,
-                chronicDiseases: currentPatient.chronicDiseases,
-                vitals: currentPatient.vitals,
-                ejectionFraction: currentPatient.ejectionFraction,
-                sessions: currentPatient.sessions,
-                cumulativeDose: currentPatient.cumulativeDose,
-                latestRisks: risks
-            });
-            
+
+            console.log('💉 Treatment session added, sending email notification...');
+            try {
+                await sendEmailNotification({
+                    patientId: currentPatient.id,
+                    timestamp: session.date,
+                    age: currentPatient.age,
+                    sex: currentPatient.sex,
+                    cancer: currentPatient.cancer,
+                    cancerSubtype: currentPatient.cancerSubtype,
+                    chronicDiseases: currentPatient.chronicDiseases,
+                    vitals: currentPatient.vitals,
+                    ejectionFraction: currentPatient.ejectionFraction,
+                    sessions: currentPatient.sessions,
+                    cumulativeDose: currentPatient.cumulativeDose,
+                    latestRisks: risks
+                });
+                console.log('✅ Treatment session email notification sent successfully!');
+            } catch (error) {
+                console.error('❌ Failed to send email for treatment session:', error);
+            }
+
             updateDoseDisplay();
             document.getElementById('sessionCount').textContent = currentPatient.sessions.length;
-            
+
             runSimulation();
-            
+
             alert(`Session ${session.sessionNumber} Completed!\n\nDose: ${sessionDose} mg/m²\nCumulative: ${currentPatient.cumulativeDose} mg/m²\n\nCardio Risk: ${risks.cardioRisk}%\nNeutro Risk: ${risks.neutroRisk}%\nRecovery: ${risks.overallScore}`);
         }
 
@@ -1909,13 +2308,13 @@ This is an automated notification from ChemoTwin Platform.
             updatePatientView(risks);
         }
 
-        // Display digital twin analysis with ejection fraction
+        // Display digital twin analysis with cancer subtype
         function displayDigitalTwinAnalysis(risks) {
             const container = document.getElementById('digitalTwinAnalysis');
             
             let html = '<div class="twin-analysis-box">';
             html += '<h4>Digital Twin Personalized Analysis</h4>';
-            html += `<p><strong>${currentPatient.id}</strong> | ${currentPatient.age}yo ${currentPatient.sex} | ${currentPatient.cancer} | ${currentPatient.cumulativeDose} mg/m² | EF: ${currentPatient.ejectionFraction}%</p>`;
+            html += `<p><strong>${currentPatient.id}</strong> | ${currentPatient.age}yo ${currentPatient.sex} | ${currentPatient.cancer} (${currentPatient.cancerSubtype}) | ${currentPatient.cumulativeDose} mg/m² | EF: ${currentPatient.ejectionFraction}%</p>`;
             
             if (risks.cardioModifiers && risks.cardioModifiers.length > 0) {
                 html += '<p><strong>Cardiotoxicity Factors:</strong></p>';
@@ -1931,7 +2330,7 @@ This is an automated notification from ChemoTwin Platform.
             container.innerHTML = html;
         }
 
-        // Display alerts with ejection fraction considerations
+        // Display alerts with cancer subtype considerations
         function displayAlerts(risks) {
             const alertsContainer = document.getElementById('clinicalAlerts');
             alertsContainer.innerHTML = '';
@@ -1992,6 +2391,39 @@ This is an automated notification from ChemoTwin Platform.
                 `;
                 alertsContainer.appendChild(alert);
             }
+            
+            // Cancer subtype-specific alerts
+            if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'AML') {
+                const alert = document.createElement('div');
+                alert.className = 'alert';
+                alert.innerHTML = `
+                    <h4>AML-SPECIFIC CONSIDERATIONS</h4>
+                    <p><strong>Acute Myeloid Leukemia requires specific monitoring</strong></p>
+                    <ul>
+                        <li>High risk of differentiation syndrome with certain agents</li>
+                        <li>Monitor for tumor lysis syndrome</li>
+                        <li>Consider antifungal prophylaxis during neutropenic periods</li>
+                        <li>Higher risk of CNS involvement - consider lumbar puncture</li>
+                    </ul>
+                `;
+                alertsContainer.appendChild(alert);
+            }
+            
+            if (currentPatient.cancer === 'lymphoma' && currentPatient.cancerSubtype === 'HL') {
+                const alert = document.createElement('div');
+                alert.className = 'alert';
+                alert.innerHTML = `
+                    <h4>HODGKIN LYMPHOMA CONSIDERATIONS</h4>
+                    <p><strong>Specific monitoring for Hodgkin Lymphoma patients</strong></p>
+                    <ul>
+                        <li>Increased risk of secondary malignancies with certain regimens</li>
+                        <li>Monitor for pulmonary toxicity with bleomycin</li>
+                        <li>Higher risk of infertility - consider fertility preservation</li>
+                        <li>Increased risk of thyroid dysfunction post-treatment</li>
+                    </ul>
+                `;
+                alertsContainer.appendChild(alert);
+            }
         }
 
         // Display research calculations (replaces RAG insights)
@@ -2006,7 +2438,7 @@ This is an automated notification from ChemoTwin Platform.
             // Cardiotoxicity calculation breakdown
             html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
             html += '<h5 style="color: #dc2626; margin-bottom: 10px;">Cardiotoxicity Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> Base Risk (from dose) + Age Factor + Sex Factor + Disease Factors + Ejection Fraction Impact + Vital Signs</p>';
+            html += '<p><strong>Formula:</strong> Base Risk (from dose) + Age Factor + Sex Factor + Disease Factors + Ejection Fraction Impact + Cancer Subtype + Vital Signs</p>';
             
             html += '<div style="margin-left: 20px; margin-top: 10px;">';
             html += '<p><strong>Step 1 - Cumulative Dose Effect:</strong></p>';
@@ -2042,7 +2474,20 @@ This is an automated notification from ChemoTwin Platform.
             }
             html += '</div>';
             
-            html += '<p style="margin-top: 10px;"><strong>Step 3 - Chronic Disease Factors:</strong></p>';
+            html += '<p style="margin-top: 10px;"><strong>Step 3 - Cancer Subtype Impact:</strong></p>';
+            html += '<div class="calculation-step">';
+            if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'AML') {
+                html += 'AML subtype: +6% (specific cardiotoxic regimens)<br>';
+            } else if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'CML') {
+                html += 'CML subtype: +4% (chronic treatment burden)<br>';
+            } else if (currentPatient.cancer === 'lymphoma' && currentPatient.cancerSubtype === 'HL') {
+                html += 'Hodgkin Lymphoma: +5% (specific treatment protocols)<br>';
+            } else {
+                html += 'Cancer subtype: No additional cardiac risk<br>';
+            }
+            html += '</div>';
+            
+            html += '<p style="margin-top: 10px;"><strong>Step 4 - Chronic Disease Factors:</strong></p>';
             html += '<div class="calculation-step">';
             if (currentPatient.chronicDiseases.includes('diabetes')) {
                 html += 'Diabetes: +12% (vascular damage, inflammation)<br>';
@@ -2061,7 +2506,7 @@ This is an automated notification from ChemoTwin Platform.
             }
             html += '</div>';
             
-            html += '<p style="margin-top: 10px;"><strong>Step 4 - Current Vital Signs Impact:</strong></p>';
+            html += '<p style="margin-top: 10px;"><strong>Step 5 - Current Vital Signs Impact:</strong></p>';
             html += '<div class="calculation-step">';
             const systolic = parseInt(currentPatient.vitals.bloodPressure.split('/')[0]);
             if (systolic > 140) {
@@ -2090,7 +2535,7 @@ This is an automated notification from ChemoTwin Platform.
             // Neutropenia calculation breakdown
             html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
             html += '<h5 style="color: #3b82f6; margin-bottom: 10px;">Neutropenia Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> 35% (baseline) + (Dose/600 × 45%) + Age Factor + Cancer Type + Disease Factors</p>';
+            html += '<p><strong>Formula:</strong> 35% (baseline) + (Dose/600 × 45%) + Age Factor + Cancer Type + Cancer Subtype + Disease Factors</p>';
             
             html += '<div style="margin-left: 20px; margin-top: 10px;">';
             html += '<p><strong>Calculation Breakdown:</strong></p>';
@@ -2101,7 +2546,17 @@ This is an automated notification from ChemoTwin Platform.
                 html += `Age factor (${currentPatient.age}): +12% (bone marrow decline)<br>`;
             }
             if (currentPatient.cancer === 'leukemia') {
-                html += 'Leukemia factor: +18% (blood cancer affects WBC production)<br>';
+                html += 'Leukemia: +18% (blood cancer affects WBC production)<br>';
+                if (currentPatient.cancerSubtype === 'ALL') {
+                    html += 'ALL subtype: +8% (intensive induction therapy)<br>';
+                } else if (currentPatient.cancerSubtype === 'AML') {
+                    html += 'AML subtype: +12% (myelosuppressive regimens)<br>';
+                }
+            } else if (currentPatient.cancer === 'lymphoma') {
+                html += 'Lymphoma: +10%<br>';
+                if (currentPatient.cancerSubtype === 'NHL') {
+                    html += 'NHL subtype: +6% (aggressive regimens)<br>';
+                }
             }
             if (currentPatient.chronicDiseases.includes('diabetes')) {
                 html += 'Diabetes: +8% (impaired immune function)<br>';
@@ -2128,7 +2583,7 @@ This is an automated notification from ChemoTwin Platform.
             // Anemia calculation breakdown
             html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
             html += '<h5 style="color: #8b5cf6; margin-bottom: 10px;">Anemia Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> 30% (baseline) + (Dose/600 × 45%) + Sex Factor + Pre-existing Anemia</p>';
+            html += '<p><strong>Formula:</strong> 30% (baseline) + (Dose/600 × 45%) + Sex Factor + Cancer Subtype + Pre-existing Anemia</p>';
             
             html += '<div style="margin-left: 20px; margin-top: 10px;">';
             html += '<p><strong>Calculation Breakdown:</strong></p>';
@@ -2137,6 +2592,12 @@ This is an automated notification from ChemoTwin Platform.
             html += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%<br>`;
             if (currentPatient.sex === 'female') {
                 html += 'Female sex: +8%<br>';
+            }
+            if (currentPatient.cancer === 'leukemia') {
+                html += 'Leukemia: +15% (bone marrow infiltration)<br>';
+                if (currentPatient.cancerSubtype === 'AML') {
+                    html += 'AML subtype: +8% (myelodysplasia)<br>';
+                }
             }
             if (currentPatient.chronicDiseases.includes('anemia')) {
                 html += 'Pre-existing anemia: +25%<br>';
@@ -2156,7 +2617,8 @@ This is an automated notification from ChemoTwin Platform.
             
             html += '<div style="background: #f0f9ff; padding: 15px; border-radius: 10px; border-left: 4px solid #0ea5e9;">';
             html += '<h5 style="color: #0369a1; margin-bottom: 10px;">Why These Calculations Matter</h5>';
-            html += '<div class="calculation-step">Personalization: Each patient is unique - same dose affects people differently based on age, sex, health conditions</div>';
+            html += '<div class="calculation-step">Personalization: Each patient is unique - same dose affects people differently based on age, sex, health conditions, and cancer subtype</div>';
+            html += '<div class="calculation-step">Cancer-Specific: Different leukemia and lymphoma subtypes have unique risk profiles requiring tailored monitoring</div>';
             html += '<div class="calculation-step">Prevention: By calculating risks early, we can take protective measures BEFORE problems occur</div>';
             html += '<div class="calculation-step">Evidence-Based: All calculations based on peer-reviewed clinical studies</div>';
             html += '<div class="calculation-step">Dynamic: Risks update in real-time as treatment progresses and vitals change</div>';
@@ -2180,6 +2642,7 @@ This is an automated notification from ChemoTwin Platform.
                     <h4>Session ${session.sessionNumber} - ${date} at ${time}</h4>
                     <p><strong>Dose:</strong> ${session.dose} mg/m² | <strong>Cumulative:</strong> ${session.cumulativeDose} mg/m²</p>
                     <p><strong>Vitals:</strong> BP: ${session.vitals.bloodPressure} | HR: ${session.vitals.heartRate} bpm | Temp: ${session.vitals.temperature}°C | EF: ${session.ejectionFraction || 'N/A'}%</p>
+                    <p><strong>Cancer:</strong> ${currentPatient.cancer} (${session.cancerSubtype || currentPatient.cancerSubtype})</p>
                     <p><strong>Risks:</strong> Cardio: ${session.risks.cardioRisk}% | Neutro: ${session.risks.neutroRisk}% | Recovery: ${session.risks.overallScore}</p>
                 `;
                 container.appendChild(item);
@@ -2323,6 +2786,12 @@ This is an automated notification from ChemoTwin Platform.
             html += `<div class="calculation-step">Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%</div>`;
             if (currentPatient.sex === 'female') {
                 html += '<div class="calculation-step">Female sex: +8%</div>';
+            }
+            if (currentPatient.cancer === 'leukemia') {
+                html += '<div class="calculation-step">Leukemia: +15%</div>';
+                if (currentPatient.cancerSubtype === 'AML') {
+                html += '<div class="calculation-step">AML subtype: +8%</div>';
+                }
             }
             if (currentPatient.chronicDiseases.includes('anemia')) {
                 html += '<div class="calculation-step">Pre-existing anemia: +25%</div>';
@@ -2571,6 +3040,29 @@ This is an automated notification from ChemoTwin Platform.
                 html += '</div>';
             }
             
+            // Cancer subtype-specific advice
+            if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'AML') {
+                html += '<div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #d97706;">';
+                html += '<h4 style="color: #92400e; margin-bottom: 10px;">AML-Specific Care</h4>';
+                html += '<ul style="margin-left: 20px; color: #92400e;">';
+                html += '<li>Report any breathing difficulties immediately</li>';
+                html += '<li>Watch for signs of tumor lysis (nausea, muscle cramps)</li>';
+                html += '<li>Take prescribed antifungal medications as directed</li>';
+                html += '</ul>';
+                html += '</div>';
+            }
+            
+            if (currentPatient.cancer === 'lymphoma' && currentPatient.cancerSubtype === 'HL') {
+                html += '<div style="background: #fce7f3; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #db2777;">';
+                html += '<h4 style="color: #9d174d; margin-bottom: 10px;">Hodgkin Lymphoma Care</h4>';
+                html += '<ul style="margin-left: 20px; color: #9d174d;">';
+                html += '<li>Report any cough or breathing changes</li>';
+                html += '<li>Discuss fertility preservation options with your doctor</li>';
+                html += '<li>Regular thyroid function monitoring recommended</li>';
+                html += '</ul>';
+                html += '</div>';
+            }
+            
             html += '<div style="background: #fee2e2; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626;">';
             html += '<h4 style="color: #991b1b; margin-bottom: 10px;">Call Doctor If:</h4>';
             html += '<ul style="margin-left: 20px; color: #7f1d1d; font-weight: 500;">';
@@ -2623,7 +3115,7 @@ This is an automated notification from ChemoTwin Platform.
             let report = `CHEMOTHERAPY DIGITAL TWIN REPORT\n${'='.repeat(60)}\n\n`;
             report += `Patient: ${currentPatient.id}\n`;
             report += `Date: ${new Date().toLocaleString()}\n\n`;
-            report += `Age: ${currentPatient.age} | Sex: ${currentPatient.sex} | Cancer: ${currentPatient.cancer}\n`;
+            report += `Age: ${currentPatient.age} | Sex: ${currentPatient.sex} | Cancer: ${currentPatient.cancer} | Subtype: ${currentPatient.cancerSubtype}\n`;
             report += `Chronic Diseases: ${currentPatient.chronicDiseases.join(', ') || 'None'}\n`;
             report += `Ejection Fraction: ${currentPatient.ejectionFraction}%\n\n`;
             report += `Cumulative Dose: ${currentPatient.cumulativeDose} mg/m²\n`;
@@ -2642,6 +3134,7 @@ This is an automated notification from ChemoTwin Platform.
                     report += `\nSession ${s.sessionNumber} - ${new Date(s.date).toLocaleString()}\n`;
                     report += `  Dose: ${s.dose} mg/m² | Cumulative: ${s.cumulativeDose} mg/m²\n`;
                     report += `  Vitals: BP ${s.vitals.bloodPressure} | HR ${s.vitals.heartRate} | Temp ${s.vitals.temperature}°C | EF ${s.ejectionFraction || 'N/A'}%\n`;
+                    report += `  Cancer: ${currentPatient.cancer} (${s.cancerSubtype || currentPatient.cancerSubtype})\n`;
                     report += `  Risks: Cardio ${s.risks.cardioRisk}% | Neutro ${s.risks.neutroRisk}% | Recovery ${s.risks.overallScore}\n`;
                 });
             }
@@ -2658,93 +3151,6 @@ This is an automated notification from ChemoTwin Platform.
             a.download = `ChemoTwin_${currentPatient.id}_${new Date().toISOString().split('T')[0]}.txt`;
             a.click();
             URL.revokeObjectURL(url);
-        }
-
-        // VIRTUAL SIMULATOR FUNCTIONS
-        function runSimulationForDose() {
-            if (!currentPatient) {
-                alert('Please load or create a patient first!');
-                return;
-            }
-            
-            const simulationDose = parseInt(document.getElementById('simulationDose').value) || 60;
-            const simulatedPatient = JSON.parse(JSON.stringify(currentPatient));
-            
-            // Add simulated session
-            simulatedPatient.cumulativeDose += simulationDose;
-            const risks = calculateDigitalTwinRisks(simulatedPatient);
-            
-            // Display results
-            const resultsContainer = document.getElementById('simulationContent');
-            const resultsPanel = document.getElementById('simulationResults');
-            
-            let html = `<h5>Simulation Results for ${simulationDose} mg/m² Dose</h5>`;
-            html += `<p><strong>Projected Cumulative Dose:</strong> ${simulatedPatient.cumulativeDose} mg/m²</p>`;
-            html += `<div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); margin: 15px 0;">`;
-            html += `<div class="metric-card"><div class="metric-value">${risks.cardioRisk}%</div><div class="metric-label">Cardiotoxicity</div></div>`;
-            html += `<div class="metric-card"><div class="metric-value">${risks.neutroRisk}%</div><div class="metric-label">Neutropenia</div></div>`;
-            html += `<div class="metric-card"><div class="metric-value">${risks.anemiaRisk}%</div><div class="metric-label">Anemia</div></div>`;
-            html += `<div class="metric-card"><div class="metric-value">${risks.overallScore}</div><div class="metric-label">Recovery Score</div></div>`;
-            html += `</div>`;
-            
-            // Add alerts based on risks
-            if (risks.cardioRisk > 30 || simulatedPatient.cumulativeDose > 550) {
-                html += '<div class="alert" style="margin-top: 15px;">';
-                html += '<h4>SIMULATION ALERT: High Risk Projected</h4>';
-                if (simulatedPatient.cumulativeDose > 550) {
-                    html += `<p>Cumulative dose (${simulatedPatient.cumulativeDose} mg/m²) exceeds maximum recommended (550 mg/m²)</p>`;
-                }
-                if (risks.cardioRisk > 30) {
-                    html += `<p>Cardiotoxicity risk projected at ${risks.cardioRisk}% - consider dose reduction or cardioprotection</p>`;
-                }
-                html += '</div>';
-            }
-            
-            resultsContainer.innerHTML = html;
-            resultsPanel.style.display = 'block';
-        }
-
-        function runMultipleSimulations() {
-            if (!currentPatient) {
-                alert('Please load or create a patient first!');
-                return;
-            }
-            
-            const doses = [30, 60, 90, 120];
-            let html = '<h5>Multiple Scenario Analysis</h5>';
-            html += '<p>Comparison of different dose strategies:</p>';
-            html += '<table style="width: 100%; border-collapse: collapse; margin-top: 15px;">';
-            html += '<thead><tr style="background: #f1f5f9;">';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Dose (mg/m²)</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cumulative</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cardio Risk</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Neutro Risk</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Recovery Score</th>';
-            html += '</tr></thead><tbody>';
-            
-            doses.forEach(dose => {
-                const simulatedPatient = JSON.parse(JSON.stringify(currentPatient));
-                simulatedPatient.cumulativeDose += dose;
-                const risks = calculateDigitalTwinRisks(simulatedPatient);
-                
-                const cardioColor = risks.cardioRisk > 30 ? '#ef4444' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981';
-                const neutroColor = risks.neutroRisk > 60 ? '#ef4444' : risks.neutroRisk > 40 ? '#f59e0b' : '#3b82f6';
-                
-                html += `<tr>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${dose}</td>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${simulatedPatient.cumulativeDose}</td>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${cardioColor}; font-weight: bold;">${risks.cardioRisk}%</td>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${neutroColor}; font-weight: bold;">${risks.neutroRisk}%</td>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">${risks.overallScore}</td>`;
-                html += `</tr>`;
-            });
-            
-            html += '</tbody></table>';
-            
-            const resultsContainer = document.getElementById('simulationContent');
-            const resultsPanel = document.getElementById('simulationResults');
-            resultsContainer.innerHTML = html;
-            resultsPanel.style.display = 'block';
         }
 
         // FIXED BLUETOOTH CONNECTION FUNCTIONS
@@ -2899,6 +3305,27 @@ This is an automated notification from ChemoTwin Platform.
 
         // Initialize
         window.addEventListener('DOMContentLoaded', () => {
+            // Check if EmailJS is properly initialized
+            console.log('🔧 Checking EmailJS initialization...');
+            if (typeof emailjs !== 'undefined') {
+                console.log('✅ EmailJS library loaded successfully!');
+                console.log('📧 EmailJS Configuration:');
+                console.log('   - Service ID: service_e8dcl0l');
+                console.log('   - Template ID: template_pxtj7kr');
+                console.log('   - Public Key: zw5gaDMv_koqacN8M');
+                console.log('');
+                console.log('💡 Tip: Check the browser console for email sending status');
+                console.log('   - ✅ means email sent successfully');
+                console.log('   - ❌ means email failed (check error details)');
+            } else {
+                console.error('❌ EmailJS library NOT loaded!');
+                console.error('   This could be due to:');
+                console.error('   1. Internet connection issues');
+                console.error('   2. CDN blocked by firewall/adblocker');
+                console.error('   3. Script loading timeout');
+            }
+            console.log('');
+
             createParticles();
             trackVisitor();
         });
