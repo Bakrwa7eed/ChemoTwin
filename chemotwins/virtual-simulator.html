@@ -315,6 +315,14 @@
             color: #0066cc;
             margin-bottom: 10px;
         }
+
+        .calculation-step {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #0066cc;
+        }
 </style>
 </head>
 <body>
@@ -446,7 +454,7 @@
                 document.getElementById('simTemperature').value = realPatient.vitals?.temperature || 37.0;
                 document.getElementById('simBloodPressure').value = realPatient.vitals?.bloodPressure || '120/80';
                 document.getElementById('simHeartRate').value = realPatient.vitals?.heartRate || 75;
-                document.getElementById('simEjectionFraction').value = realPatient.vitals?.ejectionFraction || 60;
+                document.getElementById('simEjectionFraction').value = realPatient.ejectionFraction || 60;
                 document.getElementById('simCumulativeDose').value = realPatient.cumulativeDose || 0;
 
                 // Set chronic diseases
@@ -470,49 +478,139 @@
                 vitals: {
                     temperature: parseFloat(document.getElementById('simTemperature').value),
                     bloodPressure: document.getElementById('simBloodPressure').value,
-                    heartRate: parseInt(document.getElementById('simHeartRate').value),
-                    ejectionFraction: parseInt(document.getElementById('simEjectionFraction').value)
+                    heartRate: parseInt(document.getElementById('simHeartRate').value)
                 },
+                ejectionFraction: parseInt(document.getElementById('simEjectionFraction').value) || 60,
                 cumulativeDose: parseInt(document.getElementById('simCumulativeDose').value) || 0
             };
 
             document.getElementById('simCumulativeDoseDisplay').textContent = `${virtualPatient.cumulativeDose} mg/m²`;
         }
 
+        // ENHANCED DIGITAL TWIN RISK CALCULATOR WITH EJECTION FRACTION (Matches Clinical Dashboard)
         function calculateDigitalTwinRisks(patient) {
-            const age = patient.age;
-            const cumulativeDose = patient.cumulativeDose;
-            const ef = patient.vitals.ejectionFraction;
-            const chronicDiseases = patient.chronicDiseases || [];
+            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, ejectionFraction } = patient;
+            const dose = cumulativeDose;
+            
+            // Cardiotoxicity calculation with ejection fraction
+            let cardioBase = 0;
+            if (dose > 550) cardioBase = 36;
+            else if (dose > 450) cardioBase = 24;
+            else if (dose > 300) cardioBase = 12;
+            else if (dose > 200) cardioBase = 5;
+            else cardioBase = 1;
+            
+            let cardioModifiers = [];
+            
+            if (age < 18) {
+                cardioBase += 8;
+                cardioModifiers.push(`Pediatric age (${age}yo) adds +8% risk`);
+            } else if (age > 65) {
+                cardioBase += 10;
+                cardioModifiers.push(`Advanced age (${age}yo) adds +10% risk`);
+            }
+            
+            if (sex === 'female') {
+                cardioBase += 4;
+                cardioModifiers.push("Female sex adds +4% risk");
+            }
+            
+            // Ejection fraction impact
+            if (ejectionFraction < 50) {
+                cardioBase += 15;
+                cardioModifiers.push(`Low ejection fraction (${ejectionFraction}%) adds +15% risk`);
+            } else if (ejectionFraction < 55) {
+                cardioBase += 5;
+                cardioModifiers.push(`Borderline ejection fraction (${ejectionFraction}%) adds +5% risk`);
+            }
+            
+            // Chronic diseases
+            if (chronicDiseases.includes('diabetes')) {
+                cardioBase += 12;
+                cardioModifiers.push("Diabetes adds +12% risk (damages blood vessels)");
+            }
+            if (chronicDiseases.includes('hypertension')) {
+                cardioBase += 10;
+                cardioModifiers.push("Hypertension adds +10% risk (strains heart)");
+            }
+            if (chronicDiseases.includes('heart_disease')) {
+                cardioBase += 15;
+                cardioModifiers.push("Pre-existing heart disease adds +15% risk");
+            }
+            if (chronicDiseases.includes('kidney_disease')) {
+                cardioBase += 8;
+                cardioModifiers.push("Kidney disease adds +8% risk (fluid retention)");
+            }
+            if (chronicDiseases.includes('obesity')) {
+                cardioBase += 7;
+                cardioModifiers.push("Obesity adds +7% risk (cardiac strain)");
+            }
+            
+            // Vital signs
+            const systolic = parseInt(vitals.bloodPressure.split('/')[0]);
+            if (systolic > 140) {
+                cardioBase += 6;
+                cardioModifiers.push(`Elevated BP (${systolic} mmHg) adds +6% risk`);
+            }
+            
+            if (vitals.heartRate > 100) {
+                cardioBase += 5;
+                cardioModifiers.push(`Tachycardia (${vitals.heartRate} bpm) adds +5% risk`);
+            }
+            
+            const cardioRisk = Math.min(95, Math.round(cardioBase));
+            
+            // Neutropenia calculation
+            let neutroBase = 35 + (dose / 600 * 45);
+            let neutroModifiers = [];
 
-            // Cardiotoxicity Risk (0-100%)
-            let cardioRisk = 35; // baseline
-            cardioRisk += (cumulativeDose / 600) * 45; // dose contribution
-            if (age > 65) cardioRisk += 15;
-            else if (age > 50) cardioRisk += 8;
-            if (ef < 50) cardioRisk += 20;
-            if (chronicDiseases.includes('heart_disease')) cardioRisk += 15;
-            if (chronicDiseases.includes('hypertension')) cardioRisk += 10;
-            if (chronicDiseases.includes('diabetes')) cardioRisk += 8;
-            cardioRisk = Math.min(Math.round(cardioRisk), 100);
-
-            // Neutropenia Risk (0-100%)
-            let neutroRisk = 45;
-            neutroRisk += (cumulativeDose / 400) * 30;
-            if (age > 70) neutroRisk += 10;
-            if (chronicDiseases.includes('anemia')) neutroRisk += 12;
-            if (patient.cancer === 'leukemia') neutroRisk += 8;
-            neutroRisk = Math.min(Math.round(neutroRisk), 100);
-
-            // Anemia Risk (0-100%)
-            let anemiaRisk = 40;
-            anemiaRisk += (cumulativeDose / 500) * 35;
-            if (chronicDiseases.includes('kidney_disease')) anemiaRisk += 15;
-            if (chronicDiseases.includes('anemia')) anemiaRisk += 20;
-            if (age > 65) anemiaRisk += 8;
-            anemiaRisk = Math.min(Math.round(anemiaRisk), 100);
-
-            // Overall Recovery Score (0-100, higher is better)
+            if (age > 65) {
+                neutroBase += 12;
+                neutroModifiers.push(`Age ${age} adds +12% (elderly immune system)`);
+            }
+            if (cancer === 'leukemia') {
+                neutroBase += 18;
+                neutroModifiers.push("Leukemia adds +18% (blood cancer affects WBC production)");
+            }
+            if (chronicDiseases.includes('diabetes')) {
+                neutroBase += 8;
+                neutroModifiers.push("Diabetes adds +8% (impaired immune function)");
+            }
+            if (chronicDiseases.includes('kidney_disease')) {
+                neutroBase += 10;
+                neutroModifiers.push("Kidney disease adds +10% (reduced drug clearance)");
+            }
+            if (chronicDiseases.includes('liver_disease')) {
+                neutroBase += 9;
+                neutroModifiers.push("Liver disease adds +9% (impaired drug metabolism)");
+            }
+            
+            const neutroRisk = Math.min(95, Math.round(neutroBase));
+            
+            // Anemia calculation with pre-existing condition
+            let anemiaBase = 30 + (dose / 600 * 45);
+            if (sex === 'female') anemiaBase += 8;
+            
+            // Pre-existing anemia significantly increases risk
+            if (chronicDiseases.includes('anemia')) {
+                anemiaBase += 25;
+            }
+            
+            const anemiaRisk = Math.min(90, Math.round(anemiaBase));
+            
+            // Other side effects
+            let nauseaBase = 82;
+            if (sex === 'female') nauseaBase += 10;
+            const nauseaRisk = Math.min(98, Math.round(nauseaBase));
+            
+            let fatigueBase = 55 + (dose / 600 * 35);
+            if (age > 60) fatigueBase += 10;
+            const fatigueRisk = Math.min(95, Math.round(fatigueBase));
+            
+            let mucositisBase = 25 + (dose / 600 * 35);
+            const mucositisRisk = Math.min(85, Math.round(mucositisBase));
+            
+            // Overall Recovery Score (higher is better)
             let overallScore = 85;
             overallScore -= (cardioRisk / 100) * 30;
             overallScore -= (neutroRisk / 100) * 25;
@@ -521,9 +619,14 @@
             overallScore = Math.max(Math.round(overallScore), 0);
 
             return {
-                cardioRisk,
-                neutroRisk,
-                anemiaRisk,
+                cardioRisk, 
+                cardioModifiers, 
+                neutroRisk, 
+                neutroModifiers,
+                anemiaRisk, 
+                nauseaRisk, 
+                fatigueRisk, 
+                mucositisRisk, 
                 overallScore
             };
         }
@@ -547,6 +650,23 @@
 
             let html = `<h5>Simulation Results for ${simulationDose} mg/m² Dose</h5>`;
             html += `<p><strong>Projected Cumulative Dose:</strong> ${simulatedPatient.cumulativeDose} mg/m²</p>`;
+            
+            // Display calculation details
+            html += `<div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin: 15px 0;">`;
+            html += `<h6 style="margin-bottom: 10px;">Risk Calculation Details:</h6>`;
+            
+            if (risks.cardioModifiers && risks.cardioModifiers.length > 0) {
+                html += `<p><strong>Cardiotoxicity Factors:</strong></p>`;
+                risks.cardioModifiers.forEach(mod => html += `<div class="calculation-step">${mod}</div>`);
+            }
+            
+            if (risks.neutroModifiers && risks.neutroModifiers.length > 0) {
+                html += `<p><strong>Neutropenia Factors:</strong></p>`;
+                risks.neutroModifiers.forEach(mod => html += `<div class="calculation-step">${mod}</div>`);
+            }
+            
+            html += `</div>`;
+            
             html += `<div class="metrics-grid" style="margin: 15px 0;">`;
             html += `<div class="metric-card"><div class="metric-value">${risks.cardioRisk}%</div><div class="metric-label">Cardiotoxicity</div></div>`;
             html += `<div class="metric-card"><div class="metric-value">${risks.neutroRisk}%</div><div class="metric-label">Neutropenia</div></div>`;
@@ -555,15 +675,26 @@
             html += `</div>`;
 
             // Add alerts based on risks
-            if (risks.cardioRisk > 30 || simulatedPatient.cumulativeDose > 550) {
+            const hasHighRisk = risks.cardioRisk > 30 || simulatedPatient.cumulativeDose > 550 || 
+                               risks.neutroRisk > 60 || risks.anemiaRisk > 70;
+            
+            if (hasHighRisk) {
                 html += '<div class="alert">';
                 html += '<h4>SIMULATION ALERT: High Risk Projected</h4>';
+                
                 if (simulatedPatient.cumulativeDose > 550) {
-                    html += `<p>Cumulative dose (${simulatedPatient.cumulativeDose} mg/m²) exceeds maximum recommended (550 mg/m²)</p>`;
+                    html += `<p>❌ Cumulative dose (${simulatedPatient.cumulativeDose} mg/m²) exceeds maximum recommended (550 mg/m²)</p>`;
                 }
                 if (risks.cardioRisk > 30) {
-                    html += `<p>Cardiotoxicity risk projected at ${risks.cardioRisk}% - consider dose reduction or cardioprotection</p>`;
+                    html += `<p>❌ Cardiotoxicity risk projected at ${risks.cardioRisk}% - consider dose reduction or cardioprotection</p>`;
                 }
+                if (risks.neutroRisk > 60) {
+                    html += `<p>⚠️ Neutropenia risk projected at ${risks.neutroRisk}% - G-CSF prophylaxis recommended</p>`;
+                }
+                if (risks.anemiaRisk > 70) {
+                    html += `<p>⚠️ Anemia risk projected at ${risks.anemiaRisk}% - monitor hemoglobin closely</p>`;
+                }
+                
                 html += '</div>';
             }
 
@@ -586,6 +717,7 @@
             html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cumulative</th>';
             html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cardio Risk</th>';
             html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Neutro Risk</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Anemia Risk</th>';
             html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Recovery Score</th>';
             html += '</tr></thead><tbody>';
 
@@ -596,17 +728,30 @@
 
                 const cardioColor = risks.cardioRisk > 30 ? '#ef4444' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981';
                 const neutroColor = risks.neutroRisk > 60 ? '#ef4444' : risks.neutroRisk > 40 ? '#f59e0b' : '#3b82f6';
+                const anemiaColor = risks.anemiaRisk > 70 ? '#ef4444' : risks.anemiaRisk > 50 ? '#f59e0b' : '#8b5cf6';
 
                 html += `<tr>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${dose}</td>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${simulatedPatient.cumulativeDose}</td>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${cardioColor}; font-weight: bold;">${risks.cardioRisk}%</td>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${neutroColor}; font-weight: bold;">${risks.neutroRisk}%</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${anemiaColor}; font-weight: bold;">${risks.anemiaRisk}%</td>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">${risks.overallScore}</td>`;
                 html += `</tr>`;
             });
 
             html += '</tbody></table>';
+
+            // Add summary analysis
+            html += `<div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 10px;">`;
+            html += `<h6>Summary Analysis:</h6>`;
+            html += `<p>The optimal dose strategy balances treatment efficacy with manageable side effects. Consider:</p>`;
+            html += `<ul>`;
+            html += `<li><strong>Lower doses (30-60 mg/m²):</strong> Better safety profile, suitable for high-risk patients</li>`;
+            html += `<li><strong>Moderate doses (60-90 mg/m²):</strong> Balance between efficacy and toxicity</li>`;
+            html += `<li><strong>Higher doses (90-120 mg/m²):</strong> Maximum efficacy but increased risk of complications</li>`;
+            html += `</ul>`;
+            html += `</div>`;
 
             const resultsContainer = document.getElementById('simulationContent');
             const resultsPanel = document.getElementById('simulationResults');
