@@ -426,9 +426,9 @@
                 <h2>Simulation Results <span class="digital-twin-badge">Virtual Patient</span></h2>
 
                 <div class="simulation-controls">
-                    <input type="number" id="simulationDose" class="simulation-dose-input" placeholder="Enter dose for simulation (mg/m²)" value="60" min="1" max="100">
+                    <input type="number" id="simulationDose" class="simulation-dose-input" placeholder="Enter minimum dose (mg/m²)" value="" min="1" max="100">
                     <button class="btn btn-primary" onclick="runSimulationForDose()">Simulate Treatment</button>
-                    <button class="btn btn-secondary" onclick="runMultipleSimulations()">Run Multiple Scenarios</button>
+                    <button class="btn btn-secondary" onclick="runMultipleSimulations()">Run Multiple Treatment Scenarios</button>
                 </div>
 
                 <div id="simulationResults" class="simulation-results" style="display: none;">
