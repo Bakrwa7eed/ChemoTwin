@@ -1679,11 +1679,7 @@
                     
                     <div id="research-calculations" class="tab-content">
                         <h3>Calculations</h3>
-<<<<<<< HEAD
                         <p style="color: #666; margin-bottom: 20px;">Click on any section to see detailed calculations</p>
-=======
-                        <p style="color: #666; margin-bottom: 20px;">Calculations based on this patient's profile</p>
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
                         <div id="researchCalculationsContainer"></div>
                     </div>
                     
@@ -2302,11 +2298,6 @@ This is an automated notification from ChemoTwin Platform.
             updateUI();
             // Calculate current status immediately
             runSimulation();
-<<<<<<< HEAD
-=======
-            
-            alert(`New patient generated!\n\nID: ${randomId}\nAge: ${patient.age}\nSex: ${patient.sex}\nCancer: ${patient.cancer}\nSubtype: ${patient.cancerSubtype}`);
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
         }
 
         // Save patient data function
@@ -2651,86 +2642,6 @@ This is an automated notification from ChemoTwin Platform.
             const container = document.getElementById('researchCalculationsContainer');
             container.innerHTML = '';
             
-<<<<<<< HEAD
-=======
-            let html = '<div class="twin-analysis-box">';
-            html += '<h4>How The Risks Were Calculated</h4>';
-            html += '<p>Understanding the mathematics behind personalized risk assessment:</p>';
-            
-            // Cardiotoxicity calculation breakdown
-            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
-            html += '<h5 style="color: #dc2626; margin-bottom: 10px;">Cardiotoxicity Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> Base Risk (from dose) + Age Factor + Sex Factor + Disease Factors + Ejection Fraction Impact + Cancer Subtype + Vital Signs</p>';
-            
-            html += '<div style="margin-left: 20px; margin-top: 10px;">';
-            html += '<p><strong>Step 1 - Cumulative Dose Effect:</strong></p>';
-            html += '<div class="calculation-step">';
-            html += `Current dose: ${currentPatient.cumulativeDose} mg/m²<br>`;
-            if (currentPatient.cumulativeDose <= 200) {
-                html += '≤200 mg/m² → Base risk: 1%';
-            } else if (currentPatient.cumulativeDose <= 300) {
-                html += '200-300 mg/m² → Base risk: 5%';
-            } else if (currentPatient.cumulativeDose <= 450) {
-                html += '300-450 mg/m² → Base risk: 12%';
-            } else if (currentPatient.cumulativeDose <= 550) {
-                html += '450-550 mg/m² → Base risk: 24%';
-            } else {
-                html += '>550 mg/m² → Base risk: 36%  Above safe limit!';
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 2 - Patient-Specific Modifiers:</strong></p>';
-            html += '<div class="calculation-step">';
-            if (currentPatient.age < 18) {
-                html += `Pediatric age (${currentPatient.age}): +8% (developing heart more vulnerable)<br>`;
-            } else if (currentPatient.age > 65) {
-                html += `Elderly (${currentPatient.age}): +10% (age-related cardiac decline)<br>`;
-            }
-            if (currentPatient.sex === 'female') {
-                html += 'Female sex: +4% (hormonal factors)<br>';
-            }
-            if (currentPatient.ejectionFraction < 50) {
-                html += `Low ejection fraction (${currentPatient.ejectionFraction}%): +15% (impaired cardiac function)<br>`;
-            } else if (currentPatient.ejectionFraction < 55) {
-                html += `Borderline ejection fraction (${currentPatient.ejectionFraction}%): +5%<br>`;
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 3 - Cancer Subtype Impact:</strong></p>';
-            html += '<div class="calculation-step">';
-            if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'AML') {
-                html += 'AML subtype: +6% (specific cardiotoxic regimens)<br>';
-            } else if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'CML') {
-                html += 'CML subtype: +4% (chronic treatment burden)<br>';
-            } else if (currentPatient.cancer === 'lymphoma' && currentPatient.cancerSubtype === 'HL') {
-                html += 'Hodgkin Lymphoma: +5% (specific treatment protocols)<br>';
-            } else {
-                html += 'Cancer subtype: No additional cardiac risk<br>';
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 4 - Chronic Disease Factors:</strong></p>';
-            html += '<div class="calculation-step">';
-            if (currentPatient.chronicDiseases.includes('diabetes')) {
-                html += 'Diabetes: +12% (vascular damage, inflammation)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('hypertension')) {
-                html += 'Hypertension: +10% (cardiac workload)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('heart_disease')) {
-                html += 'Heart disease: +15% (pre-existing damage)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('kidney_disease')) {
-                html += 'Kidney disease: +8% (fluid retention affects heart)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('obesity')) {
-                html += 'Obesity: +7% (increased cardiac strain)<br>';
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 5 - Current Vital Signs Impact:</strong></p>';
-            html += '<div class="calculation-step">';
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
             const systolic = parseInt(currentPatient.vitals.bloodPressure.split('/')[0]);
             
             // Build cardiotoxicity details
@@ -2748,7 +2659,6 @@ This is an automated notification from ChemoTwin Platform.
                 cardioDetails += '>550 mg/m² = Base risk: 36% - Above safe limit!</div>';
             }
             
-<<<<<<< HEAD
             let modifiers = [];
             if (currentPatient.age < 18) modifiers.push(`Pediatric age (${currentPatient.age}): +8%`);
             else if (currentPatient.age > 65) modifiers.push(`Elderly (${currentPatient.age}): +10%`);
@@ -2756,12 +2666,6 @@ This is an automated notification from ChemoTwin Platform.
             if (currentPatient.ejectionFraction < 50) modifiers.push(`Low EF (${currentPatient.ejectionFraction}%): +15%`);
             else if (currentPatient.ejectionFraction < 55) modifiers.push(`Borderline EF (${currentPatient.ejectionFraction}%): +5%`);
             cardioDetails += `<div class="calc-step"><strong>Step 2 - Patient Modifiers:</strong><br>${modifiers.length ? modifiers.join('<br>') : 'No additional modifiers'}</div>`;
-=======
-            // Neutropenia calculation breakdown
-            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
-            html += '<h5 style="color: #3b82f6; margin-bottom: 10px;">Neutropenia Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> 35% (baseline) + (Dose/600 × 45%) + Age Factor + Cancer Type + Cancer Subtype + Disease Factors</p>';
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
             
             let cancerImpact = 'No additional cardiac risk';
             if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'AML') cancerImpact = 'AML subtype: +6%';
@@ -2794,26 +2698,12 @@ This is an automated notification from ChemoTwin Platform.
             let neutroFactors = [];
             if (currentPatient.age > 65) neutroFactors.push(`Age (${currentPatient.age}): +12%`);
             if (currentPatient.cancer === 'leukemia') {
-<<<<<<< HEAD
                 neutroFactors.push('Leukemia: +18%');
                 if (currentPatient.cancerSubtype === 'ALL') neutroFactors.push('ALL subtype: +8%');
                 else if (currentPatient.cancerSubtype === 'AML') neutroFactors.push('AML subtype: +12%');
             } else if (currentPatient.cancer === 'lymphoma') {
                 neutroFactors.push('Lymphoma: +10%');
                 if (currentPatient.cancerSubtype === 'NHL') neutroFactors.push('NHL subtype: +6%');
-=======
-                html += 'Leukemia: +18% (blood cancer affects WBC production)<br>';
-                if (currentPatient.cancerSubtype === 'ALL') {
-                    html += 'ALL subtype: +8% (intensive induction therapy)<br>';
-                } else if (currentPatient.cancerSubtype === 'AML') {
-                    html += 'AML subtype: +12% (myelosuppressive regimens)<br>';
-                }
-            } else if (currentPatient.cancer === 'lymphoma') {
-                html += 'Lymphoma: +10%<br>';
-                if (currentPatient.cancerSubtype === 'NHL') {
-                    html += 'NHL subtype: +6% (aggressive regimens)<br>';
-                }
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
             }
             if (currentPatient.chronicDiseases.includes('diabetes')) neutroFactors.push('Diabetes: +8%');
             if (currentPatient.chronicDiseases.includes('kidney_disease')) neutroFactors.push('Kidney disease: +10%');
@@ -2823,18 +2713,11 @@ This is an automated notification from ChemoTwin Platform.
             const neutroRiskClass = risks.neutroRisk > 60 ? 'high-risk' : risks.neutroRisk > 40 ? 'medium-risk' : 'low-risk';
             neutroDetails += `<div class="calc-result ${neutroRiskClass}">Final Neutropenia Risk: ${risks.neutroRisk}%${risks.neutroRisk > 60 ? ' - G-CSF prophylaxis recommended' : ''}</div>`;
             
-<<<<<<< HEAD
             // Build anemia details
             let anemiaDetails = '';
             anemiaDetails += `<div class="calc-step"><strong>Baseline Calculation:</strong><br>`;
             anemiaDetails += `Baseline risk: 30%<br>`;
             anemiaDetails += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%</div>`;
-=======
-            // Anemia calculation breakdown
-            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
-            html += '<h5 style="color: #8b5cf6; margin-bottom: 10px;">Anemia Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> 30% (baseline) + (Dose/600 × 45%) + Sex Factor + Cancer Subtype + Pre-existing Anemia</p>';
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
             
             let anemiaFactors = [];
             if (currentPatient.sex === 'female') anemiaFactors.push('Female sex: +8%');
@@ -2842,26 +2725,12 @@ This is an automated notification from ChemoTwin Platform.
                 anemiaFactors.push('Leukemia: +15%');
                 if (currentPatient.cancerSubtype === 'AML') anemiaFactors.push('AML subtype: +8%');
             }
-<<<<<<< HEAD
             if (currentPatient.chronicDiseases.includes('anemia')) anemiaFactors.push('Pre-existing anemia: +25%');
             anemiaDetails += `<div class="calc-step"><strong>Risk Modifiers:</strong><br>${anemiaFactors.length ? anemiaFactors.join('<br>') : 'No additional factors'}</div>`;
-=======
-            if (currentPatient.cancer === 'leukemia') {
-                html += 'Leukemia: +15% (bone marrow infiltration)<br>';
-                if (currentPatient.cancerSubtype === 'AML') {
-                    html += 'AML subtype: +8% (myelodysplasia)<br>';
-                }
-            }
-            if (currentPatient.chronicDiseases.includes('anemia')) {
-                html += 'Pre-existing anemia: +25%<br>';
-            }
-            html += '</div>';
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
             
             const anemiaRiskClass = risks.anemiaRisk > 70 ? 'high-risk' : risks.anemiaRisk > 50 ? 'medium-risk' : 'low-risk';
             anemiaDetails += `<div class="calc-result ${anemiaRiskClass}">Final Anemia Risk: ${risks.anemiaRisk}%${risks.anemiaRisk > 70 ? ' - Monitor hemoglobin closely' : ''}</div>`;
             
-<<<<<<< HEAD
             // Build info section
             let infoDetails = '';
             infoDetails += `<div class="calc-step"><strong>Personalization:</strong> Each patient is unique - same dose affects people differently based on age, sex, health conditions, and cancer subtype</div>`;
@@ -2950,16 +2819,6 @@ This is an automated notification from ChemoTwin Platform.
                     </div>
                 </div>
             </div>`;
-=======
-            html += '<div style="background: #f0f9ff; padding: 15px; border-radius: 10px; border-left: 4px solid #0ea5e9;">';
-            html += '<h5 style="color: #0369a1; margin-bottom: 10px;">Why These Calculations Matter</h5>';
-            html += '<div class="calculation-step">Personalization: Each patient is unique - same dose affects people differently based on age, sex, health conditions, and cancer subtype</div>';
-            html += '<div class="calculation-step">Cancer-Specific: Different leukemia and lymphoma subtypes have unique risk profiles requiring tailored monitoring</div>';
-            html += '<div class="calculation-step">Prevention: By calculating risks early, we can take protective measures BEFORE problems occur</div>';
-            html += '<div class="calculation-step">Evidence-Based: All calculations based on peer-reviewed clinical studies</div>';
-            html += '<div class="calculation-step">Dynamic: Risks update in real-time as treatment progresses and vitals change</div>';
-            html += '</div>';
->>>>>>> 67000ff5636a3a8ddcffd87dbffc19451390b3a4
             
             html += '</div>';
             container.innerHTML = html;
