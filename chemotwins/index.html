@@ -639,6 +639,209 @@
             display: block;
         }
 
+        /* Accordion Styles for Research Calculation Rules */
+        .accordion-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .accordion-item {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-item:hover {
+            border-color: #0066cc;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+        }
+
+        .accordion-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .accordion-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .accordion-icon.cardio { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); }
+        .accordion-icon.neutro { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+        .accordion-icon.anemia { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); }
+        .accordion-icon.info { background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%); }
+
+        .accordion-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.05em;
+        }
+
+        .accordion-subtitle {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .accordion-arrow {
+            font-size: 1.4em;
+            color: #94a3b8;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+            color: #0066cc;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            background: white;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 2000px;
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .accordion-body {
+            color: #475569;
+            line-height: 1.7;
+        }
+
+        .calc-step {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 3px solid #0066cc;
+        }
+
+        .calc-step strong {
+            color: #1e293b;
+        }
+
+        .calc-result {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .calc-result.high-risk {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+            color: #991b1b;
+        }
+
+        .calc-result.medium-risk {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .calc-result.low-risk {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+
+        /* First Session Prompt Styles */
+        .first-session-prompt {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #ede9fe 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #93c5fd;
+        }
+
+        .prompt-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .prompt-icon {
+            font-size: 2em;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
+        }
+
+        .prompt-text {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .prompt-text strong {
+            display: block;
+            color: #1e40af;
+            font-size: 1.1em;
+            margin-bottom: 4px;
+        }
+
+        .prompt-text span {
+            color: #3b82f6;
+            font-size: 0.95em;
+        }
+
+        .prompt-btn {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .prompt-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+        }
+
+        @keyframes pulse-highlight {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 4px 20px rgba(0, 102, 204, 0.5);
+            }
+        }
+
         .alert {
             background: #fee2e2;
             border-left: 4px solid #ef4444;
@@ -1280,13 +1483,12 @@
             <h2>Patient Identification & Management</h2>
             <div class="id-controls">
                 <input type="text" id="patientId" placeholder="Enter Patient ID (e.g., PT-2025-001)" class="patient-id-input">
-                <button onclick="loadPatient()" class="btn btn-primary">Load Patient</button>
                 <button onclick="generateNewPatient()" class="btn btn-success">Generate New Patient</button>
                 <button onclick="exportPatientReport()" class="btn btn-secondary" id="exportBtn" style="display:none;">Export Report</button>
             </div>
         </div>
 
-        <div class="patient-profile-section">
+        <div class="patient-profile-section" id="patientProfileSection" style="display:none;">
             <h2>Patient Profile - <span id="currentPatientId">No Patient Loaded</span></h2>
 
             <div class="profile-content">
@@ -1399,9 +1601,21 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="first-session-prompt" id="firstSessionPrompt">
+                <div class="prompt-content">
+                    <div class="prompt-text">
+                        <strong>Ready to start treatment?</strong>
+                        <span>Add your first chemotherapy session</span>
+                    </div>
+                    <button onclick="scrollToAddSession()" class="prompt-btn">
+                        Start First Session
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="dashboard">
+        <div class="dashboard" id="dashboardSection" style="display:none;">
             <div class="input-panel" id="patientForm">
                 <h2>Treatment Management</h2>
 
@@ -1435,7 +1649,8 @@
                 <div id="doctorView">
                     <div class="tabs">
                         <button class="tab active" onclick="switchTab('overview')">Overview</button>
-                        <button class="tab" onclick="switchTab('research-calculations')">Research Calculations</button>
+                        <button class="tab" onclick="switchTab('risks')">Risks</button>
+                        <button class="tab" onclick="switchTab('research-calculations')">Research Calculation Rules</button>
                         <button class="tab" onclick="switchTab('history')">Patient History</button>
                         <button class="tab" onclick="openVirtualSimulator()">Virtual Simulator</button>
                     </div>
@@ -1443,32 +1658,20 @@
                     <div id="overview" class="tab-content active">
                         <div id="digitalTwinAnalysis"></div>
                         <div id="clinicalAlerts"></div>
-                        
-                        <div class="metrics-grid">
-                            <div class="metric-card">
-                                <div class="metric-icon"></div>
-                                <div class="metric-value" id="cardioRisk">--</div>
-                                <div class="metric-label">Cardiotoxicity Risk (%)</div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-icon"></div>
-                                <div class="metric-value" id="neutroRisk">--</div>
-                                <div class="metric-label">Neutropenia Risk (%)</div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-icon"></div>
-                                <div class="metric-value" id="anemiaRisk">--</div>
-                                <div class="metric-label">Anemia Risk (%)</div>
-                            </div>
-                            <div class="metric-card">
-                                <div class="metric-icon"></div>
-                                <div class="metric-value" id="qualityScore">--</div>
-                                <div class="metric-label">Recovery Score</div>
-                            </div>
+                        <!-- Hidden elements for JavaScript compatibility -->
+                        <div style="display:none;">
+                            <span id="cardioRisk">--</span>
+                            <span id="neutroRisk">--</span>
+                            <span id="anemiaRisk">--</span>
+                            <span id="qualityScore">--</span>
                         </div>
-                        
+                    </div>
+                    
+                    <div id="risks" class="tab-content">
+                        <h3>Risk Analysis <span class="digital-twin-badge">Patient-Specific</span></h3>
+                        <p style="color: #666; margin-bottom: 20px;">Visual representation of calculated risks based on patient profile</p>
                         <div class="chart-container">
-                            <h3>Personalized Risk Distribution <span class="digital-twin-badge">Patient-Specific</span></h3>
+                            <h4>Personalized Risk Distribution</h4>
                             <canvas id="riskChart"></canvas>
                             <div id="riskDetailPanel" class="risk-detail-panel"></div>
                         </div>
@@ -1476,7 +1679,7 @@
                     
                     <div id="research-calculations" class="tab-content">
                         <h3>Calculations</h3>
-                        <p style="color: #666; margin-bottom: 20px;">Calculations based on this patient's profile</p>
+                        <p style="color: #666; margin-bottom: 20px;">Click on any section to see detailed calculations</p>
                         <div id="researchCalculationsContainer"></div>
                     </div>
                     
@@ -1661,7 +1864,7 @@
 
             // Validate EmailJS is loaded
             if (typeof emailjs === 'undefined') {
-                console.error('❌ EmailJS library not loaded! Check your internet connection.');
+                console.error('EmailJS library not loaded! Check your internet connection.');
                 return;
             }
 
@@ -1720,9 +1923,9 @@ This is an automated notification from ChemoTwin Platform.
             try {
                 console.log('⏳ Sending email via EmailJS...');
                 const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
-                console.log('✅ Email sent successfully! Status:', response.status, 'Response:', response);
+                console.log('Email sent successfully! Status:', response.status, 'Response:', response);
             } catch (error) {
-                console.error('❌ Failed to send patient email!');
+                console.error('Failed to send patient email!');
                 console.error('Error details:', error);
                 console.error('Error message:', error.text || error.message);
                 console.error('Error status:', error.status);
@@ -1744,7 +1947,7 @@ This is an automated notification from ChemoTwin Platform.
 
             // Validate EmailJS is loaded
             if (typeof emailjs === 'undefined') {
-                console.error('❌ EmailJS library not loaded for visitor tracking! Check your internet connection.');
+                console.error('EmailJS library not loaded for visitor tracking! Check your internet connection.');
                 return;
             }
 
@@ -1781,9 +1984,9 @@ This is an automated notification from ChemoTwin Platform.
             try {
                 console.log('⏳ Sending visitor tracking email...');
                 const response = await emailjs.send('service_e8dcl0l', 'template_pxtj7kr', emailParams);
-                console.log('✅ Visitor tracking email sent successfully!', response.status, response.text);
+                console.log('Visitor tracking email sent successfully!', response.status, response.text);
             } catch (error) {
-                console.error('❌ Failed to send visitor email!');
+                console.error('Failed to send visitor email!');
                 console.error('Error details:', error);
                 console.error('Error message:', error.text || error.message);
                 console.error('Error status:', error.status);
@@ -2004,7 +2207,7 @@ This is an automated notification from ChemoTwin Platform.
                     currentPatient = initializePatient(patientId);
                     localStorage.setItem(`patient:${patientId}`, JSON.stringify(currentPatient));
 
-                    console.log('📋 New patient created, sending email notification...');
+                    console.log('New patient created, sending email notification...');
                     try {
                         await sendEmailNotification({
                             patientId: currentPatient.id,
@@ -2086,17 +2289,15 @@ This is an automated notification from ChemoTwin Platform.
                         cumulativeDose: currentPatient.cumulativeDose,
                         latestRisks: {}
                     });
-                    console.log('✅ Email notification sent for new patient:', randomId);
+                    console.log('Email notification sent for new patient:', randomId);
                 } catch (error) {
-                    console.error('❌ Failed to send email for new patient:', error);
+                    console.error('Failed to send email for new patient:', error);
                 }
             })();
 
             updateUI();
             // Calculate current status immediately
             runSimulation();
-            
-            alert(`New patient generated!\n\nID: ${randomId}\nAge: ${patient.age}\nSex: ${patient.sex}\nCancer: ${patient.cancer}\nSubtype: ${patient.cancerSubtype}`);
         }
 
         // Save patient data function
@@ -2114,10 +2315,18 @@ This is an automated notification from ChemoTwin Platform.
         function updateUI() {
             if (!currentPatient) return;
             
+            document.getElementById('patientProfileSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'grid';
             document.getElementById('patientForm').classList.add('active');
             document.getElementById('resultsArea').classList.add('active');
             document.getElementById('exportBtn').style.display = 'inline-block';
             document.getElementById('bluetoothSidebar').classList.add('active');
+            
+            // Show/hide first session prompt based on sessions
+            const firstSessionPrompt = document.getElementById('firstSessionPrompt');
+            if (firstSessionPrompt) {
+                firstSessionPrompt.style.display = currentPatient.sessions.length === 0 ? 'block' : 'none';
+            }
             
             document.getElementById('currentPatientId').textContent = currentPatient.id;
             document.getElementById('age').value = currentPatient.age;
@@ -2258,7 +2467,7 @@ This is an automated notification from ChemoTwin Platform.
 
             await savePatientData();
 
-            console.log('💉 Treatment session added, sending email notification...');
+            console.log('Treatment session added, sending email notification...');
             try {
                 await sendEmailNotification({
                     patientId: currentPatient.id,
@@ -2274,17 +2483,21 @@ This is an automated notification from ChemoTwin Platform.
                     cumulativeDose: currentPatient.cumulativeDose,
                     latestRisks: risks
                 });
-                console.log('✅ Treatment session email notification sent successfully!');
+                console.log('Treatment session email notification sent successfully!');
             } catch (error) {
-                console.error('❌ Failed to send email for treatment session:', error);
+                console.error('Failed to send email for treatment session:', error);
             }
 
             updateDoseDisplay();
             document.getElementById('sessionCount').textContent = currentPatient.sessions.length;
+            
+            // Hide the first session prompt after adding a session
+            const firstSessionPrompt = document.getElementById('firstSessionPrompt');
+            if (firstSessionPrompt) {
+                firstSessionPrompt.style.display = 'none';
+            }
 
             runSimulation();
-
-            alert(`Session ${session.sessionNumber} Completed!\n\nDose: ${sessionDose} mg/m²\nCumulative: ${currentPatient.cumulativeDose} mg/m²\n\nCardio Risk: ${risks.cardioRisk}%\nNeutro Risk: ${risks.neutroRisk}%\nRecovery: ${risks.overallScore}`);
         }
 
         // Run simulation for current patient
@@ -2301,9 +2514,7 @@ This is an automated notification from ChemoTwin Platform.
             displayDigitalTwinAnalysis(risks);
             displayAlerts(risks);
             displayResearchCalculations(risks);
-            if (currentPatient.sessions.length > 0) {
-                displaySessionHistory();
-            }
+            displaySessionHistory();
             updateCharts();
             updatePatientView(risks);
         }
@@ -2426,212 +2637,216 @@ This is an automated notification from ChemoTwin Platform.
             }
         }
 
-        // Display research calculations (replaces RAG insights)
+        // Display research calculations with accordion style
         function displayResearchCalculations(risks) {
             const container = document.getElementById('researchCalculationsContainer');
             container.innerHTML = '';
             
-            let html = '<div class="twin-analysis-box">';
-            html += '<h4>How The Risks Were Calculated</h4>';
-            html += '<p>Understanding the mathematics behind personalized risk assessment:</p>';
-            
-            // Cardiotoxicity calculation breakdown
-            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
-            html += '<h5 style="color: #dc2626; margin-bottom: 10px;">Cardiotoxicity Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> Base Risk (from dose) + Age Factor + Sex Factor + Disease Factors + Ejection Fraction Impact + Cancer Subtype + Vital Signs</p>';
-            
-            html += '<div style="margin-left: 20px; margin-top: 10px;">';
-            html += '<p><strong>Step 1 - Cumulative Dose Effect:</strong></p>';
-            html += '<div class="calculation-step">';
-            html += `Current dose: ${currentPatient.cumulativeDose} mg/m²<br>`;
-            if (currentPatient.cumulativeDose <= 200) {
-                html += '≤200 mg/m² → Base risk: 1%';
-            } else if (currentPatient.cumulativeDose <= 300) {
-                html += '200-300 mg/m² → Base risk: 5%';
-            } else if (currentPatient.cumulativeDose <= 450) {
-                html += '300-450 mg/m² → Base risk: 12%';
-            } else if (currentPatient.cumulativeDose <= 550) {
-                html += '450-550 mg/m² → Base risk: 24%';
-            } else {
-                html += '>550 mg/m² → Base risk: 36%  Above safe limit!';
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 2 - Patient-Specific Modifiers:</strong></p>';
-            html += '<div class="calculation-step">';
-            if (currentPatient.age < 18) {
-                html += `Pediatric age (${currentPatient.age}): +8% (developing heart more vulnerable)<br>`;
-            } else if (currentPatient.age > 65) {
-                html += `Elderly (${currentPatient.age}): +10% (age-related cardiac decline)<br>`;
-            }
-            if (currentPatient.sex === 'female') {
-                html += 'Female sex: +4% (hormonal factors)<br>';
-            }
-            if (currentPatient.ejectionFraction < 50) {
-                html += `Low ejection fraction (${currentPatient.ejectionFraction}%): +15% (impaired cardiac function)<br>`;
-            } else if (currentPatient.ejectionFraction < 55) {
-                html += `Borderline ejection fraction (${currentPatient.ejectionFraction}%): +5%<br>`;
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 3 - Cancer Subtype Impact:</strong></p>';
-            html += '<div class="calculation-step">';
-            if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'AML') {
-                html += 'AML subtype: +6% (specific cardiotoxic regimens)<br>';
-            } else if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'CML') {
-                html += 'CML subtype: +4% (chronic treatment burden)<br>';
-            } else if (currentPatient.cancer === 'lymphoma' && currentPatient.cancerSubtype === 'HL') {
-                html += 'Hodgkin Lymphoma: +5% (specific treatment protocols)<br>';
-            } else {
-                html += 'Cancer subtype: No additional cardiac risk<br>';
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 4 - Chronic Disease Factors:</strong></p>';
-            html += '<div class="calculation-step">';
-            if (currentPatient.chronicDiseases.includes('diabetes')) {
-                html += 'Diabetes: +12% (vascular damage, inflammation)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('hypertension')) {
-                html += 'Hypertension: +10% (cardiac workload)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('heart_disease')) {
-                html += 'Heart disease: +15% (pre-existing damage)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('kidney_disease')) {
-                html += 'Kidney disease: +8% (fluid retention affects heart)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('obesity')) {
-                html += 'Obesity: +7% (increased cardiac strain)<br>';
-            }
-            html += '</div>';
-            
-            html += '<p style="margin-top: 10px;"><strong>Step 5 - Current Vital Signs Impact:</strong></p>';
-            html += '<div class="calculation-step">';
             const systolic = parseInt(currentPatient.vitals.bloodPressure.split('/')[0]);
-            if (systolic > 140) {
-                html += `Elevated BP (${currentPatient.vitals.bloodPressure}): +6%<br>`;
-            } else {
-                html += `Normal BP (${currentPatient.vitals.bloodPressure}): No additional risk<br>`;
-            }
-            if (currentPatient.vitals.heartRate > 100) {
-                html += `Tachycardia (${currentPatient.vitals.heartRate} bpm): +5%<br>`;
-            } else {
-                html += `Normal HR (${currentPatient.vitals.heartRate} bpm): No additional risk<br>`;
-            }
-            html += '</div>';
             
-            html += '<div style="margin-top: 15px; padding: 10px; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 5px;">';
-            html += `<strong>Final Cardiotoxicity Risk: ${risks.cardioRisk}%</strong><br>`;
-            if (risks.cardioRisk > 20) {
-                html += '<span style="color: #991b1b;">HIGH RISK - Cardioprotective measures recommended</span>';
+            // Build cardiotoxicity details
+            let cardioDetails = '';
+            cardioDetails += `<div class="calc-step"><strong>Step 1 - Cumulative Dose Effect:</strong><br>Current dose: ${currentPatient.cumulativeDose} mg/m²<br>`;
+            if (currentPatient.cumulativeDose <= 200) {
+                cardioDetails += '≤200 mg/m² = Base risk: 1%</div>';
+            } else if (currentPatient.cumulativeDose <= 300) {
+                cardioDetails += '200-300 mg/m² = Base risk: 5%</div>';
+            } else if (currentPatient.cumulativeDose <= 450) {
+                cardioDetails += '300-450 mg/m² = Base risk: 12%</div>';
+            } else if (currentPatient.cumulativeDose <= 550) {
+                cardioDetails += '450-550 mg/m² = Base risk: 24%</div>';
             } else {
-                html += '<span style="color: #059669;">Risk within acceptable range</span>';
+                cardioDetails += '>550 mg/m² = Base risk: 36% - Above safe limit!</div>';
             }
-            html += '</div>';
-            html += '</div>';
-            html += '</div>';
             
-            // Neutropenia calculation breakdown
-            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
-            html += '<h5 style="color: #3b82f6; margin-bottom: 10px;">Neutropenia Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> 35% (baseline) + (Dose/600 × 45%) + Age Factor + Cancer Type + Cancer Subtype + Disease Factors</p>';
+            let modifiers = [];
+            if (currentPatient.age < 18) modifiers.push(`Pediatric age (${currentPatient.age}): +8%`);
+            else if (currentPatient.age > 65) modifiers.push(`Elderly (${currentPatient.age}): +10%`);
+            if (currentPatient.sex === 'female') modifiers.push('Female sex: +4%');
+            if (currentPatient.ejectionFraction < 50) modifiers.push(`Low EF (${currentPatient.ejectionFraction}%): +15%`);
+            else if (currentPatient.ejectionFraction < 55) modifiers.push(`Borderline EF (${currentPatient.ejectionFraction}%): +5%`);
+            cardioDetails += `<div class="calc-step"><strong>Step 2 - Patient Modifiers:</strong><br>${modifiers.length ? modifiers.join('<br>') : 'No additional modifiers'}</div>`;
             
-            html += '<div style="margin-left: 20px; margin-top: 10px;">';
-            html += '<p><strong>Calculation Breakdown:</strong></p>';
-            html += '<div class="calculation-step">';
-            html += `Baseline neutropenia risk: 35%<br>`;
-            html += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%<br>`;
-            if (currentPatient.age > 65) {
-                html += `Age factor (${currentPatient.age}): +12% (bone marrow decline)<br>`;
-            }
+            let cancerImpact = 'No additional cardiac risk';
+            if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'AML') cancerImpact = 'AML subtype: +6%';
+            else if (currentPatient.cancer === 'leukemia' && currentPatient.cancerSubtype === 'CML') cancerImpact = 'CML subtype: +4%';
+            else if (currentPatient.cancer === 'lymphoma' && currentPatient.cancerSubtype === 'HL') cancerImpact = 'Hodgkin Lymphoma: +5%';
+            cardioDetails += `<div class="calc-step"><strong>Step 3 - Cancer Subtype:</strong><br>${cancerImpact}</div>`;
+            
+            let diseases = [];
+            if (currentPatient.chronicDiseases.includes('diabetes')) diseases.push('Diabetes: +12%');
+            if (currentPatient.chronicDiseases.includes('hypertension')) diseases.push('Hypertension: +10%');
+            if (currentPatient.chronicDiseases.includes('heart_disease')) diseases.push('Heart disease: +15%');
+            if (currentPatient.chronicDiseases.includes('kidney_disease')) diseases.push('Kidney disease: +8%');
+            if (currentPatient.chronicDiseases.includes('obesity')) diseases.push('Obesity: +7%');
+            cardioDetails += `<div class="calc-step"><strong>Step 4 - Chronic Diseases:</strong><br>${diseases.length ? diseases.join('<br>') : 'None'}</div>`;
+            
+            let vitals = [];
+            if (systolic > 140) vitals.push(`Elevated BP (${currentPatient.vitals.bloodPressure}): +6%`);
+            if (currentPatient.vitals.heartRate > 100) vitals.push(`Tachycardia (${currentPatient.vitals.heartRate} bpm): +5%`);
+            cardioDetails += `<div class="calc-step"><strong>Step 5 - Vital Signs:</strong><br>${vitals.length ? vitals.join('<br>') : 'Normal - no additional risk'}</div>`;
+            
+            const cardioRiskClass = risks.cardioRisk > 20 ? 'high-risk' : risks.cardioRisk > 10 ? 'medium-risk' : 'low-risk';
+            cardioDetails += `<div class="calc-result ${cardioRiskClass}">Final Cardiotoxicity Risk: ${risks.cardioRisk}%${risks.cardioRisk > 20 ? ' - Cardioprotective measures recommended' : ''}</div>`;
+            
+            // Build neutropenia details
+            let neutroDetails = '';
+            neutroDetails += `<div class="calc-step"><strong>Baseline Calculation:</strong><br>`;
+            neutroDetails += `Baseline risk: 35%<br>`;
+            neutroDetails += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%</div>`;
+            
+            let neutroFactors = [];
+            if (currentPatient.age > 65) neutroFactors.push(`Age (${currentPatient.age}): +12%`);
             if (currentPatient.cancer === 'leukemia') {
-                html += 'Leukemia: +18% (blood cancer affects WBC production)<br>';
-                if (currentPatient.cancerSubtype === 'ALL') {
-                    html += 'ALL subtype: +8% (intensive induction therapy)<br>';
-                } else if (currentPatient.cancerSubtype === 'AML') {
-                    html += 'AML subtype: +12% (myelosuppressive regimens)<br>';
-                }
+                neutroFactors.push('Leukemia: +18%');
+                if (currentPatient.cancerSubtype === 'ALL') neutroFactors.push('ALL subtype: +8%');
+                else if (currentPatient.cancerSubtype === 'AML') neutroFactors.push('AML subtype: +12%');
             } else if (currentPatient.cancer === 'lymphoma') {
-                html += 'Lymphoma: +10%<br>';
-                if (currentPatient.cancerSubtype === 'NHL') {
-                    html += 'NHL subtype: +6% (aggressive regimens)<br>';
-                }
+                neutroFactors.push('Lymphoma: +10%');
+                if (currentPatient.cancerSubtype === 'NHL') neutroFactors.push('NHL subtype: +6%');
             }
-            if (currentPatient.chronicDiseases.includes('diabetes')) {
-                html += 'Diabetes: +8% (impaired immune function)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('kidney_disease')) {
-                html += 'Kidney disease: +10% (reduced drug clearance)<br>';
-            }
-            if (currentPatient.chronicDiseases.includes('liver_disease')) {
-                html += 'Liver disease: +9% (impaired drug metabolism)<br>';
-            }
-            html += '</div>';
+            if (currentPatient.chronicDiseases.includes('diabetes')) neutroFactors.push('Diabetes: +8%');
+            if (currentPatient.chronicDiseases.includes('kidney_disease')) neutroFactors.push('Kidney disease: +10%');
+            if (currentPatient.chronicDiseases.includes('liver_disease')) neutroFactors.push('Liver disease: +9%');
+            neutroDetails += `<div class="calc-step"><strong>Risk Modifiers:</strong><br>${neutroFactors.length ? neutroFactors.join('<br>') : 'No additional factors'}</div>`;
             
-            html += '<div style="margin-top: 15px; padding: 10px; background: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 5px;">';
-            html += `<strong>Final Neutropenia Risk: ${risks.neutroRisk}%</strong><br>`;
-            if (risks.neutroRisk > 60) {
-                html += '<span style="color: #1e40af;">HIGH RISK - G-CSF prophylaxis recommended</span>';
-            } else {
-                html += '<span style="color: #059669;">Risk manageable with standard monitoring</span>';
-            }
-            html += '</div>';
-            html += '</div>';
-            html += '</div>';
+            const neutroRiskClass = risks.neutroRisk > 60 ? 'high-risk' : risks.neutroRisk > 40 ? 'medium-risk' : 'low-risk';
+            neutroDetails += `<div class="calc-result ${neutroRiskClass}">Final Neutropenia Risk: ${risks.neutroRisk}%${risks.neutroRisk > 60 ? ' - G-CSF prophylaxis recommended' : ''}</div>`;
             
-            // Anemia calculation breakdown
-            html += '<div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">';
-            html += '<h5 style="color: #8b5cf6; margin-bottom: 10px;">Anemia Risk Calculation</h5>';
-            html += '<p><strong>Formula:</strong> 30% (baseline) + (Dose/600 × 45%) + Sex Factor + Cancer Subtype + Pre-existing Anemia</p>';
+            // Build anemia details
+            let anemiaDetails = '';
+            anemiaDetails += `<div class="calc-step"><strong>Baseline Calculation:</strong><br>`;
+            anemiaDetails += `Baseline risk: 30%<br>`;
+            anemiaDetails += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%</div>`;
             
-            html += '<div style="margin-left: 20px; margin-top: 10px;">';
-            html += '<p><strong>Calculation Breakdown:</strong></p>';
-            html += '<div class="calculation-step">';
-            html += `Baseline anemia risk: 30%<br>`;
-            html += `Dose contribution: (${currentPatient.cumulativeDose}/600) × 45% = ${Math.round((currentPatient.cumulativeDose/600)*45)}%<br>`;
-            if (currentPatient.sex === 'female') {
-                html += 'Female sex: +8%<br>';
-            }
+            let anemiaFactors = [];
+            if (currentPatient.sex === 'female') anemiaFactors.push('Female sex: +8%');
             if (currentPatient.cancer === 'leukemia') {
-                html += 'Leukemia: +15% (bone marrow infiltration)<br>';
-                if (currentPatient.cancerSubtype === 'AML') {
-                    html += 'AML subtype: +8% (myelodysplasia)<br>';
-                }
+                anemiaFactors.push('Leukemia: +15%');
+                if (currentPatient.cancerSubtype === 'AML') anemiaFactors.push('AML subtype: +8%');
             }
-            if (currentPatient.chronicDiseases.includes('anemia')) {
-                html += 'Pre-existing anemia: +25%<br>';
-            }
-            html += '</div>';
+            if (currentPatient.chronicDiseases.includes('anemia')) anemiaFactors.push('Pre-existing anemia: +25%');
+            anemiaDetails += `<div class="calc-step"><strong>Risk Modifiers:</strong><br>${anemiaFactors.length ? anemiaFactors.join('<br>') : 'No additional factors'}</div>`;
             
-            html += '<div style="margin-top: 15px; padding: 10px; background: #f3e8ff; border-left: 4px solid #8b5cf6; border-radius: 5px;">';
-            html += `<strong>Final Anemia Risk: ${risks.anemiaRisk}%</strong><br>`;
-            if (risks.anemiaRisk > 70 || currentPatient.chronicDiseases.includes('anemia')) {
-                html += '<span style="color: #6b21a8;">HIGH RISK - Monitor hemoglobin closely</span>';
-            } else {
-                html += '<span style="color: #059669;">Risk manageable with standard monitoring</span>';
-            }
-            html += '</div>';
-            html += '</div>';
-            html += '</div>';
+            const anemiaRiskClass = risks.anemiaRisk > 70 ? 'high-risk' : risks.anemiaRisk > 50 ? 'medium-risk' : 'low-risk';
+            anemiaDetails += `<div class="calc-result ${anemiaRiskClass}">Final Anemia Risk: ${risks.anemiaRisk}%${risks.anemiaRisk > 70 ? ' - Monitor hemoglobin closely' : ''}</div>`;
             
-            html += '<div style="background: #f0f9ff; padding: 15px; border-radius: 10px; border-left: 4px solid #0ea5e9;">';
-            html += '<h5 style="color: #0369a1; margin-bottom: 10px;">Why These Calculations Matter</h5>';
-            html += '<div class="calculation-step">Personalization: Each patient is unique - same dose affects people differently based on age, sex, health conditions, and cancer subtype</div>';
-            html += '<div class="calculation-step">Cancer-Specific: Different leukemia and lymphoma subtypes have unique risk profiles requiring tailored monitoring</div>';
-            html += '<div class="calculation-step">Prevention: By calculating risks early, we can take protective measures BEFORE problems occur</div>';
-            html += '<div class="calculation-step">Evidence-Based: All calculations based on peer-reviewed clinical studies</div>';
-            html += '<div class="calculation-step">Dynamic: Risks update in real-time as treatment progresses and vitals change</div>';
-            html += '</div>';
+            // Build info section
+            let infoDetails = '';
+            infoDetails += `<div class="calc-step"><strong>Personalization:</strong> Each patient is unique - same dose affects people differently based on age, sex, health conditions, and cancer subtype</div>`;
+            infoDetails += `<div class="calc-step"><strong>Cancer-Specific:</strong> Different leukemia and lymphoma subtypes have unique risk profiles requiring tailored monitoring</div>`;
+            infoDetails += `<div class="calc-step"><strong>Prevention:</strong> By calculating risks early, we can take protective measures BEFORE problems occur</div>`;
+            infoDetails += `<div class="calc-step"><strong>Evidence-Based:</strong> All calculations based on peer-reviewed clinical studies</div>`;
+            infoDetails += `<div class="calc-step"><strong>Dynamic:</strong> Risks update in real-time as treatment progresses and vitals change</div>`;
+            
+            let html = '<div class="accordion-container">';
+            
+            // Cardiotoxicity accordion
+            html += `<div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <div class="accordion-header-left">
+                        <div class="accordion-icon cardio"></div>
+                        <div>
+                            <div class="accordion-title">Cardiotoxicity Risk Calculation</div>
+                            <div class="accordion-subtitle">Final Risk: ${risks.cardioRisk}%</div>
+                        </div>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p style="margin-bottom: 15px;"><strong>Formula:</strong> Base Risk + Age + Sex + Diseases + Ejection Fraction + Cancer Subtype + Vitals</p>
+                        ${cardioDetails}
+                    </div>
+                </div>
+            </div>`;
+            
+            // Neutropenia accordion
+            html += `<div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <div class="accordion-header-left">
+                        <div class="accordion-icon neutro"></div>
+                        <div>
+                            <div class="accordion-title">Neutropenia Risk Calculation</div>
+                            <div class="accordion-subtitle">Final Risk: ${risks.neutroRisk}%</div>
+                        </div>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p style="margin-bottom: 15px;"><strong>Formula:</strong> 35% baseline + (Dose/600 × 45%) + Age + Cancer Type + Diseases</p>
+                        ${neutroDetails}
+                    </div>
+                </div>
+            </div>`;
+            
+            // Anemia accordion
+            html += `<div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <div class="accordion-header-left">
+                        <div class="accordion-icon anemia"></div>
+                        <div>
+                            <div class="accordion-title">Anemia Risk Calculation</div>
+                            <div class="accordion-subtitle">Final Risk: ${risks.anemiaRisk}%</div>
+                        </div>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        <p style="margin-bottom: 15px;"><strong>Formula:</strong> 30% baseline + (Dose/600 × 45%) + Sex + Cancer Subtype + Pre-existing Anemia</p>
+                        ${anemiaDetails}
+                    </div>
+                </div>
+            </div>`;
+            
+            // Info accordion
+            html += `<div class="accordion-item" onclick="toggleAccordion(this)">
+                <div class="accordion-header">
+                    <div class="accordion-header-left">
+                        <div class="accordion-icon info"></div>
+                        <div>
+                            <div class="accordion-title">Why These Calculations Matter</div>
+                            <div class="accordion-subtitle">Understanding personalized risk assessment</div>
+                        </div>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-body">
+                        ${infoDetails}
+                    </div>
+                </div>
+            </div>`;
             
             html += '</div>';
             container.innerHTML = html;
+        }
+        
+        // Toggle accordion function
+        function toggleAccordion(element) {
+            element.classList.toggle('active');
         }
 
         // Display session history
         function displaySessionHistory() {
             const container = document.getElementById('sessionHistoryList');
             container.innerHTML = '';
+            
+            if (!currentPatient || currentPatient.sessions.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; background: #f8fafc; border-radius: 12px; border: 2px dashed #cbd5e1;">
+                        <div style="font-size: 1.5em; margin-bottom: 15px; color: #64748b;">No History</div>
+                        <h4 style="color: #475569; margin-bottom: 10px;">No Sessions Taken Yet</h4>
+                        <p style="color: #64748b; margin-bottom: 20px;">Start your first treatment session to see the history here.</p>
+                        <button onclick="scrollToAddSession()" style="background: linear-gradient(135deg, #0066cc, #0052a3); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: transform 0.2s;">
+                            Add First Session
+                        </button>
+                    </div>
+                `;
+                return;
+            }
             
             currentPatient.sessions.forEach((session) => {
                 const item = document.createElement('div');
@@ -2647,6 +2862,18 @@ This is an automated notification from ChemoTwin Platform.
                 `;
                 container.appendChild(item);
             });
+        }
+        
+        // Scroll to Add Treatment Session button
+        function scrollToAddSession() {
+            const addSessionBtn = document.querySelector('.btn-add-session');
+            if (addSessionBtn) {
+                addSessionBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                addSessionBtn.style.animation = 'pulse-highlight 1s ease-in-out 3';
+                setTimeout(() => {
+                    addSessionBtn.style.animation = '';
+                }, 3000);
+            }
         }
 
         // Update charts with clickable functionality
@@ -3308,17 +3535,17 @@ This is an automated notification from ChemoTwin Platform.
             // Check if EmailJS is properly initialized
             console.log('🔧 Checking EmailJS initialization...');
             if (typeof emailjs !== 'undefined') {
-                console.log('✅ EmailJS library loaded successfully!');
+                console.log('EmailJS library loaded successfully!');
                 console.log('📧 EmailJS Configuration:');
                 console.log('   - Service ID: service_e8dcl0l');
                 console.log('   - Template ID: template_pxtj7kr');
                 console.log('   - Public Key: zw5gaDMv_koqacN8M');
                 console.log('');
                 console.log('💡 Tip: Check the browser console for email sending status');
-                console.log('   - ✅ means email sent successfully');
-                console.log('   - ❌ means email failed (check error details)');
+                console.log('   - Success means email sent successfully');
+                console.log('   - Error means email failed (check error details)');
             } else {
-                console.error('❌ EmailJS library NOT loaded!');
+                console.error('EmailJS library NOT loaded!');
                 console.error('   This could be due to:');
                 console.error('   1. Internet connection issues');
                 console.error('   2. CDN blocked by firewall/adblocker');
