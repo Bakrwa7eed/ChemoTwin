@@ -1436,7 +1436,7 @@
     <div class="bluetooth-sidebar" id="bluetoothSidebar">
         <button class="bluetooth-close-btn" onclick="closeBluetooth()" title="Close">✕</button>
         <div class="bluetooth-header">
-            <div class="bluetooth-icon">🔵</div>
+            <div class="bluetooth-icon" style="width: 24px; height: 24px; background: #0066cc; border-radius: 50%;"></div>
             <div class="bluetooth-title">Device Monitor</div>
         </div>
         
@@ -1461,6 +1461,14 @@
             <div class="vital-item">
                 <span class="vital-label">Ejection Fraction</span>
                 <span class="vital-value" id="sidebarEF">-- %</span>
+            </div>
+            <div class="vital-item" style="border-top: 2px solid #f59e0b; padding-top: 10px; margin-top: 5px;">
+                <span class="vital-label" style="color: #92400e; font-weight: 600;">GLS (Current)</span>
+                <span class="vital-value" id="sidebarGLS" style="color: #dc2626;">-- %</span>
+            </div>
+            <div class="vital-item">
+                <span class="vital-label" style="color: #92400e;">GLS Change</span>
+                <span class="vital-value" id="sidebarGLSChange" style="font-size: 0.9em;">-- %</span>
             </div>
         </div>
         
@@ -1597,6 +1605,36 @@
                         <div class="input-group">
                             <label>Ejection Fraction (%)</label>
                             <input type="number" id="ejectionFraction" min="20" max="80" value="60" oninput="updatePatientRealtime()">
+                        </div>
+                    </div>
+                    
+                    <!-- Global Longitudinal Strain (GLS) Section -->
+                    <div class="gls-section" style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border: 2px solid #f59e0b;">
+                        <h4 style="color: #92400e; margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.3em;"></span> Global Longitudinal Strain (GLS)
+                            <span style="font-size: 0.7em; background: #dc2626; color: white; padding: 2px 8px; border-radius: 12px; font-weight: 600;">MORE ACCURATE</span>
+                        </h4>
+                        <p style="color: #78350f; font-size: 0.85em; margin-bottom: 15px; line-height: 1.5;">
+                            GLS detects cardiotoxicity <strong>2-3 months earlier</strong> than Ejection Fraction. Normal values: -20% to -22% (more negative = better function)
+                        </p>
+                        <div class="horizontal-grid">
+                            <div class="input-group">
+                                <label style="color: #92400e; font-weight: 600;">Baseline GLS (%)</label>
+                                <input type="number" id="baselineGLS" step="0.1" min="-30" max="-10" value="-21.0" 
+                                       oninput="updatePatientRealtime()" 
+                                       style="background: white; border-color: #f59e0b;">
+                                <small style="color: #92400e; font-size: 0.75em;">Pre-treatment value (typically -20% to -22%)</small>
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #92400e; font-weight: 600;">Current GLS (%)</label>
+                                <input type="number" id="currentGLS" step="0.1" min="-30" max="-5" value="-21.0" 
+                                       oninput="updatePatientRealtime()" 
+                                       style="background: white; border-color: #f59e0b;">
+                                <small style="color: #92400e; font-size: 0.75em;">Latest measurement (less negative = worse)</small>
+                            </div>
+                        </div>
+                        <div id="glsChangeIndicator" style="margin-top: 10px; padding: 10px; background: white; border-radius: 8px; display: none;">
+                            <!-- GLS change will be displayed here dynamically -->
                         </div>
                     </div>
                 </div>
@@ -1993,9 +2031,147 @@ This is an automated notification from ChemoTwin Platform.
             }
         }
         
-        // ENHANCED DIGITAL TWIN RISK CALCULATOR WITH CANCER SUBTYPES
+        // ============================================================================
+        // GLOBAL LONGITUDINAL STRAIN (GLS) CALCULATION FUNCTIONS
+        // Based on ASE/EACVI Expert Consensus on Cardio-Oncology Guidelines
+        // ============================================================================
+        
+        /**
+         * Calculate GLS Relative Change (%)
+         * Formula: ((Current GLS - Baseline GLS) / |Baseline GLS|) × 100
+         * 
+         * IMPORTANT: GLS values are negative (e.g., -21%). A less negative value 
+         * (e.g., -18%) indicates worse function. A POSITIVE relative change 
+         * indicates worsening (cardiotoxicity risk).
+         * 
+         * Example: Baseline = -21%, Current = -18%
+         * Change = ((-18) - (-21)) / |-21| × 100 = (3 / 21) × 100 = +14.3%
+         * This +14.3% change indicates cardiac function is deteriorating.
+         */
+        function calculateGLSRelativeChange(baselineGLS, currentGLS) {
+            // Ensure values are negative (GLS convention)
+            const baseline = Math.abs(baselineGLS) > 0 ? baselineGLS : -21.0;
+            const current = currentGLS;
+            
+            // Calculate relative change: positive value = worsening
+            // Formula: ((current - baseline) / |baseline|) × 100
+            const relativeChange = ((current - baseline) / Math.abs(baseline)) * 100;
+            
+            return relativeChange;
+        }
+        
+        /**
+         * Assess GLS Status based on Absolute Value
+         * Per ASE/EACVI Guidelines:
+         * - Normal: GLS ≤ -20% (more negative)
+         * - Borderline: -18% to -19.9%
+         * - Abnormal: -16% to -17.9%
+         * - Severely Abnormal: > -15% (less negative, e.g., -14%, -12%)
+         */
+        function assessAbsoluteGLSStatus(currentGLS) {
+            const absGLS = currentGLS; // Already negative
+            
+            if (absGLS <= -20) {
+                return { status: 'normal', label: 'Normal', color: '#10b981', riskAddition: 0 };
+            } else if (absGLS <= -18) {
+                return { status: 'borderline', label: 'Borderline', color: '#f59e0b', riskAddition: 5 };
+            } else if (absGLS <= -16) {
+                return { status: 'abnormal', label: 'Abnormal', color: '#ef4444', riskAddition: 15 };
+            } else {
+                return { status: 'severe', label: 'Severely Abnormal', color: '#dc2626', riskAddition: 30 };
+            }
+        }
+        
+        /**
+         * Assess GLS Change Significance
+         * Per ASE/EACVI Expert Consensus:
+         * - ≥15% relative decrease from baseline = SIGNIFICANT CARDIOTOXICITY
+         * - 10-14.9% change = WARNING - Close monitoring required
+         * - <10% change = Within acceptable limits
+         */
+        function assessGLSChangeSignificance(relativeChange) {
+            if (relativeChange >= 15) {
+                return {
+                    status: 'significant',
+                    label: 'SIGNIFICANT CARDIOTOXICITY DETECTED',
+                    description: '≥15% GLS reduction from baseline indicates subclinical LV dysfunction',
+                    color: '#dc2626',
+                    riskAddition: 25,
+                    recommendation: 'URGENT: Consider cardiology consultation, dose modification, or cardioprotective therapy'
+                };
+            } else if (relativeChange >= 10) {
+                return {
+                    status: 'warning',
+                    label: 'WARNING - Cardiac Function Declining',
+                    description: '10-15% GLS reduction indicates early cardiac strain',
+                    color: '#f59e0b',
+                    riskAddition: 12,
+                    recommendation: 'Increase monitoring frequency, consider prophylactic measures'
+                };
+            } else if (relativeChange >= 5) {
+                return {
+                    status: 'mild',
+                    label: 'Mild Change',
+                    description: 'Minor GLS change within acceptable range',
+                    color: '#3b82f6',
+                    riskAddition: 5,
+                    recommendation: 'Continue standard monitoring protocol'
+                };
+            } else {
+                return {
+                    status: 'normal',
+                    label: 'Stable',
+                    description: 'GLS within normal variation',
+                    color: '#10b981',
+                    riskAddition: 0,
+                    recommendation: 'Continue current treatment plan'
+                };
+            }
+        }
+        
+        /**
+         * Calculate Comprehensive GLS-based Cardiotoxicity Risk
+         * Combines absolute GLS status and relative change from baseline
+         * This is the PRIMARY cardiotoxicity detection method (more accurate than LVEF alone)
+         */
+        function calculateGLSCardiotoxicityRisk(baselineGLS, currentGLS) {
+            const relativeChange = calculateGLSRelativeChange(baselineGLS, currentGLS);
+            const absoluteStatus = assessAbsoluteGLSStatus(currentGLS);
+            const changeSignificance = assessGLSChangeSignificance(relativeChange);
+            
+            // Combined risk assessment
+            let glsRiskScore = 0;
+            let glsModifiers = [];
+            
+            // Add risk from absolute GLS value
+            glsRiskScore += absoluteStatus.riskAddition;
+            if (absoluteStatus.riskAddition > 0) {
+                glsModifiers.push(`Absolute GLS (${currentGLS.toFixed(1)}%) is ${absoluteStatus.label.toLowerCase()} - adds +${absoluteStatus.riskAddition}% risk`);
+            }
+            
+            // Add risk from relative change (this is the key indicator per guidelines)
+            glsRiskScore += changeSignificance.riskAddition;
+            if (changeSignificance.riskAddition > 0) {
+                glsModifiers.push(`GLS relative change of ${relativeChange >= 0 ? '+' : ''}${relativeChange.toFixed(1)}% from baseline - adds +${changeSignificance.riskAddition}% risk`);
+            }
+            
+            return {
+                baselineGLS,
+                currentGLS,
+                relativeChange,
+                absoluteStatus,
+                changeSignificance,
+                glsRiskScore,
+                glsModifiers,
+                isSignificantCardiotoxicity: relativeChange >= 15 || currentGLS > -16
+            };
+        }
+        
+        // ============================================================================
+        // ENHANCED DIGITAL TWIN RISK CALCULATOR WITH GLS & CANCER SUBTYPES
+        // ============================================================================
         function calculateDigitalTwinRisks(patient) {
-            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, cancerSubtype, ejectionFraction } = patient;
+            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, cancerSubtype, ejectionFraction, baselineGLS, currentGLS } = patient;
             const dose = cumulativeDose;
             
             // Cardiotoxicity calculation with ejection fraction
@@ -2078,6 +2254,32 @@ This is an automated notification from ChemoTwin Platform.
             if (vitals.heartRate > 100) {
                 cardioBase += 5;
                 cardioModifiers.push(`Tachycardia (${vitals.heartRate} bpm) adds +5% risk`);
+            }
+            
+            // ============================================================================
+            // GLS-BASED CARDIOTOXICITY ASSESSMENT (PRIMARY DETECTION METHOD)
+            // Per ASE/EACVI Expert Consensus - More accurate than LVEF alone
+            // ============================================================================
+            const patientBaselineGLS = baselineGLS || -21.0;
+            const patientCurrentGLS = currentGLS || -21.0;
+            const glsAssessment = calculateGLSCardiotoxicityRisk(patientBaselineGLS, patientCurrentGLS);
+            
+            // Add GLS-based risk to cardiotoxicity calculation
+            cardioBase += glsAssessment.glsRiskScore;
+            
+            // Add GLS modifiers to the explanation
+            glsAssessment.glsModifiers.forEach(mod => {
+                cardioModifiers.push(` GLS: ${mod}`);
+            });
+            
+            // Add absolute GLS status message
+            if (glsAssessment.absoluteStatus.status !== 'normal') {
+                cardioModifiers.push(` Current GLS Status: ${glsAssessment.absoluteStatus.label} (${patientCurrentGLS.toFixed(1)}%)`);
+            }
+            
+            // Add change significance message if concerning
+            if (glsAssessment.changeSignificance.status !== 'normal') {
+                cardioModifiers.push(` GLS Assessment: ${glsAssessment.changeSignificance.label}`);
             }
             
             const cardioRisk = Math.min(95, Math.round(cardioBase));
@@ -2163,11 +2365,17 @@ This is an automated notification from ChemoTwin Platform.
             
             return {
                 cardioRisk, cardioModifiers, neutroRisk, neutroModifiers,
-                anemiaRisk, nauseaRisk, fatigueRisk, mucositisRisk, overallScore
+                anemiaRisk, nauseaRisk, fatigueRisk, mucositisRisk, overallScore,
+                // GLS Assessment Data
+                glsAssessment: glsAssessment,
+                glsRelativeChange: glsAssessment.relativeChange,
+                glsStatus: glsAssessment.absoluteStatus,
+                glsChangeSignificance: glsAssessment.changeSignificance,
+                isGLSCardiotoxicity: glsAssessment.isSignificantCardiotoxicity
             };
         }
 
-        // Initialize patient with cancer subtype
+        // Initialize patient with cancer subtype and GLS
         function initializePatient(id) {
             return {
                 id: id,
@@ -2182,6 +2390,8 @@ This is an automated notification from ChemoTwin Platform.
                     heartRate: 75
                 },
                 ejectionFraction: 60,
+                baselineGLS: -21.0,  // Normal baseline GLS (pre-treatment)
+                currentGLS: -21.0,   // Current GLS (will decrease with cardiotoxicity)
                 cumulativeDose: 0,
                 sessions: [],
                 createdAt: new Date().toISOString()
@@ -2269,6 +2479,16 @@ This is an automated notification from ChemoTwin Platform.
             patient.vitals.heartRate = Math.floor(Math.random() * 40) + 60;
             patient.ejectionFraction = Math.floor(Math.random() * 30) + 45; // 45-75%
             
+            // GLS values - baseline normal range (-18 to -24%), current may show deterioration
+            patient.baselineGLS = -(18 + Math.random() * 6).toFixed(1); // -18% to -24%
+            // Current GLS slightly worse than baseline for realistic simulation
+            const glsDegradation = Math.random() * 4; // 0-4% degradation
+            patient.currentGLS = (parseFloat(patient.baselineGLS) + glsDegradation).toFixed(1);
+            // Ensure current GLS is not more negative than baseline
+            if (parseFloat(patient.currentGLS) < parseFloat(patient.baselineGLS)) {
+                patient.currentGLS = patient.baselineGLS;
+            }
+            
             currentPatient = patient;
             savePatientData();
 
@@ -2285,6 +2505,8 @@ This is an automated notification from ChemoTwin Platform.
                         chronicDiseases: currentPatient.chronicDiseases,
                         vitals: currentPatient.vitals,
                         ejectionFraction: currentPatient.ejectionFraction,
+                        baselineGLS: currentPatient.baselineGLS,
+                        currentGLS: currentPatient.currentGLS,
                         sessions: currentPatient.sessions,
                         cumulativeDose: currentPatient.cumulativeDose,
                         latestRisks: {}
@@ -2337,6 +2559,13 @@ This is an automated notification from ChemoTwin Platform.
             document.getElementById('heartRate').value = currentPatient.vitals.heartRate;
             document.getElementById('ejectionFraction').value = currentPatient.ejectionFraction;
             
+            // Set GLS values (with defaults for existing patients)
+            document.getElementById('baselineGLS').value = currentPatient.baselineGLS || -21.0;
+            document.getElementById('currentGLS').value = currentPatient.currentGLS || -21.0;
+            
+            // Update GLS indicator
+            updateGLSChangeIndicator();
+            
             // Set cancer subtype
             const subtypeRadios = document.getElementsByName('cancerSubtype');
             for (let radio of subtypeRadios) {
@@ -2367,16 +2596,35 @@ This is an automated notification from ChemoTwin Platform.
             toggleCancerSubtypes();
         }
 
-        // Update sidebar vitals with ejection fraction
+        // Update sidebar vitals with ejection fraction and GLS
         function updateSidebarVitals() {
             if (!currentPatient) return;
             document.getElementById('sidebarHR').textContent = currentPatient.vitals.heartRate + ' bpm';
             document.getElementById('sidebarBP').textContent = currentPatient.vitals.bloodPressure;
             document.getElementById('sidebarTemp').textContent = currentPatient.vitals.temperature + ' °C';
             document.getElementById('sidebarEF').textContent = currentPatient.ejectionFraction + ' %';
+            
+            // GLS display
+            const currentGLS = currentPatient.currentGLS || -21.0;
+            const baselineGLS = currentPatient.baselineGLS || -21.0;
+            document.getElementById('sidebarGLS').textContent = currentGLS.toFixed(1) + ' %';
+            
+            // Calculate and display GLS relative change
+            const glsRelativeChange = calculateGLSRelativeChange(baselineGLS, currentGLS);
+            const glsChangeEl = document.getElementById('sidebarGLSChange');
+            glsChangeEl.textContent = (glsRelativeChange >= 0 ? '+' : '') + glsRelativeChange.toFixed(1) + '%';
+            
+            // Color coding based on GLS change significance
+            if (glsRelativeChange >= 15) {
+                glsChangeEl.style.color = '#dc2626'; // Red - significant cardiotoxicity
+            } else if (glsRelativeChange >= 10) {
+                glsChangeEl.style.color = '#f59e0b'; // Orange - warning
+            } else {
+                glsChangeEl.style.color = '#10b981'; // Green - normal
+            }
         }
 
-        // Update patient realtime with cancer subtype
+        // Update patient realtime with cancer subtype and GLS
         function updatePatientRealtime() {
             if (!currentPatient) return;
             
@@ -2387,6 +2635,13 @@ This is an automated notification from ChemoTwin Platform.
             currentPatient.vitals.bloodPressure = document.getElementById('bloodPressure').value || '120/80';
             currentPatient.vitals.heartRate = parseInt(document.getElementById('heartRate').value) || 75;
             currentPatient.ejectionFraction = parseInt(document.getElementById('ejectionFraction').value) || 60;
+            
+            // GLS values (negative percentages)
+            currentPatient.baselineGLS = parseFloat(document.getElementById('baselineGLS').value) || -21.0;
+            currentPatient.currentGLS = parseFloat(document.getElementById('currentGLS').value) || -21.0;
+            
+            // Update GLS change indicator
+            updateGLSChangeIndicator();
             
             // Get cancer subtype
             const subtypeRadios = document.getElementsByName('cancerSubtype');
@@ -2405,6 +2660,57 @@ This is an automated notification from ChemoTwin Platform.
             
             // Calculate current status immediately when inputs change
             runSimulation();
+        }
+        
+        // Update GLS Change Indicator in real-time
+        function updateGLSChangeIndicator() {
+            const baselineGLS = parseFloat(document.getElementById('baselineGLS').value) || -21.0;
+            const currentGLS = parseFloat(document.getElementById('currentGLS').value) || -21.0;
+            
+            const indicator = document.getElementById('glsChangeIndicator');
+            if (!indicator) return;
+            
+            const relativeChange = calculateGLSRelativeChange(baselineGLS, currentGLS);
+            const absoluteStatus = assessAbsoluteGLSStatus(currentGLS);
+            const changeSignificance = assessGLSChangeSignificance(relativeChange);
+            
+            let html = '';
+            
+            // Relative change display
+            html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">`;
+            html += `<span style="font-weight: 600; color: #475569;">Relative Change:</span>`;
+            html += `<span style="font-weight: 700; font-size: 1.2em; color: ${changeSignificance.color};">${relativeChange >= 0 ? '+' : ''}${relativeChange.toFixed(1)}%</span>`;
+            html += `</div>`;
+            
+            // Status assessment
+            html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">`;
+            html += `<span style="font-weight: 600; color: #475569;">Current Status:</span>`;
+            html += `<span style="font-weight: 600; color: ${absoluteStatus.color}; background: ${absoluteStatus.color}20; padding: 2px 10px; border-radius: 12px;">${absoluteStatus.label}</span>`;
+            html += `</div>`;
+            
+            // Significance assessment
+            if (changeSignificance.status !== 'normal') {
+                html += `<div style="margin-top: 10px; padding: 10px; background: ${changeSignificance.color}15; border-left: 4px solid ${changeSignificance.color}; border-radius: 4px;">`;
+                html += `<div style="font-weight: 700; color: ${changeSignificance.color}; margin-bottom: 5px;">${changeSignificance.label}</div>`;
+                html += `<div style="font-size: 0.85em; color: #475569;">${changeSignificance.description}</div>`;
+                html += `<div style="font-size: 0.8em; color: #64748b; margin-top: 5px; font-style: italic;">Recommendation: ${changeSignificance.recommendation}</div>`;
+                html += `</div>`;
+            }
+            
+            // Show warning for significant cardiotoxicity
+            if (relativeChange >= 15) {
+                html += `<div style="margin-top: 10px; padding: 12px; background: #fef2f2; border: 2px solid #dc2626; border-radius: 8px;">`;
+                html += `<div style="font-weight: 700; color: #dc2626; display: flex; align-items: center; gap: 8px;">`;
+                html += `<span style="font-weight: 700; color: #dc2626;">[ALERT]</span> CARDIOTOXICITY THRESHOLD EXCEEDED`;
+                html += `</div>`;
+                html += `<div style="font-size: 0.85em; color: #7f1d1d; margin-top: 5px;">`;
+                html += `≥15% GLS reduction from baseline indicates subclinical left ventricular dysfunction (per ASE/EACVI guidelines)`;
+                html += `</div>`;
+                html += `</div>`;
+            }
+            
+            indicator.innerHTML = html;
+            indicator.style.display = 'block';
         }
 
         // Update dose display
@@ -2459,6 +2765,8 @@ This is an automated notification from ChemoTwin Platform.
                 cumulativeDose: currentPatient.cumulativeDose,
                 vitals: { ...currentPatient.vitals },
                 ejectionFraction: currentPatient.ejectionFraction,
+                baselineGLS: currentPatient.baselineGLS || -21.0,
+                currentGLS: currentPatient.currentGLS || -21.0,
                 cancerSubtype: currentPatient.cancerSubtype,
                 risks: risks
             };
@@ -2479,6 +2787,10 @@ This is an automated notification from ChemoTwin Platform.
                     chronicDiseases: currentPatient.chronicDiseases,
                     vitals: currentPatient.vitals,
                     ejectionFraction: currentPatient.ejectionFraction,
+                    baselineGLS: currentPatient.baselineGLS,
+                    currentGLS: currentPatient.currentGLS,
+                    glsRelativeChange: risks.glsRelativeChange,
+                    isGLSCardiotoxicity: risks.isGLSCardiotoxicity,
                     sessions: currentPatient.sessions,
                     cumulativeDose: currentPatient.cumulativeDose,
                     latestRisks: risks
@@ -2519,13 +2831,63 @@ This is an automated notification from ChemoTwin Platform.
             updatePatientView(risks);
         }
 
-        // Display digital twin analysis with cancer subtype
+        // Display digital twin analysis with cancer subtype and GLS
         function displayDigitalTwinAnalysis(risks) {
             const container = document.getElementById('digitalTwinAnalysis');
+            
+            // Get GLS values
+            const baselineGLS = currentPatient.baselineGLS || -21.0;
+            const currentGLS = currentPatient.currentGLS || -21.0;
+            const glsRelativeChange = risks.glsRelativeChange || 0;
+            const glsStatus = risks.glsStatus || { label: 'Normal', color: '#10b981' };
+            const glsChangeSignificance = risks.glsChangeSignificance || { label: 'Stable', color: '#10b981' };
             
             let html = '<div class="twin-analysis-box">';
             html += '<h4>Digital Twin Personalized Analysis</h4>';
             html += `<p><strong>${currentPatient.id}</strong> | ${currentPatient.age}yo ${currentPatient.sex} | ${currentPatient.cancer} (${currentPatient.cancerSubtype}) | ${currentPatient.cumulativeDose} mg/m² | EF: ${currentPatient.ejectionFraction}%</p>`;
+            
+            // GLS Assessment Box - Primary cardiotoxicity indicator
+            html += `<div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 15px; border-radius: 10px; margin: 15px 0; border: 2px solid #f59e0b;">`;
+            html += `<h5 style="color: #92400e; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">`;
+            html += ` Global Longitudinal Strain (GLS) Assessment`;
+            html += `<span style="font-size: 0.7em; background: #dc2626; color: white; padding: 2px 8px; border-radius: 12px;">PRIMARY CARDIOTOXICITY INDICATOR</span>`;
+            html += `</h5>`;
+            
+            html += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 10px;">`;
+            html += `<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">`;
+            html += `<div style="font-size: 0.8em; color: #64748b;">Baseline GLS</div>`;
+            html += `<div style="font-size: 1.4em; font-weight: 700; color: #1e293b;">${baselineGLS.toFixed(1)}%</div>`;
+            html += `</div>`;
+            html += `<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">`;
+            html += `<div style="font-size: 0.8em; color: #64748b;">Current GLS</div>`;
+            html += `<div style="font-size: 1.4em; font-weight: 700; color: ${glsStatus.color};">${currentGLS.toFixed(1)}%</div>`;
+            html += `</div>`;
+            html += `<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">`;
+            html += `<div style="font-size: 0.8em; color: #64748b;">Relative Change</div>`;
+            html += `<div style="font-size: 1.4em; font-weight: 700; color: ${glsChangeSignificance.color};">${glsRelativeChange >= 0 ? '+' : ''}${glsRelativeChange.toFixed(1)}%</div>`;
+            html += `</div>`;
+            html += `<div style="background: white; padding: 12px; border-radius: 8px; text-align: center;">`;
+            html += `<div style="font-size: 0.8em; color: #64748b;">Status</div>`;
+            html += `<div style="font-size: 1.1em; font-weight: 700; color: ${glsStatus.color};">${glsStatus.label}</div>`;
+            html += `</div>`;
+            html += `</div>`;
+            
+            // Cardiotoxicity warning if detected
+            if (risks.isGLSCardiotoxicity) {
+                html += `<div style="background: #fef2f2; border: 2px solid #dc2626; border-radius: 8px; padding: 12px; margin-top: 10px;">`;
+                html += `<div style="color: #dc2626; font-weight: 700; display: flex; align-items: center; gap: 8px;">`;
+                html += `<span style="font-weight: 700; color: #dc2626;">[ALERT]</span> CARDIOTOXICITY THRESHOLD EXCEEDED`;
+                html += `</div>`;
+                html += `<div style="color: #7f1d1d; font-size: 0.9em; margin-top: 8px;">`;
+                html += `${glsChangeSignificance.label}: ${glsChangeSignificance.description || ''}`;
+                html += `</div>`;
+                html += `<div style="color: #7f1d1d; font-size: 0.85em; margin-top: 5px; font-style: italic;">`;
+                html += `Recommendation: ${glsChangeSignificance.recommendation || 'Consider cardiology consultation'}`;
+                html += `</div>`;
+                html += `</div>`;
+            }
+            
+            html += `</div>`; // End GLS box
             
             if (risks.cardioModifiers && risks.cardioModifiers.length > 0) {
                 html += '<p><strong>Cardiotoxicity Factors:</strong></p>';
@@ -2541,10 +2903,36 @@ This is an automated notification from ChemoTwin Platform.
             container.innerHTML = html;
         }
 
-        // Display alerts with cancer subtype considerations
+        // Display alerts with cancer subtype and GLS considerations
         function displayAlerts(risks) {
             const alertsContainer = document.getElementById('clinicalAlerts');
             alertsContainer.innerHTML = '';
+            
+            // GLS-based cardiotoxicity alert (PRIMARY INDICATOR - highest priority)
+            if (risks.isGLSCardiotoxicity) {
+                const glsAlert = document.createElement('div');
+                glsAlert.className = 'alert';
+                glsAlert.style.background = 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)';
+                glsAlert.style.borderColor = '#dc2626';
+                let glsAlertText = '<h4 style="color: #dc2626;">[CRITICAL] GLS CARDIOTOXICITY ALERT (PRIMARY INDICATOR)</h4>';
+                glsAlertText += `<p><strong>GLS Relative Change: ${(risks.glsRelativeChange || 0) >= 0 ? '+' : ''}${(risks.glsRelativeChange || 0).toFixed(1)}%</strong> (≥15% = significant)</p>`;
+                glsAlertText += `<p><strong>Current GLS: ${(currentPatient.currentGLS || -21).toFixed(1)}%</strong> | Status: ${(risks.glsStatus || {}).label || 'N/A'}</p>`;
+                glsAlertText += '<p><strong>Clinical Significance:</strong></p>';
+                glsAlertText += '<ul>';
+                glsAlertText += '<li><strong>Per ASE/EACVI Guidelines:</strong> ≥15% GLS reduction from baseline indicates subclinical LV dysfunction</li>';
+                glsAlertText += '<li>GLS detects cardiotoxicity 2-3 months BEFORE ejection fraction decreases</li>';
+                glsAlertText += '</ul>';
+                glsAlertText += '<p><strong>Immediate Actions Required:</strong></p>';
+                glsAlertText += '<ul>';
+                glsAlertText += '<li>URGENT CARDIOLOGY CONSULTATION</li>';
+                glsAlertText += '<li>Consider dose reduction or treatment modification</li>';
+                glsAlertText += '<li>Initiate cardioprotective therapy (dexrazoxane, ACE inhibitors, beta-blockers)</li>';
+                glsAlertText += '<li>Schedule follow-up echocardiogram within 2-4 weeks</li>';
+                glsAlertText += '<li>Monitor serial GLS and troponin levels</li>';
+                glsAlertText += '</ul>';
+                glsAlert.innerHTML = glsAlertText;
+                alertsContainer.appendChild(glsAlert);
+            }
             
             if (risks.cardioRisk > 20 || currentPatient.ejectionFraction < 50) {
                 const alert = document.createElement('div');
@@ -2739,7 +3127,74 @@ This is an automated notification from ChemoTwin Platform.
             infoDetails += `<div class="calc-step"><strong>Evidence-Based:</strong> All calculations based on peer-reviewed clinical studies</div>`;
             infoDetails += `<div class="calc-step"><strong>Dynamic:</strong> Risks update in real-time as treatment progresses and vitals change</div>`;
             
+            // Build GLS calculation details
+            const baselineGLS = currentPatient.baselineGLS || -21.0;
+            const currentGLS = currentPatient.currentGLS || -21.0;
+            const glsRelChange = risks.glsRelativeChange || 0;
+            const glsStatus = risks.glsStatus || { label: 'Normal', color: '#10b981' };
+            const glsChangeSig = risks.glsChangeSignificance || { label: 'Stable', color: '#10b981' };
+            
+            let glsDetails = '';
+            glsDetails += `<div class="calc-step" style="background: #fef3c7; border-left-color: #f59e0b;"><strong> What is GLS?</strong><br>`;
+            glsDetails += `Global Longitudinal Strain (GLS) measures how much the heart muscle contracts and deforms during each heartbeat.<br>`;
+            glsDetails += `<strong>Normal values:</strong> -20% to -22% (more negative = better function)<br>`;
+            glsDetails += `<strong>Key advantage:</strong> Detects cardiotoxicity 2-3 months BEFORE ejection fraction drops</div>`;
+            
+            glsDetails += `<div class="calc-step"><strong>Step 1 - Baseline GLS (Pre-treatment):</strong><br>`;
+            glsDetails += `Patient's baseline GLS: <strong>${baselineGLS.toFixed(1)}%</strong><br>`;
+            glsDetails += `Reference range: -20% to -22%</div>`;
+            
+            glsDetails += `<div class="calc-step"><strong>Step 2 - Current GLS Measurement:</strong><br>`;
+            glsDetails += `Current GLS: <strong>${currentGLS.toFixed(1)}%</strong><br>`;
+            glsDetails += `Status: <span style="color: ${glsStatus.color}; font-weight: 600;">${glsStatus.label}</span></div>`;
+            
+            glsDetails += `<div class="calc-step"><strong>Step 3 - Relative Change Calculation:</strong><br>`;
+            glsDetails += `<strong>Formula:</strong> ((Current GLS - Baseline GLS) / |Baseline GLS|) × 100<br>`;
+            glsDetails += `Calculation: ((${currentGLS.toFixed(1)}) - (${baselineGLS.toFixed(1)})) / |${baselineGLS.toFixed(1)}| × 100<br>`;
+            glsDetails += `<strong>Result: ${glsRelChange >= 0 ? '+' : ''}${glsRelChange.toFixed(1)}%</strong></div>`;
+            
+            glsDetails += `<div class="calc-step"><strong>Step 4 - Clinical Significance (ASE/EACVI Guidelines):</strong><br>`;
+            glsDetails += `• <strong style="color: #10b981;">< 5% change:</strong> Normal variation - Continue treatment<br>`;
+            glsDetails += `• <strong style="color: #3b82f6;">5-9.9% change:</strong> Mild change - Monitor closely<br>`;
+            glsDetails += `• <strong style="color: #f59e0b;">10-14.9% change:</strong> Warning - Consider intervention<br>`;
+            glsDetails += `• <strong style="color: #dc2626;">≥15% change:</strong> SIGNIFICANT CARDIOTOXICITY - Urgent action required</div>`;
+            
+            glsDetails += `<div class="calc-step"><strong>Step 5 - Absolute GLS Assessment:</strong><br>`;
+            glsDetails += `• GLS ≤ -20%: Normal function<br>`;
+            glsDetails += `• GLS -18% to -19.9%: Borderline (+5% risk)<br>`;
+            glsDetails += `• GLS -16% to -17.9%: Abnormal (+15% risk)<br>`;
+            glsDetails += `• GLS > -16% (less negative): Severely abnormal (+30% risk)</div>`;
+            
+            const glsRiskClass = risks.isGLSCardiotoxicity ? 'high-risk' : glsRelChange >= 10 ? 'medium-risk' : 'low-risk';
+            glsDetails += `<div class="calc-result ${glsRiskClass}">`;
+            glsDetails += `GLS Assessment: ${glsChangeSig.label}<br>`;
+            glsDetails += `Risk Contribution: +${(glsStatus.riskAddition || 0) + (glsChangeSig.riskAddition || 0)}% to cardiotoxicity`;
+            if (risks.isGLSCardiotoxicity) {
+                glsDetails += `<br><strong style="color: #dc2626;">[ALERT] CARDIOTOXICITY THRESHOLD EXCEEDED</strong>`;
+            }
+            glsDetails += `</div>`;
+            
             let html = '<div class="accordion-container">';
+            
+            // GLS accordion - PRIMARY CARDIOTOXICITY INDICATOR (first position)
+            html += `<div class="accordion-item active" onclick="toggleAccordion(this)">
+                <div class="accordion-header" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-bottom-color: #f59e0b;">
+                    <div class="accordion-header-left">
+                        <div class="accordion-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"></div>
+                        <div>
+                            <div class="accordion-title" style="color: #92400e;">Global Longitudinal Strain (GLS) <span style="font-size: 0.65em; background: #dc2626; color: white; padding: 2px 8px; border-radius: 8px; margin-left: 8px;">PRIMARY INDICATOR</span></div>
+                            <div class="accordion-subtitle" style="color: #78350f;">Change: ${glsRelChange >= 0 ? '+' : ''}${glsRelChange.toFixed(1)}% | Status: ${glsStatus.label}</div>
+                        </div>
+                    </div>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content" style="display: block;">
+                    <div class="accordion-body">
+                        <p style="margin-bottom: 15px;"><strong>Formula:</strong> Relative Change = ((Current GLS - Baseline GLS) / |Baseline GLS|) × 100</p>
+                        ${glsDetails}
+                    </div>
+                </div>
+            </div>`;
             
             // Cardiotoxicity accordion
             html += `<div class="accordion-item" onclick="toggleAccordion(this)">
@@ -2747,15 +3202,15 @@ This is an automated notification from ChemoTwin Platform.
                     <div class="accordion-header-left">
                         <div class="accordion-icon cardio"></div>
                         <div>
-                            <div class="accordion-title">Cardiotoxicity Risk Calculation</div>
-                            <div class="accordion-subtitle">Final Risk: ${risks.cardioRisk}%</div>
+                            <div class="accordion-title">Combined Cardiotoxicity Risk Calculation</div>
+                            <div class="accordion-subtitle">Final Risk: ${risks.cardioRisk}% (includes GLS assessment)</div>
                         </div>
                     </div>
                     <span class="accordion-arrow">▼</span>
                 </div>
                 <div class="accordion-content">
                     <div class="accordion-body">
-                        <p style="margin-bottom: 15px;"><strong>Formula:</strong> Base Risk + Age + Sex + Diseases + Ejection Fraction + Cancer Subtype + Vitals</p>
+                        <p style="margin-bottom: 15px;"><strong>Formula:</strong> Base Risk + Age + Sex + Diseases + EF + GLS + Cancer Subtype + Vitals</p>
                         ${cardioDetails}
                     </div>
                 </div>
@@ -2853,10 +3308,17 @@ This is an automated notification from ChemoTwin Platform.
                 item.className = 'session-item';
                 const date = new Date(session.date).toLocaleDateString();
                 const time = new Date(session.date).toLocaleTimeString();
+                
+                // GLS status for display
+                const glsChange = session.risks.glsRelativeChange || 0;
+                const glsStatus = session.risks.glsStatus || { label: 'N/A', color: '#64748b' };
+                const isGLSCardiotoxicity = session.risks.isGLSCardiotoxicity || false;
+                
                 item.innerHTML = `
                     <h4>Session ${session.sessionNumber} - ${date} at ${time}</h4>
                     <p><strong>Dose:</strong> ${session.dose} mg/m² | <strong>Cumulative:</strong> ${session.cumulativeDose} mg/m²</p>
                     <p><strong>Vitals:</strong> BP: ${session.vitals.bloodPressure} | HR: ${session.vitals.heartRate} bpm | Temp: ${session.vitals.temperature}°C | EF: ${session.ejectionFraction || 'N/A'}%</p>
+                    <p><strong>GLS:</strong> Baseline: ${session.baselineGLS || currentPatient.baselineGLS || -21}% | Current: ${session.currentGLS || currentPatient.currentGLS || -21}% | Change: <span style="color: ${glsChange >= 15 ? '#dc2626' : glsChange >= 10 ? '#f59e0b' : '#10b981'}; font-weight: 600;">${glsChange >= 0 ? '+' : ''}${glsChange.toFixed(1)}%</span> ${isGLSCardiotoxicity ? '<span style="color: #dc2626; font-weight: 700;">[CARDIOTOXICITY]</span>' : ''}</p>
                     <p><strong>Cancer:</strong> ${currentPatient.cancer} (${session.cancerSubtype || currentPatient.cancerSubtype})</p>
                     <p><strong>Risks:</strong> Cardio: ${session.risks.cardioRisk}% | Neutro: ${session.risks.neutroRisk}% | Recovery: ${session.risks.overallScore}</p>
                 `;

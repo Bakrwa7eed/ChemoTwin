@@ -406,6 +406,127 @@
                             <input type="number" id="simEjectionFraction" min="20" max="80" value="60" oninput="updateSimulation()">
                         </div>
                     </div>
+                    
+                    <!-- Global Longitudinal Strain (GLS) Section -->
+                    <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; border: 2px solid #f59e0b;">
+                        <h4 style="color: #92400e; margin-bottom: 15px; font-size: 1em; display: flex; align-items: center; gap: 8px;">
+                            Global Longitudinal Strain (GLS)
+                            <span style="font-size: 0.65em; background: #dc2626; color: white; padding: 2px 8px; border-radius: 12px; font-weight: 600;">MORE ACCURATE</span>
+                        </h4>
+                        <p style="color: #78350f; font-size: 0.8em; margin-bottom: 12px; line-height: 1.4;">
+                            GLS detects cardiotoxicity <strong>2-3 months earlier</strong> than LVEF. Normal: -20% to -22%
+                        </p>
+                        <div class="horizontal-grid">
+                            <div class="input-group">
+                                <label style="color: #92400e; font-weight: 600;">Baseline GLS (%)</label>
+                                <input type="number" id="simBaselineGLS" step="0.1" min="-30" max="-10" value="-21.0" 
+                                       oninput="updateSimulation()" 
+                                       style="background: white; border-color: #f59e0b;">
+                                <small style="color: #92400e; font-size: 0.7em;">Pre-treatment value</small>
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #92400e; font-weight: 600;">Current GLS (%)</label>
+                                <input type="number" id="simCurrentGLS" step="0.1" min="-30" max="-5" value="-21.0" 
+                                       oninput="updateSimulation()" 
+                                       style="background: white; border-color: #f59e0b;">
+                                <small style="color: #92400e; font-size: 0.7em;">Less negative = worse</small>
+                            </div>
+                        </div>
+                        <div id="simGLSIndicator" style="margin-top: 10px; padding: 8px; background: white; border-radius: 6px; font-size: 0.85em;"></div>
+                    </div>
+                </div>
+
+                <!-- Complete Blood Count (CBC) Section - Per NCCN/ASCO Guidelines -->
+                <div class="form-section">
+                    <h3>Complete Blood Count (CBC)</h3>
+                    <p style="color: #64748b; font-size: 0.85em; margin-bottom: 15px;">Laboratory values for hematologic toxicity assessment</p>
+                    <div class="horizontal-grid">
+                        <div class="input-group">
+                            <label>WBC (x10^9/L)</label>
+                            <input type="number" id="simWBC" step="0.1" min="0" max="50" value="7.0" oninput="updateSimulation()">
+                            <small style="color: #666; font-size: 0.75em;">Normal: 4.5-11.0</small>
+                        </div>
+                        <div class="input-group">
+                            <label>ANC (x10^9/L)</label>
+                            <input type="number" id="simANC" step="0.1" min="0" max="20" value="4.0" oninput="updateSimulation()">
+                            <small style="color: #666; font-size: 0.75em;">Normal: 1.5-8.0 | Hold chemo if &lt;1.5</small>
+                        </div>
+                        <div class="input-group">
+                            <label>Hemoglobin (g/dL)</label>
+                            <input type="number" id="simHemoglobin" step="0.1" min="0" max="20" value="13.5" oninput="updateSimulation()">
+                            <small style="color: #666; font-size: 0.75em;">Normal: M 13.5-17.5, F 12.0-16.0</small>
+                        </div>
+                        <div class="input-group">
+                            <label>Platelets (x10^9/L)</label>
+                            <input type="number" id="simPlatelets" step="1" min="0" max="500" value="250" oninput="updateSimulation()">
+                            <small style="color: #666; font-size: 0.75em;">Normal: 150-400 | Hold if &lt;100</small>
+                        </div>
+                    </div>
+                    <div id="cbcIndicator" style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 0.85em;"></div>
+                </div>
+
+                <!-- Kidney Function Section - Per FDA/NCCN Guidelines -->
+                <div class="form-section">
+                    <h3>Kidney Function</h3>
+                    <p style="color: #64748b; font-size: 0.85em; margin-bottom: 15px;">Renal parameters for dose adjustments</p>
+                    <div class="horizontal-grid">
+                        <div class="input-group">
+                            <label>Serum Creatinine (mg/dL)</label>
+                            <input type="number" id="simCreatinine" step="0.1" min="0" max="15" value="1.0" oninput="updateSimulation(); calculateEGFR();">
+                            <small style="color: #666; font-size: 0.75em;">Normal: 0.7-1.3</small>
+                        </div>
+                        <div class="input-group">
+                            <label>eGFR (mL/min/1.73m²)</label>
+                            <input type="number" id="simEGFR" step="1" min="0" max="150" value="90" oninput="updateSimulation()">
+                            <small style="color: #666; font-size: 0.75em;">Normal: ≥90 | Dose adjust if &lt;60</small>
+                        </div>
+                        <div class="input-group">
+                            <label>BUN (mg/dL)</label>
+                            <input type="number" id="simBUN" step="1" min="0" max="100" value="15" oninput="updateSimulation()">
+                            <small style="color: #666; font-size: 0.75em;">Normal: 7-20</small>
+                        </div>
+                    </div>
+                    <div id="kidneyIndicator" style="margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 0.85em;"></div>
+                </div>
+
+                <!-- Chemotherapy Regimen Selection -->
+                <div class="form-section">
+                    <h3>Chemotherapy Regimen</h3>
+                    <div class="input-group">
+                        <label>Select Regimen</label>
+                        <select id="simRegimen" onchange="updateSimulation(); updateRegimenInfo();">
+                            <option value="doxorubicin">Doxorubicin (Anthracycline) - Single Agent</option>
+                            <option value="ac">AC (Doxorubicin + Cyclophosphamide) - Breast Cancer</option>
+                            <option value="chop">CHOP (Cyclophosphamide, Doxorubicin, Vincristine, Prednisone) - Lymphoma</option>
+                            <option value="abvd">ABVD (Doxorubicin, Bleomycin, Vinblastine, Dacarbazine) - Hodgkin</option>
+                            <option value="fac">FAC (5-FU, Doxorubicin, Cyclophosphamide) - Breast Cancer</option>
+                            <option value="rchop">R-CHOP (Rituximab + CHOP) - B-cell Lymphoma</option>
+                        </select>
+                    </div>
+                    <div id="regimenInfo" style="margin-top: 10px; padding: 12px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0066cc;"></div>
+                </div>
+
+                <!-- Concomitant Medications (Drug Interactions) -->
+                <div class="form-section">
+                    <h3>Concomitant Medications</h3>
+                    <p style="color: #64748b; font-size: 0.85em; margin-bottom: 15px;">Select medications that may cause drug-drug interactions</p>
+                    <div class="input-group">
+                        <select id="simConcomitantMeds" multiple size="8" onchange="updateSimulation(); checkDrugInteractions();">
+                            <option value="none">None</option>
+                            <option value="trastuzumab">Trastuzumab (Herceptin) - HER2+ Breast Cancer</option>
+                            <option value="paclitaxel">Paclitaxel (Taxol)</option>
+                            <option value="cyclophosphamide">Cyclophosphamide (High-dose)</option>
+                            <option value="mediastinal_rt">Mediastinal Radiation Therapy</option>
+                            <option value="verapamil">Verapamil (Calcium Channel Blocker)</option>
+                            <option value="cyclosporine">Cyclosporine (Immunosuppressant)</option>
+                            <option value="digoxin">Digoxin (Cardiac Glycoside)</option>
+                            <option value="warfarin">Warfarin (Anticoagulant)</option>
+                            <option value="phenytoin">Phenytoin (Anticonvulsant)</option>
+                            <option value="cimetidine">Cimetidine (H2 Blocker)</option>
+                        </select>
+                        <small style="color: #666; display: block; margin-top: 5px;">Hold Ctrl/Cmd to select multiple</small>
+                    </div>
+                    <div id="drugInteractionAlert" style="margin-top: 10px; display: none;"></div>
                 </div>
 
                 <div class="form-section">
@@ -413,12 +534,26 @@
                     <div class="dose-display">
                         <label>Current Cumulative Dose</label>
                         <div class="dose-value" id="simCumulativeDoseDisplay">0 mg/m²</div>
-                        <small>Maximum recommended: 550 mg/m²</small>
+                        <small>Maximum recommended: 550 mg/m² (Doxorubicin)</small>
                     </div>
-                    <div class="input-group">
-                        <label>Cumulative Dose (mg/m²)</label>
-                        <input type="number" id="simCumulativeDose" min="0" max="600" value="0" oninput="updateSimulation()">
+                    <div class="horizontal-grid">
+                        <div class="input-group">
+                            <label>Cumulative Dose (mg/m²)</label>
+                            <input type="number" id="simCumulativeDose" min="0" max="600" value="0" oninput="updateSimulation()">
+                        </div>
+                        <div class="input-group">
+                            <label>Current Cycle Number</label>
+                            <input type="number" id="simCycleNumber" min="1" max="20" value="1" oninput="updateSimulation()">
+                        </div>
                     </div>
+                </div>
+
+                <!-- Treatment Cycle History Tracking -->
+                <div class="form-section">
+                    <h3>Toxicity Trend Tracking</h3>
+                    <p style="color: #64748b; font-size: 0.85em; margin-bottom: 15px;">Track risk changes across treatment cycles</p>
+                    <button class="btn btn-secondary" onclick="addCycleToHistory()" style="width: 100%; margin-bottom: 10px;">Record Current Cycle</button>
+                    <div id="cycleHistoryDisplay" style="max-height: 200px; overflow-y: auto;"></div>
                 </div>
             </div>
 
@@ -441,6 +576,229 @@
     <script>
         // Virtual patient state
         let virtualPatient = null;
+        let cycleHistory = [];
+
+        // ============================================================================
+        // CHEMOTHERAPY REGIMEN DATABASE - Evidence-Based Clinical Data
+        // Sources: NCCN Guidelines 2024, FDA Prescribing Information, Uptodate
+        // References:
+        // - Von Hoff DD, et al. Ann Intern Med 1979;91:710-7 (Doxorubicin cumulative dose)
+        // - Cardiotoxicity risk: <1% at <300mg/m², 5% at 400mg/m², 26% at 550mg/m²
+        // - NCCN Antiemesis Guidelines v2.2024
+        // - NCCN B-Cell Lymphomas v5.2024, NCCN Breast Cancer v4.2024
+        // ============================================================================
+        const REGIMEN_DATA = {
+            doxorubicin: {
+                name: 'Doxorubicin (Adriamycin)',
+                type: 'Anthracycline',
+                indication: 'Various solid tumors, leukemias, lymphomas',
+                standardDose: '60-75 mg/m² q21d',
+                maxLifetimeDose: 550, // CHF risk: <1% at 300, 5% at 400, 26% at 550 mg/m²
+                cardiotoxicityProfile: 'HIGH',
+                myelosuppressionRisk: 'HIGH',
+                emetogenicity: 'HIGH', // NCCN: High emetic risk (>90% without prophylaxis)
+                renalAdjustment: { severe: 0.5, moderate: 0.75, mild: 1.0 }, // Per FDA label
+                hepaticAdjustment: { severe: 0.25, moderate: 0.5, mild: 0.75 }, // Bili >3: 50%, Bili 1.5-3: 75%
+                keyToxicities: ['Cardiotoxicity (dose-limiting)', 'Myelosuppression', 'Mucositis', 'Alopecia'],
+                monitoring: ['ECHO/MUGA baseline and q cumulative 100mg/m²', 'GLS recommended', 'CBC weekly']
+            },
+            ac: {
+                name: 'AC (Doxorubicin + Cyclophosphamide)',
+                type: 'Combination - Breast Cancer',
+                indication: 'Breast cancer (adjuvant/neoadjuvant)',
+                standardDose: 'Doxorubicin 60 mg/m² + Cyclophosphamide 600 mg/m² q21d x 4',
+                maxLifetimeDose: 450,
+                cardiotoxicityProfile: 'HIGH',
+                myelosuppressionRisk: 'HIGH',
+                emetogenicity: 'HIGH',
+                renalAdjustment: { severe: 0.5, moderate: 0.75, mild: 1.0 },
+                hepaticAdjustment: { severe: 0.25, moderate: 0.5, mild: 0.75 },
+                keyToxicities: ['Cardiotoxicity', 'Neutropenia', 'Nausea/Vomiting', 'Amenorrhea'],
+                monitoring: ['ECHO baseline and post-treatment', 'CBC before each cycle', 'GLS recommended']
+            },
+            chop: {
+                name: 'CHOP',
+                type: 'Combination - Lymphoma',
+                indication: 'Non-Hodgkin Lymphoma',
+                standardDose: 'Cyclophosphamide 750, Doxorubicin 50, Vincristine 1.4, Prednisone 100 q21d',
+                maxLifetimeDose: 400,
+                cardiotoxicityProfile: 'MODERATE-HIGH',
+                myelosuppressionRisk: 'HIGH',
+                emetogenicity: 'HIGH',
+                renalAdjustment: { severe: 0.5, moderate: 0.75, mild: 1.0 },
+                hepaticAdjustment: { severe: 0.5, moderate: 0.75, mild: 1.0 },
+                keyToxicities: ['Neutropenia', 'Cardiotoxicity', 'Peripheral Neuropathy', 'Hyperglycemia'],
+                monitoring: ['CBC before each cycle', 'ECHO if symptomatic', 'Blood glucose']
+            },
+            abvd: {
+                name: 'ABVD',
+                type: 'Combination - Hodgkin Lymphoma',
+                indication: 'Hodgkin Lymphoma',
+                standardDose: 'Doxorubicin 25, Bleomycin 10, Vinblastine 6, Dacarbazine 375 d1,15 q28d',
+                maxLifetimeDose: 400,
+                cardiotoxicityProfile: 'MODERATE',
+                myelosuppressionRisk: 'MODERATE',
+                emetogenicity: 'MODERATE',
+                renalAdjustment: { severe: 0.75, moderate: 1.0, mild: 1.0 },
+                hepaticAdjustment: { severe: 0.5, moderate: 0.75, mild: 1.0 },
+                keyToxicities: ['Pulmonary Toxicity (Bleomycin)', 'Cardiotoxicity', 'Infertility'],
+                monitoring: ['PFTs baseline and q2 cycles', 'ECHO if symptomatic', 'CBC']
+            },
+            fac: {
+                name: 'FAC (5-FU, Doxorubicin, Cyclophosphamide)',
+                type: 'Combination - Breast Cancer',
+                indication: 'Breast cancer',
+                standardDose: '5-FU 500, Doxorubicin 50, Cyclophosphamide 500 q21d',
+                maxLifetimeDose: 450,
+                cardiotoxicityProfile: 'HIGH',
+                myelosuppressionRisk: 'HIGH',
+                emetogenicity: 'HIGH',
+                renalAdjustment: { severe: 0.5, moderate: 0.75, mild: 1.0 },
+                hepaticAdjustment: { severe: 0.25, moderate: 0.5, mild: 0.75 },
+                keyToxicities: ['Cardiotoxicity', 'Mucositis', 'Diarrhea', 'Hand-foot syndrome'],
+                monitoring: ['ECHO/MUGA', 'CBC weekly', 'Liver function']
+            },
+            rchop: {
+                name: 'R-CHOP (Rituximab + CHOP)',
+                type: 'Immunochemotherapy - B-cell Lymphoma',
+                indication: 'Diffuse Large B-cell Lymphoma, Follicular Lymphoma',
+                standardDose: 'Rituximab 375 mg/m² + CHOP q21d x 6-8',
+                maxLifetimeDose: 400,
+                cardiotoxicityProfile: 'MODERATE-HIGH',
+                myelosuppressionRisk: 'HIGH',
+                emetogenicity: 'MODERATE',
+                renalAdjustment: { severe: 0.75, moderate: 1.0, mild: 1.0 },
+                hepaticAdjustment: { severe: 0.5, moderate: 0.75, mild: 1.0 },
+                keyToxicities: ['Infusion reactions', 'Neutropenia', 'Cardiotoxicity', 'HBV reactivation'],
+                monitoring: ['HBV screening', 'CBC', 'ECHO', 'Infusion monitoring']
+            }
+        };
+
+        // ============================================================================
+        // DRUG INTERACTION DATABASE - Evidence-Based
+        // Sources: FDA Prescribing Information, Lexicomp, Clinical Pharmacology
+        // References:
+        // - FDA Herceptin (trastuzumab) Label: Cardiac dysfunction 27% concurrent vs 8% sequential
+        // - Slamon DJ, et al. N Engl J Med 2001;344:783-92 (HER2 trial)
+        // - Von Hoff DD, et al. Ann Intern Med 1979;91:710-7 (Doxorubicin cardiotoxicity)
+        // ============================================================================
+        const DRUG_INTERACTIONS = {
+            trastuzumab: {
+                severity: 'MAJOR',
+                mechanism: 'Additive cardiotoxicity - HER2 inhibition impairs cardiac repair after anthracycline damage. FDA BLACK BOX WARNING.',
+                recommendation: 'AVOID concurrent use. Cardiac dysfunction: 27% concurrent vs 8% sequential (FDA). If sequential, allow ≥7 weeks washout. Monitor LVEF q3 months.',
+                riskIncrease: 20, // Based on ~19% absolute risk increase (27% - 8%)
+                affectedToxicity: 'cardiotoxicity'
+            },
+            paclitaxel: {
+                severity: 'MODERATE',
+                mechanism: 'Paclitaxel increases doxorubicin AUC by ~30%. Enhanced myelosuppression.',
+                recommendation: 'Administer doxorubicin before paclitaxel. Consider dose reduction.',
+                riskIncrease: 15,
+                affectedToxicity: 'cardiotoxicity'
+            },
+            cyclophosphamide: {
+                severity: 'MODERATE',
+                mechanism: 'Enhanced cardiotoxicity when high-dose cyclophosphamide combined with anthracyclines.',
+                recommendation: 'Standard doses acceptable. Monitor for heart failure with high doses.',
+                riskIncrease: 10,
+                affectedToxicity: 'cardiotoxicity'
+            },
+            mediastinal_rt: {
+                severity: 'MAJOR',
+                mechanism: 'Radiation-induced cardiac damage synergistic with anthracycline cardiotoxicity.',
+                recommendation: 'Reduce lifetime anthracycline dose to 350-400 mg/m². Closer cardiac monitoring.',
+                riskIncrease: 20,
+                affectedToxicity: 'cardiotoxicity'
+            },
+            verapamil: {
+                severity: 'MAJOR',
+                mechanism: 'Verapamil inhibits P-glycoprotein, increasing intracellular doxorubicin concentration.',
+                recommendation: 'Avoid combination. Consider alternative antihypertensive.',
+                riskIncrease: 15,
+                affectedToxicity: 'cardiotoxicity'
+            },
+            cyclosporine: {
+                severity: 'MAJOR',
+                mechanism: 'Cyclosporine inhibits doxorubicin metabolism, increases AUC and toxicity.',
+                recommendation: 'Reduce doxorubicin dose by 40%. Monitor closely for myelosuppression.',
+                riskIncrease: 20,
+                affectedToxicity: 'myelosuppression'
+            },
+            digoxin: {
+                severity: 'MODERATE',
+                mechanism: 'Chemotherapy-induced mucositis reduces digoxin absorption unpredictably.',
+                recommendation: 'Monitor digoxin levels closely. Consider IV formulation during mucositis.',
+                riskIncrease: 5,
+                affectedToxicity: 'other'
+            },
+            warfarin: {
+                severity: 'MODERATE',
+                mechanism: 'Doxorubicin may enhance anticoagulant effect. Increased bleeding risk.',
+                recommendation: 'Monitor INR frequently (2-3x weekly initially). Adjust warfarin dose.',
+                riskIncrease: 8,
+                affectedToxicity: 'bleeding'
+            },
+            phenytoin: {
+                severity: 'MODERATE',
+                mechanism: 'Phenytoin may reduce doxorubicin efficacy via CYP3A4 induction.',
+                recommendation: 'Consider alternative anticonvulsant. Monitor seizure control and efficacy.',
+                riskIncrease: 0,
+                affectedToxicity: 'efficacy'
+            },
+            cimetidine: {
+                severity: 'MINOR',
+                mechanism: 'Cimetidine may increase doxorubicin bioavailability slightly.',
+                recommendation: 'Monitor for enhanced toxicity. Consider alternative H2 blocker.',
+                riskIncrease: 5,
+                affectedToxicity: 'general'
+            }
+        };
+
+        // ============================================================================
+        // CBC ASSESSMENT THRESHOLDS - Per CTCAE v5.0 & NCCN Guidelines
+        // References:
+        // - CTCAE v5.0: https://ctep.cancer.gov/protocoldevelopment/electronic_applications/ctc.htm
+        // - NCCN Myeloid Growth Factors Guidelines v2.2024
+        // - NCCN Cancer-Related Anemia Guidelines v2.2024
+        // ============================================================================
+        const CBC_THRESHOLDS = {
+            anc: {
+                // CTCAE v5.0 Neutrophil Count Decreased
+                // Grade 1: <LLN - 1500/μL | Grade 2: <1500 - 1000/μL
+                // Grade 3: <1000 - 500/μL | Grade 4: <500/μL
+                normal: 2.0,        // Lower limit of normal ~1.8-2.0 x10^9/L
+                grade1: 1.5,        // 1.5-2.0 x10^9/L
+                grade2: 1.0,        // 1.0-1.5 x10^9/L  
+                grade3: 0.5,        // 0.5-1.0 x10^9/L
+                grade4: 0.5,        // <0.5 x10^9/L (severe neutropenia)
+                holdThreshold: 1.5, // NCCN: Hold chemo if ANC <1500/μL
+                gcsf_Threshold: 1.0 // NCCN: Consider G-CSF if ANC <1000/μL
+            },
+            platelets: {
+                // CTCAE v5.0 Platelet Count Decreased
+                // Grade 1: <LLN - 75,000/μL | Grade 2: <75,000 - 50,000/μL
+                // Grade 3: <50,000 - 25,000/μL | Grade 4: <25,000/μL
+                normal: 150,        // Normal: 150-400 x10^9/L
+                grade1: 75,         // 75-150 x10^9/L
+                grade2: 50,         // 50-75 x10^9/L
+                grade3: 25,         // 25-50 x10^9/L
+                grade4: 25,         // <25 x10^9/L (severe thrombocytopenia)
+                holdThreshold: 100, // NCCN: Hold most chemo if platelets <100,000/μL
+                transfusionThreshold: 10 // Prophylactic transfusion if <10,000/μL (or <20,000 with fever)
+            },
+            hemoglobin: {
+                // CTCAE v5.0 Anemia
+                // Grade 1: <LLN - 10.0 g/dL | Grade 2: <10.0 - 8.0 g/dL
+                // Grade 3: <8.0 g/dL | Grade 4: Life-threatening
+                normalMale: 13.5,   // Normal male: 13.5-17.5 g/dL
+                normalFemale: 12.0, // Normal female: 12.0-16.0 g/dL
+                grade1: 10.0,       // <LLN - 10.0 g/dL
+                grade2: 8.0,        // 8.0-10.0 g/dL
+                grade3: 8.0,        // <8.0 g/dL - transfusion indicated
+                transfusionThreshold: 7.0 // NCCN: Restrictive strategy, transfuse if Hgb <7 g/dL
+            }
+        };
 
         // Initialize from real patient data or create new virtual patient
         function initializeVirtualPatient() {
@@ -455,6 +813,8 @@
                 document.getElementById('simBloodPressure').value = realPatient.vitals?.bloodPressure || '120/80';
                 document.getElementById('simHeartRate').value = realPatient.vitals?.heartRate || 75;
                 document.getElementById('simEjectionFraction').value = realPatient.ejectionFraction || 60;
+                document.getElementById('simBaselineGLS').value = realPatient.baselineGLS || -21.0;
+                document.getElementById('simCurrentGLS').value = realPatient.currentGLS || -21.0;
                 document.getElementById('simCumulativeDose').value = realPatient.cumulativeDose || 0;
 
                 // Set chronic diseases
@@ -462,13 +822,41 @@
                 for (let option of select.options) {
                     option.selected = realPatient.chronicDiseases?.includes(option.value) || false;
                 }
+                
+                // Load CBC values if available
+                if (realPatient.cbc) {
+                    document.getElementById('simWBC').value = realPatient.cbc.wbc || 7.0;
+                    document.getElementById('simANC').value = realPatient.cbc.anc || 4.0;
+                    document.getElementById('simHemoglobin').value = realPatient.cbc.hemoglobin || 13.5;
+                    document.getElementById('simPlatelets').value = realPatient.cbc.platelets || 250;
+                }
+                
+                // Load kidney function if available
+                if (realPatient.renal) {
+                    document.getElementById('simCreatinine').value = realPatient.renal.creatinine || 1.0;
+                    document.getElementById('simEGFR').value = realPatient.renal.egfr || 90;
+                    document.getElementById('simBUN').value = realPatient.renal.bun || 15;
+                }
             }
+            
+            // Load cycle history from localStorage
+            const savedHistory = localStorage.getItem('cycleHistory');
+            if (savedHistory) {
+                cycleHistory = JSON.parse(savedHistory);
+                displayCycleHistory();
+            }
+            
             updateSimulation();
+            updateRegimenInfo();
+            checkDrugInteractions();
         }
 
         function updateSimulation() {
             const chronicDiseasesSelect = document.getElementById('simChronicDiseases');
             const selectedDiseases = Array.from(chronicDiseasesSelect.selectedOptions).map(opt => opt.value);
+            
+            const concomitantMedsSelect = document.getElementById('simConcomitantMeds');
+            const selectedMeds = Array.from(concomitantMedsSelect.selectedOptions).map(opt => opt.value);
 
             virtualPatient = {
                 age: parseInt(document.getElementById('simAge').value),
@@ -481,26 +869,462 @@
                     heartRate: parseInt(document.getElementById('simHeartRate').value)
                 },
                 ejectionFraction: parseInt(document.getElementById('simEjectionFraction').value) || 60,
-                cumulativeDose: parseInt(document.getElementById('simCumulativeDose').value) || 0
+                baselineGLS: parseFloat(document.getElementById('simBaselineGLS').value) || -21.0,
+                currentGLS: parseFloat(document.getElementById('simCurrentGLS').value) || -21.0,
+                cumulativeDose: parseInt(document.getElementById('simCumulativeDose').value) || 0,
+                cycleNumber: parseInt(document.getElementById('simCycleNumber').value) || 1,
+                regimen: document.getElementById('simRegimen').value,
+                concomitantMeds: selectedMeds,
+                cbc: {
+                    wbc: parseFloat(document.getElementById('simWBC').value) || 7.0,
+                    anc: parseFloat(document.getElementById('simANC').value) || 4.0,
+                    hemoglobin: parseFloat(document.getElementById('simHemoglobin').value) || 13.5,
+                    platelets: parseInt(document.getElementById('simPlatelets').value) || 250
+                },
+                renal: {
+                    creatinine: parseFloat(document.getElementById('simCreatinine').value) || 1.0,
+                    egfr: parseInt(document.getElementById('simEGFR').value) || 90,
+                    bun: parseInt(document.getElementById('simBUN').value) || 15
+                }
             };
 
             document.getElementById('simCumulativeDoseDisplay').textContent = `${virtualPatient.cumulativeDose} mg/m²`;
+            
+            // Update all indicators
+            updateGLSIndicator();
+            updateCBCIndicator();
+            updateKidneyIndicator();
+        }
+        
+        // ============================================================================
+        // CBC INDICATOR - Assesses hematologic toxicity grade per CTCAE v5.0
+        // ============================================================================
+        function updateCBCIndicator() {
+            const anc = parseFloat(document.getElementById('simANC').value) || 4.0;
+            const platelets = parseInt(document.getElementById('simPlatelets').value) || 250;
+            const hemoglobin = parseFloat(document.getElementById('simHemoglobin').value) || 13.5;
+            const sex = document.getElementById('simSex').value;
+            
+            const indicator = document.getElementById('cbcIndicator');
+            let alerts = [];
+            let status = 'normal';
+            
+            // ANC Assessment (CTCAE v5.0)
+            let ancStatus, ancColor;
+            if (anc >= 2.0) { ancStatus = 'Normal'; ancColor = '#10b981'; }
+            else if (anc >= 1.5) { ancStatus = 'Grade 1'; ancColor = '#84cc16'; }
+            else if (anc >= 1.0) { ancStatus = 'Grade 2 - Monitor'; ancColor = '#f59e0b'; status = 'warning'; }
+            else if (anc >= 0.5) { ancStatus = 'Grade 3 - HOLD CHEMO'; ancColor = '#ef4444'; status = 'critical'; alerts.push('ANC <1.0: Consider G-CSF prophylaxis'); }
+            else { ancStatus = 'Grade 4 - SEVERE'; ancColor = '#dc2626'; status = 'critical'; alerts.push('ANC <0.5: HIGH risk febrile neutropenia. G-CSF required.'); }
+            
+            // Platelet Assessment (CTCAE v5.0)
+            // Grade 1: <LLN - 75,000/μL | Grade 2: <75,000 - 50,000/μL
+            // Grade 3: <50,000 - 25,000/μL | Grade 4: <25,000/μL
+            let pltStatus, pltColor;
+            if (platelets >= 150) { pltStatus = 'Normal'; pltColor = '#10b981'; }
+            else if (platelets >= 100) { pltStatus = 'Grade 1 - OK to treat'; pltColor = '#84cc16'; }
+            else if (platelets >= 75) { pltStatus = 'Grade 1 - HOLD CHEMO'; pltColor = '#f59e0b'; status = status === 'critical' ? 'critical' : 'warning'; alerts.push('Platelets <100: Hold chemotherapy until recovery (per NCCN)'); }
+            else if (platelets >= 50) { pltStatus = 'Grade 2 - CAUTION'; pltColor = '#ef4444'; status = 'critical'; alerts.push('Platelets 50-75: Hold treatment. Monitor for bleeding.'); }
+            else if (platelets >= 25) { pltStatus = 'Grade 3 - HIGH RISK'; pltColor = '#dc2626'; status = 'critical'; alerts.push('Platelets 25-50: Transfusion may be needed. Hold all myelosuppressive therapy.'); }
+            else { pltStatus = 'Grade 4 - CRITICAL'; pltColor = '#7f1d1d'; status = 'critical'; alerts.push('Platelets <25: URGENT - Prophylactic transfusion required.'); }
+            
+            // Hemoglobin Assessment (CTCAE v5.0)
+            // Grade 1: <LLN - 10.0 g/dL | Grade 2: <10.0 - 8.0 g/dL
+            // Grade 3: <8.0 g/dL, transfusion indicated | Grade 4: Life-threatening
+            const hgbNormal = sex === 'female' ? 12.0 : 13.5;
+            let hgbStatus, hgbColor;
+            if (hemoglobin >= hgbNormal) { hgbStatus = 'Normal'; hgbColor = '#10b981'; }
+            else if (hemoglobin >= 10.0) { hgbStatus = 'Grade 1'; hgbColor = '#84cc16'; }
+            else if (hemoglobin >= 8.0) { hgbStatus = 'Grade 2 - Monitor'; hgbColor = '#f59e0b'; alerts.push('Hgb 8-10: Monitor for symptoms. Consider EPO if persistent.'); }
+            else if (hemoglobin >= 7.0) { hgbStatus = 'Grade 3 - Transfusion'; hgbColor = '#ef4444'; status = 'critical'; alerts.push('Hgb <8: Transfusion indicated per NCCN (threshold 7-8 g/dL).'); }
+            else { hgbStatus = 'Grade 4 - URGENT'; hgbColor = '#dc2626'; status = 'critical'; alerts.push('Hgb <7: URGENT transfusion required. Hold chemotherapy.'); }
+            
+            const bgColor = status === 'critical' ? '#fef2f2' : status === 'warning' ? '#fffbeb' : '#f0fdf4';
+            const borderColor = status === 'critical' ? '#dc2626' : status === 'warning' ? '#f59e0b' : '#10b981';
+            
+            indicator.innerHTML = `
+                <div style="background: ${bgColor}; padding: 10px; border-radius: 6px; border-left: 4px solid ${borderColor};">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: ${alerts.length > 0 ? '10px' : '0'};">
+                        <div><strong>ANC:</strong> <span style="color: ${ancColor}; font-weight: 600;">${ancStatus}</span></div>
+                        <div><strong>Platelets:</strong> <span style="color: ${pltColor}; font-weight: 600;">${pltStatus}</span></div>
+                        <div><strong>Hemoglobin:</strong> <span style="color: ${hgbColor}; font-weight: 600;">${hgbStatus}</span></div>
+                    </div>
+                    ${alerts.length > 0 ? `<div style="color: #991b1b; font-size: 0.85em; font-weight: 500;">${alerts.map(a => '[!] ' + a).join('<br>')}</div>` : ''}
+                </div>
+            `;
+        }
+        
+        // ============================================================================
+        // KIDNEY FUNCTION INDICATOR - Per CKD-EPI and FDA Guidelines
+        // ============================================================================
+        function updateKidneyIndicator() {
+            const creatinine = parseFloat(document.getElementById('simCreatinine').value) || 1.0;
+            const egfr = parseInt(document.getElementById('simEGFR').value) || 90;
+            
+            const indicator = document.getElementById('kidneyIndicator');
+            let status, color, recommendation;
+            
+            // CKD Staging based on eGFR
+            if (egfr >= 90) {
+                status = 'Normal (G1)';
+                color = '#10b981';
+                recommendation = 'No dose adjustment required';
+            } else if (egfr >= 60) {
+                status = 'Mild Impairment (G2)';
+                color = '#84cc16';
+                recommendation = 'No dose adjustment for most agents';
+            } else if (egfr >= 45) {
+                status = 'Moderate (G3a)';
+                color = '#f59e0b';
+                recommendation = 'Consider 25% dose reduction for renally cleared agents';
+            } else if (egfr >= 30) {
+                status = 'Moderate-Severe (G3b)';
+                color = '#ef4444';
+                recommendation = 'Reduce dose by 25-50%. Avoid nephrotoxic agents. Monitor closely.';
+            } else if (egfr >= 15) {
+                status = 'Severe (G4)';
+                color = '#dc2626';
+                recommendation = 'Reduce dose by 50% or avoid. Nephrology consultation recommended.';
+            } else {
+                status = 'Kidney Failure (G5)';
+                color = '#7f1d1d';
+                recommendation = 'Dialysis consideration. Many agents contraindicated.';
+            }
+            
+            const regimen = document.getElementById('simRegimen').value;
+            const regimenData = REGIMEN_DATA[regimen];
+            let doseAdjustment = '100%';
+            if (egfr < 30) doseAdjustment = `${regimenData.renalAdjustment.severe * 100}%`;
+            else if (egfr < 60) doseAdjustment = `${regimenData.renalAdjustment.moderate * 100}%`;
+            
+            indicator.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <strong>Renal Status:</strong> 
+                        <span style="background: ${color}20; color: ${color}; padding: 2px 10px; border-radius: 10px; font-weight: 600;">${status}</span>
+                    </div>
+                    <div style="font-size: 0.9em;">
+                        <strong>Dose Adjustment:</strong> <span style="font-weight: 600;">${doseAdjustment}</span>
+                    </div>
+                </div>
+                <div style="margin-top: 8px; font-size: 0.85em; color: #475569;">${recommendation}</div>
+            `;
+        }
+        
+        // ============================================================================
+        // eGFR CALCULATION - CKD-EPI 2021 Equation (Race-Free)
+        // Reference: Inker LA, et al. N Engl J Med 2021;385:1737-1749
+        // KDIGO 2024 CKD Guideline Update
+        // Formula: eGFR = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^-1.200 × 0.9938^Age × (1.012 if female)
+        // κ = 0.7 (female), 0.9 (male) | α = -0.241 (female), -0.302 (male)
+        // ============================================================================
+        function calculateEGFR() {
+            const creatinine = parseFloat(document.getElementById('simCreatinine').value) || 1.0;
+            const age = parseInt(document.getElementById('simAge').value) || 45;
+            const sex = document.getElementById('simSex').value;
+            
+            // CKD-EPI 2021 (Race-Free) Equation - per KDIGO/NKF recommendation
+            const kappa = sex === 'female' ? 0.7 : 0.9;
+            const alpha = sex === 'female' ? -0.241 : -0.302;
+            const sexFactor = sex === 'female' ? 1.012 : 1.0;
+            
+            const scrKappa = creatinine / kappa;
+            let egfr;
+            
+            // Apply piecewise formula
+            if (scrKappa <= 1) {
+                egfr = 142 * Math.pow(scrKappa, alpha) * Math.pow(0.9938, age) * sexFactor;
+            } else {
+                egfr = 142 * Math.pow(scrKappa, -1.200) * Math.pow(0.9938, age) * sexFactor;
+            }
+            
+            egfr = Math.round(Math.max(0, Math.min(150, egfr)));
+            document.getElementById('simEGFR').value = egfr;
+        }
+        
+        // ============================================================================
+        // REGIMEN INFORMATION DISPLAY
+        // ============================================================================
+        function updateRegimenInfo() {
+            const regimen = document.getElementById('simRegimen').value;
+            const data = REGIMEN_DATA[regimen];
+            const infoDiv = document.getElementById('regimenInfo');
+            
+            const cardioColor = data.cardiotoxicityProfile === 'HIGH' ? '#dc2626' : data.cardiotoxicityProfile === 'MODERATE-HIGH' ? '#ea580c' : '#f59e0b';
+            const myeloColor = data.myelosuppressionRisk === 'HIGH' ? '#dc2626' : '#f59e0b';
+            
+            infoDiv.innerHTML = `
+                <div style="margin-bottom: 8px;"><strong>${data.name}</strong> - ${data.type}</div>
+                <div style="font-size: 0.85em; color: #475569; margin-bottom: 8px;">${data.indication}</div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 0.85em; margin-bottom: 8px;">
+                    <span>Dose: <strong>${data.standardDose}</strong></span>
+                    <span>Max Lifetime: <strong>${data.maxLifetimeDose} mg/m²</strong></span>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
+                    <span style="background: ${cardioColor}20; color: ${cardioColor}; padding: 2px 8px; border-radius: 8px; font-size: 0.8em; font-weight: 600;">Cardiotoxicity: ${data.cardiotoxicityProfile}</span>
+                    <span style="background: ${myeloColor}20; color: ${myeloColor}; padding: 2px 8px; border-radius: 8px; font-size: 0.8em; font-weight: 600;">Myelosuppression: ${data.myelosuppressionRisk}</span>
+                </div>
+                <div style="font-size: 0.8em; color: #64748b;">
+                    <strong>Key Toxicities:</strong> ${data.keyToxicities.join(', ')}<br>
+                    <strong>Monitoring:</strong> ${data.monitoring.join(', ')}
+                </div>
+            `;
+        }
+        
+        // ============================================================================
+        // DRUG INTERACTION CHECKER - Evidence-Based Alerts
+        // ============================================================================
+        function checkDrugInteractions() {
+            const select = document.getElementById('simConcomitantMeds');
+            const selectedMeds = Array.from(select.selectedOptions).map(opt => opt.value).filter(v => v !== 'none');
+            const alertDiv = document.getElementById('drugInteractionAlert');
+            
+            if (selectedMeds.length === 0) {
+                alertDiv.style.display = 'none';
+                return;
+            }
+            
+            let interactions = [];
+            let totalRiskIncrease = 0;
+            
+            selectedMeds.forEach(med => {
+                if (DRUG_INTERACTIONS[med]) {
+                    const interaction = DRUG_INTERACTIONS[med];
+                    interactions.push({
+                        drug: med.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                        ...interaction
+                    });
+                    if (interaction.affectedToxicity === 'cardiotoxicity' || interaction.affectedToxicity === 'myelosuppression') {
+                        totalRiskIncrease += interaction.riskIncrease;
+                    }
+                }
+            });
+            
+            if (interactions.length === 0) {
+                alertDiv.style.display = 'none';
+                return;
+            }
+            
+            let html = `<div style="background: #fef2f2; border: 2px solid #dc2626; border-radius: 8px; padding: 15px;">`;
+            html += `<h4 style="color: #991b1b; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">[DRUG INTERACTIONS DETECTED]</h4>`;
+            
+            interactions.forEach(int => {
+                const severityColor = int.severity === 'MAJOR' ? '#dc2626' : int.severity === 'MODERATE' ? '#ea580c' : '#f59e0b';
+                html += `
+                    <div style="margin-bottom: 12px; padding: 10px; background: white; border-radius: 6px; border-left: 4px solid ${severityColor};">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <strong>${int.drug}</strong>
+                            <span style="background: ${severityColor}20; color: ${severityColor}; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: 600;">${int.severity}</span>
+                        </div>
+                        <div style="font-size: 0.85em; color: #475569; margin-bottom: 5px;"><strong>Mechanism:</strong> ${int.mechanism}</div>
+                        <div style="font-size: 0.85em; color: #1e40af;"><strong>Recommendation:</strong> ${int.recommendation}</div>
+                        ${int.riskIncrease > 0 ? `<div style="font-size: 0.85em; color: #dc2626; margin-top: 5px;"><strong>Risk Increase:</strong> +${int.riskIncrease}% ${int.affectedToxicity}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            if (totalRiskIncrease > 0) {
+                html += `<div style="margin-top: 10px; padding: 8px; background: #fecaca; border-radius: 6px; text-align: center;">
+                    <strong style="color: #991b1b;">Total Additional Risk from Interactions: +${totalRiskIncrease}%</strong>
+                </div>`;
+            }
+            
+            html += `</div>`;
+            alertDiv.innerHTML = html;
+            alertDiv.style.display = 'block';
+        }
+        
+        // ============================================================================
+        // CYCLE HISTORY TRACKING
+        // ============================================================================
+        function addCycleToHistory() {
+            if (!virtualPatient) {
+                alert('Please configure virtual patient first!');
+                return;
+            }
+            
+            const risks = calculateDigitalTwinRisks(virtualPatient);
+            
+            const cycleData = {
+                cycleNumber: virtualPatient.cycleNumber,
+                date: new Date().toLocaleDateString(),
+                cumulativeDose: virtualPatient.cumulativeDose,
+                cardioRisk: risks.cardioRisk,
+                neutroRisk: risks.neutroRisk,
+                anemiaRisk: risks.anemiaRisk,
+                overallScore: risks.overallScore,
+                glsRelativeChange: risks.glsRelativeChange,
+                isGLSCardiotoxicity: risks.isGLSCardiotoxicity,
+                anc: virtualPatient.cbc.anc,
+                hemoglobin: virtualPatient.cbc.hemoglobin,
+                platelets: virtualPatient.cbc.platelets,
+                egfr: virtualPatient.renal.egfr
+            };
+            
+            cycleHistory.push(cycleData);
+            localStorage.setItem('cycleHistory', JSON.stringify(cycleHistory));
+            
+            // Increment cycle number
+            document.getElementById('simCycleNumber').value = virtualPatient.cycleNumber + 1;
+            updateSimulation();
+            displayCycleHistory();
+        }
+        
+        function displayCycleHistory() {
+            const display = document.getElementById('cycleHistoryDisplay');
+            
+            if (cycleHistory.length === 0) {
+                display.innerHTML = '<p style="color: #64748b; font-size: 0.9em; text-align: center;">No cycles recorded yet</p>';
+                return;
+            }
+            
+            let html = '<table style="width: 100%; border-collapse: collapse; font-size: 0.8em;">';
+            html += '<thead><tr style="background: #f1f5f9;">';
+            html += '<th style="padding: 6px; text-align: left; border-bottom: 1px solid #e5e7eb;">Cycle</th>';
+            html += '<th style="padding: 6px; text-align: left; border-bottom: 1px solid #e5e7eb;">Dose</th>';
+            html += '<th style="padding: 6px; text-align: left; border-bottom: 1px solid #e5e7eb;">Cardio</th>';
+            html += '<th style="padding: 6px; text-align: left; border-bottom: 1px solid #e5e7eb;">ANC</th>';
+            html += '<th style="padding: 6px; text-align: left; border-bottom: 1px solid #e5e7eb;">GLS</th>';
+            html += '</tr></thead><tbody>';
+            
+            cycleHistory.forEach((cycle, index) => {
+                const cardioColor = cycle.cardioRisk > 30 ? '#dc2626' : cycle.cardioRisk > 15 ? '#f59e0b' : '#10b981';
+                const ancColor = cycle.anc < 1.0 ? '#dc2626' : cycle.anc < 1.5 ? '#f59e0b' : '#10b981';
+                const glsColor = cycle.isGLSCardiotoxicity ? '#dc2626' : '#10b981';
+                
+                html += `<tr>`;
+                html += `<td style="padding: 6px; border-bottom: 1px solid #e5e7eb;">${cycle.cycleNumber}</td>`;
+                html += `<td style="padding: 6px; border-bottom: 1px solid #e5e7eb;">${cycle.cumulativeDose}</td>`;
+                html += `<td style="padding: 6px; border-bottom: 1px solid #e5e7eb; color: ${cardioColor}; font-weight: 600;">${cycle.cardioRisk}%</td>`;
+                html += `<td style="padding: 6px; border-bottom: 1px solid #e5e7eb; color: ${ancColor}; font-weight: 600;">${cycle.anc}</td>`;
+                html += `<td style="padding: 6px; border-bottom: 1px solid #e5e7eb; color: ${glsColor}; font-weight: 600;">${cycle.glsRelativeChange >= 0 ? '+' : ''}${cycle.glsRelativeChange.toFixed(1)}%</td>`;
+                html += `</tr>`;
+            });
+            
+            html += '</tbody></table>';
+            
+            // Add trend analysis if enough data
+            if (cycleHistory.length >= 2) {
+                const lastTwo = cycleHistory.slice(-2);
+                const cardioTrend = lastTwo[1].cardioRisk - lastTwo[0].cardioRisk;
+                const ancTrend = lastTwo[1].anc - lastTwo[0].anc;
+                
+                html += `<div style="margin-top: 10px; padding: 8px; background: #f8fafc; border-radius: 6px; font-size: 0.85em;">`;
+                html += `<strong>Trend Analysis:</strong><br>`;
+                html += `Cardiotoxicity: <span style="color: ${cardioTrend > 0 ? '#dc2626' : '#10b981'};">${cardioTrend > 0 ? '+' : ''}${cardioTrend}%</span> | `;
+                html += `ANC: <span style="color: ${ancTrend < 0 ? '#dc2626' : '#10b981'};">${ancTrend > 0 ? '+' : ''}${ancTrend.toFixed(1)}</span>`;
+                html += `</div>`;
+            }
+            
+            html += `<button onclick="clearCycleHistory()" style="margin-top: 8px; padding: 6px 12px; background: #fee2e2; color: #991b1b; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8em;">Clear History</button>`;
+            
+            display.innerHTML = html;
+        }
+        
+        function clearCycleHistory() {
+            if (confirm('Clear all cycle history?')) {
+                cycleHistory = [];
+                localStorage.removeItem('cycleHistory');
+                displayCycleHistory();
+            }
+        }
+        
+        // ============================================================================
+        // GLS CALCULATION FUNCTIONS - Per ASE/EACVI Expert Consensus 2014 & ESC 2022
+        // References:
+        // - Plana JC, et al. J Am Soc Echocardiogr 2014;27:911-39 (ASE/EACVI Consensus)
+        // - Lyon AR, et al. Eur Heart J 2022;43:4229-4361 (ESC Cardio-Oncology)
+        // - Thavendiranathan P, et al. JAMA Cardiol 2021 (Meta-analysis)
+        // Key thresholds:
+        // - ≥15% relative decrease from baseline = Significant cardiotoxicity (ASE/EACVI)
+        // - Absolute GLS > -18% borderline, > -16% abnormal (ASE/EACVI)
+        // - Normal GLS: -18% to -22% (vendor-dependent, use same machine for serial)
+        // ============================================================================
+        
+        function calculateGLSRelativeChange(baselineGLS, currentGLS) {
+            // Formula: ((Current - Baseline) / |Baseline|) × 100
+            // Positive value = worsening (less negative GLS = worse function)
+            const baseline = Math.abs(baselineGLS) > 0 ? baselineGLS : -21.0;
+            const current = currentGLS;
+            const relativeChange = ((current - baseline) / Math.abs(baseline)) * 100;
+            return relativeChange;
+        }
+        
+        function assessAbsoluteGLSStatus(currentGLS) {
+            // Per ASE/EACVI 2014 Expert Consensus & ESC 2022 Guidelines
+            // Normal: more negative than -18% (typically -18% to -22%)
+            // Borderline: -16% to -18%
+            // Abnormal: less negative than -16%
+            const absGLS = currentGLS;
+            if (absGLS <= -20) return { status: 'normal', label: 'Normal', color: '#10b981', riskAddition: 0 };
+            else if (absGLS <= -18) return { status: 'borderline', label: 'Low-Normal', color: '#84cc16', riskAddition: 3 };
+            else if (absGLS <= -16) return { status: 'borderline', label: 'Borderline', color: '#f59e0b', riskAddition: 10 };
+            else if (absGLS <= -14) return { status: 'abnormal', label: 'Abnormal', color: '#ef4444', riskAddition: 20 };
+            else return { status: 'severe', label: 'Severely Abnormal', color: '#dc2626', riskAddition: 30 };
+        }
+        
+        function assessGLSChangeSignificance(relativeChange) {
+            // Per ASE/EACVI 2014: ≥15% relative reduction = subclinical LV dysfunction
+            // Per ESC 2022: >15% relative reduction OR new GLS < -18% absolute
+            // JAMA Cardiol meta-analysis: ≥11% associated with 16-fold higher CTRCD risk
+            if (relativeChange >= 15) return { status: 'significant', label: 'SIGNIFICANT CARDIOTOXICITY', color: '#dc2626', riskAddition: 25, recommendation: 'Cardiology consultation. Consider holding/reducing anthracycline. Start cardioprotection.' };
+            else if (relativeChange >= 11) return { status: 'warning', label: 'HIGH RISK', color: '#ea580c', riskAddition: 15, recommendation: 'Close monitoring. Consider cardiology referral.' };
+            else if (relativeChange >= 8) return { status: 'mild', label: 'Moderate Change', color: '#f59e0b', riskAddition: 8, recommendation: 'Increased monitoring frequency recommended.' };
+            else if (relativeChange >= 5) return { status: 'mild', label: 'Mild Change', color: '#3b82f6', riskAddition: 3, recommendation: 'Continue monitoring per protocol.' };
+            else return { status: 'normal', label: 'Stable', color: '#10b981', riskAddition: 0, recommendation: 'Continue treatment. Routine monitoring.' };
+        }
+        
+        function updateGLSIndicator() {
+            const baselineGLS = parseFloat(document.getElementById('simBaselineGLS').value) || -21.0;
+            const currentGLS = parseFloat(document.getElementById('simCurrentGLS').value) || -21.0;
+            const indicator = document.getElementById('simGLSIndicator');
+            
+            const relativeChange = calculateGLSRelativeChange(baselineGLS, currentGLS);
+            const status = assessAbsoluteGLSStatus(currentGLS);
+            const significance = assessGLSChangeSignificance(relativeChange);
+            
+            indicator.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Change: <strong style="color: ${significance.color}">${relativeChange >= 0 ? '+' : ''}${relativeChange.toFixed(1)}%</strong></span>
+                    <span style="background: ${status.color}20; color: ${status.color}; padding: 2px 8px; border-radius: 10px; font-weight: 600; font-size: 0.8em;">${status.label}</span>
+                </div>
+                ${relativeChange >= 15 ? '<div style="color: #dc2626; font-weight: 600; margin-top: 5px;">[ALERT] Cardiotoxicity threshold exceeded (≥15%)</div>' : ''}
+            `;
         }
 
-        // ENHANCED DIGITAL TWIN RISK CALCULATOR WITH EJECTION FRACTION (Matches Clinical Dashboard)
+        // ============================================================================
+        // ENHANCED DIGITAL TWIN RISK CALCULATOR
+        // Incorporates: GLS, CBC, Kidney Function, Drug Interactions, Regimen-specific
+        // Evidence Sources: NCCN, ASCO, ASE/EACVI, FDA Prescribing Information
+        // ============================================================================
         function calculateDigitalTwinRisks(patient) {
-            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, ejectionFraction } = patient;
+            const { age, sex, cumulativeDose, chronicDiseases, vitals, cancer, ejectionFraction, baselineGLS, currentGLS, cbc, renal, concomitantMeds, regimen } = patient;
             const dose = cumulativeDose;
             
-            // Cardiotoxicity calculation with ejection fraction
+            // Get regimen-specific data
+            const regimenData = REGIMEN_DATA[regimen || 'doxorubicin'];
+            const maxDose = regimenData.maxLifetimeDose;
+            
+            // ============================================================================
+            // CARDIOTOXICITY CALCULATION
+            // ============================================================================
             let cardioBase = 0;
-            if (dose > 550) cardioBase = 36;
-            else if (dose > 450) cardioBase = 24;
-            else if (dose > 300) cardioBase = 12;
-            else if (dose > 200) cardioBase = 5;
+            
+            // Dose-based risk (adjusted for regimen-specific max dose)
+            const dosePercentage = (dose / maxDose) * 100;
+            if (dosePercentage > 100) cardioBase = 36;
+            else if (dosePercentage > 82) cardioBase = 24;  // >450/550
+            else if (dosePercentage > 55) cardioBase = 12;  // >300/550
+            else if (dosePercentage > 36) cardioBase = 5;   // >200/550
             else cardioBase = 1;
             
             let cardioModifiers = [];
+            
+            // Regimen-specific cardiotoxicity modifier
+            if (regimenData.cardiotoxicityProfile === 'HIGH') {
+                cardioBase += 5;
+                cardioModifiers.push(`${regimenData.name} has HIGH cardiotoxicity profile - adds +5% risk`);
+            }
             
             if (age < 18) {
                 cardioBase += 8;
@@ -522,6 +1346,55 @@
             } else if (ejectionFraction < 55) {
                 cardioBase += 5;
                 cardioModifiers.push(`Borderline ejection fraction (${ejectionFraction}%) adds +5% risk`);
+            }
+            
+            // ============================================================================
+            // GLS-BASED CARDIOTOXICITY ASSESSMENT (PRIMARY DETECTION METHOD)
+            // Per ASE/EACVI Expert Consensus - More accurate than LVEF alone
+            // ============================================================================
+            const patientBaselineGLS = baselineGLS || -21.0;
+            const patientCurrentGLS = currentGLS || -21.0;
+            
+            const glsRelativeChange = calculateGLSRelativeChange(patientBaselineGLS, patientCurrentGLS);
+            const glsAbsoluteStatus = assessAbsoluteGLSStatus(patientCurrentGLS);
+            const glsChangeSignificance = assessGLSChangeSignificance(glsRelativeChange);
+            
+            // Add GLS-based risk
+            cardioBase += glsAbsoluteStatus.riskAddition;
+            cardioBase += glsChangeSignificance.riskAddition;
+            
+            // Add GLS modifiers
+            if (glsAbsoluteStatus.riskAddition > 0) {
+                cardioModifiers.push(`GLS: Absolute value (${patientCurrentGLS.toFixed(1)}%) is ${glsAbsoluteStatus.label.toLowerCase()} - adds +${glsAbsoluteStatus.riskAddition}% risk`);
+            }
+            if (glsChangeSignificance.riskAddition > 0) {
+                cardioModifiers.push(`GLS: Relative change of ${glsRelativeChange >= 0 ? '+' : ''}${glsRelativeChange.toFixed(1)}% from baseline - adds +${glsChangeSignificance.riskAddition}% risk`);
+            }
+            if (glsRelativeChange >= 15) {
+                cardioModifiers.push(`GLS: ≥15% reduction indicates SUBCLINICAL LV DYSFUNCTION (ASE/EACVI criteria)`);
+            }
+            
+            // ============================================================================
+            // DRUG INTERACTION IMPACT ON CARDIOTOXICITY
+            // ============================================================================
+            let drugInteractionRisk = 0;
+            let drugInteractionAlerts = [];
+            
+            if (concomitantMeds && concomitantMeds.length > 0) {
+                concomitantMeds.forEach(med => {
+                    if (med !== 'none' && DRUG_INTERACTIONS[med]) {
+                        const interaction = DRUG_INTERACTIONS[med];
+                        if (interaction.affectedToxicity === 'cardiotoxicity') {
+                            drugInteractionRisk += interaction.riskIncrease;
+                            drugInteractionAlerts.push(`${med.replace(/_/g, ' ')}: +${interaction.riskIncrease}% (${interaction.severity})`);
+                        }
+                    }
+                });
+            }
+            
+            if (drugInteractionRisk > 0) {
+                cardioBase += drugInteractionRisk;
+                cardioModifiers.push(`Drug interactions add +${drugInteractionRisk}% cardiotoxicity risk`);
             }
             
             // Chronic diseases
@@ -560,9 +1433,27 @@
             
             const cardioRisk = Math.min(95, Math.round(cardioBase));
             
-            // Neutropenia calculation
+            // ============================================================================
+            // NEUTROPENIA CALCULATION - Per NCCN Myeloid Growth Factor Guidelines
+            // ============================================================================
             let neutroBase = 35 + (dose / 600 * 45);
             let neutroModifiers = [];
+            
+            // CBC-based adjustments - Per CTCAE v5.0
+            const patientANC = cbc?.anc || 4.0;
+            if (patientANC < 1.5) {
+                neutroBase += 20;
+                neutroModifiers.push(`Low baseline ANC (${patientANC}) - HIGH risk - adds +20%`);
+            } else if (patientANC < 2.0) {
+                neutroBase += 10;
+                neutroModifiers.push(`Borderline ANC (${patientANC}) adds +10%`);
+            }
+            
+            // Regimen-specific myelosuppression
+            if (regimenData.myelosuppressionRisk === 'HIGH') {
+                neutroBase += 10;
+                neutroModifiers.push(`${regimenData.name} has HIGH myelosuppression risk - adds +10%`);
+            }
 
             if (age > 65) {
                 neutroBase += 12;
@@ -576,9 +1467,20 @@
                 neutroBase += 8;
                 neutroModifiers.push("Diabetes adds +8% (impaired immune function)");
             }
+            
+            // Kidney function impact on neutropenia (reduced drug clearance)
+            const patientEGFR = renal?.egfr || 90;
+            if (patientEGFR < 30) {
+                neutroBase += 15;
+                neutroModifiers.push(`Severe renal impairment (eGFR ${patientEGFR}) adds +15% - reduced drug clearance`);
+            } else if (patientEGFR < 60) {
+                neutroBase += 8;
+                neutroModifiers.push(`Moderate renal impairment (eGFR ${patientEGFR}) adds +8%`);
+            }
+            
             if (chronicDiseases.includes('kidney_disease')) {
-                neutroBase += 10;
-                neutroModifiers.push("Kidney disease adds +10% (reduced drug clearance)");
+                neutroBase += 5; // Additional to eGFR adjustment
+                neutroModifiers.push("Documented kidney disease adds +5%");
             }
             if (chronicDiseases.includes('liver_disease')) {
                 neutroBase += 9;
@@ -587,20 +1489,67 @@
             
             const neutroRisk = Math.min(95, Math.round(neutroBase));
             
-            // Anemia calculation with pre-existing condition
+            // ============================================================================
+            // ANEMIA CALCULATION - Per NCCN Cancer-Related Anemia Guidelines
+            // ============================================================================
             let anemiaBase = 30 + (dose / 600 * 45);
-            if (sex === 'female') anemiaBase += 8;
+            let anemiaModifiers = [];
+            
+            if (sex === 'female') {
+                anemiaBase += 8;
+                anemiaModifiers.push("Female sex adds +8% risk");
+            }
+            
+            // Hemoglobin-based risk assessment
+            const patientHgb = cbc?.hemoglobin || 13.5;
+            const hgbNormal = sex === 'female' ? 12.0 : 13.5;
+            
+            if (patientHgb < 8.0) {
+                anemiaBase += 30;
+                anemiaModifiers.push(`Severe anemia (Hgb ${patientHgb}) - CRITICAL - adds +30%`);
+            } else if (patientHgb < 10.0) {
+                anemiaBase += 20;
+                anemiaModifiers.push(`Moderate anemia (Hgb ${patientHgb}) adds +20%`);
+            } else if (patientHgb < hgbNormal) {
+                anemiaBase += 10;
+                anemiaModifiers.push(`Mild anemia (Hgb ${patientHgb}) adds +10%`);
+            }
             
             // Pre-existing anemia significantly increases risk
             if (chronicDiseases.includes('anemia')) {
-                anemiaBase += 25;
+                anemiaBase += 15;
+                anemiaModifiers.push("Pre-existing anemia adds +15%");
             }
             
             const anemiaRisk = Math.min(90, Math.round(anemiaBase));
             
+            // ============================================================================
+            // THROMBOCYTOPENIA RISK - Per CTCAE v5.0
+            // ============================================================================
+            let thromboBase = 20 + (dose / 600 * 30);
+            let thromboModifiers = [];
+            
+            const patientPlatelets = cbc?.platelets || 250;
+            if (patientPlatelets < 100) {
+                thromboBase += 30;
+                thromboModifiers.push(`Low baseline platelets (${patientPlatelets}) - HIGH risk - adds +30%`);
+            } else if (patientPlatelets < 150) {
+                thromboBase += 15;
+                thromboModifiers.push(`Borderline platelets (${patientPlatelets}) adds +15%`);
+            }
+            
+            if (regimenData.myelosuppressionRisk === 'HIGH') {
+                thromboBase += 10;
+                thromboModifiers.push(`${regimenData.name} has HIGH myelosuppression - adds +10%`);
+            }
+            
+            const thromboRisk = Math.min(90, Math.round(thromboBase));
+            
             // Other side effects
             let nauseaBase = 82;
             if (sex === 'female') nauseaBase += 10;
+            // Emetogenicity from regimen
+            if (regimenData.emetogenicity === 'HIGH') nauseaBase += 5;
             const nauseaRisk = Math.min(98, Math.round(nauseaBase));
             
             let fatigueBase = 55 + (dose / 600 * 35);
@@ -610,12 +1559,52 @@
             let mucositisBase = 25 + (dose / 600 * 35);
             const mucositisRisk = Math.min(85, Math.round(mucositisBase));
             
+            // ============================================================================
+            // TREATMENT ELIGIBILITY CHECK
+            // ============================================================================
+            let treatmentEligibility = {
+                eligible: true,
+                reasons: [],
+                warnings: [],
+                doseAdjustment: 100
+            };
+            
+            // CBC-based eligibility (NCCN criteria)
+            if (patientANC < 1.5) {
+                treatmentEligibility.eligible = false;
+                treatmentEligibility.reasons.push(`ANC ${patientANC} < 1.5: HOLD chemotherapy until ANC recovery`);
+            }
+            if (patientPlatelets < 100) {
+                treatmentEligibility.eligible = false;
+                treatmentEligibility.reasons.push(`Platelets ${patientPlatelets} < 100: HOLD chemotherapy`);
+            }
+            if (patientHgb < 7.0) {
+                treatmentEligibility.eligible = false;
+                treatmentEligibility.reasons.push(`Hemoglobin ${patientHgb} < 7.0: Transfuse before treatment`);
+            }
+            
+            // Renal-based dose adjustment
+            if (patientEGFR < 30) {
+                treatmentEligibility.doseAdjustment = regimenData.renalAdjustment.severe * 100;
+                treatmentEligibility.warnings.push(`eGFR ${patientEGFR}: Reduce dose to ${treatmentEligibility.doseAdjustment}%`);
+            } else if (patientEGFR < 60) {
+                treatmentEligibility.doseAdjustment = regimenData.renalAdjustment.moderate * 100;
+                treatmentEligibility.warnings.push(`eGFR ${patientEGFR}: Consider dose reduction to ${treatmentEligibility.doseAdjustment}%`);
+            }
+            
+            // Drug interaction warnings
+            if (drugInteractionAlerts.length > 0) {
+                treatmentEligibility.warnings.push(`Drug interactions detected: ${drugInteractionAlerts.join('; ')}`);
+            }
+            
             // Overall Recovery Score (higher is better)
             let overallScore = 85;
             overallScore -= (cardioRisk / 100) * 30;
             overallScore -= (neutroRisk / 100) * 25;
             overallScore -= (anemiaRisk / 100) * 20;
             overallScore -= chronicDiseases.filter(d => d !== 'none').length * 3;
+            // Additional penalty for drug interactions
+            overallScore -= drugInteractionRisk * 0.5;
             overallScore = Math.max(Math.round(overallScore), 0);
 
             return {
@@ -623,11 +1612,36 @@
                 cardioModifiers, 
                 neutroRisk, 
                 neutroModifiers,
-                anemiaRisk, 
+                anemiaRisk,
+                anemiaModifiers,
+                thromboRisk,
+                thromboModifiers,
                 nauseaRisk, 
                 fatigueRisk, 
                 mucositisRisk, 
-                overallScore
+                overallScore,
+                // GLS Assessment Data
+                glsRelativeChange: glsRelativeChange,
+                glsStatus: glsAbsoluteStatus,
+                glsChangeSignificance: glsChangeSignificance,
+                isGLSCardiotoxicity: glsRelativeChange >= 15 || patientCurrentGLS > -16,
+                // CBC Assessment
+                cbcStatus: {
+                    anc: patientANC,
+                    hemoglobin: patientHgb,
+                    platelets: patientPlatelets
+                },
+                // Renal Assessment
+                renalStatus: {
+                    egfr: patientEGFR
+                },
+                // Drug Interactions
+                drugInteractionRisk,
+                drugInteractionAlerts,
+                // Treatment Eligibility
+                treatmentEligibility,
+                // Regimen Info
+                regimenData
             };
         }
 
@@ -643,13 +1657,54 @@
             // Add simulated session
             simulatedPatient.cumulativeDose += simulationDose;
             const risks = calculateDigitalTwinRisks(simulatedPatient);
+            const maxDose = risks.regimenData.maxLifetimeDose;
 
             // Display results
             const resultsContainer = document.getElementById('simulationContent');
             const resultsPanel = document.getElementById('simulationResults');
 
             let html = `<h5>Simulation Results for ${simulationDose} mg/m² Dose</h5>`;
-            html += `<p><strong>Projected Cumulative Dose:</strong> ${simulatedPatient.cumulativeDose} mg/m²</p>`;
+            html += `<p><strong>Regimen:</strong> ${risks.regimenData.name}</p>`;
+            html += `<p><strong>Projected Cumulative Dose:</strong> ${simulatedPatient.cumulativeDose} mg/m² (Max: ${maxDose} mg/m²)</p>`;
+            
+            // ============================================================================
+            // TREATMENT ELIGIBILITY ASSESSMENT
+            // ============================================================================
+            if (!risks.treatmentEligibility.eligible || risks.treatmentEligibility.warnings.length > 0) {
+                html += `<div style="background: ${risks.treatmentEligibility.eligible ? '#fffbeb' : '#fef2f2'}; border: 2px solid ${risks.treatmentEligibility.eligible ? '#f59e0b' : '#dc2626'}; border-radius: 10px; padding: 15px; margin: 15px 0;">`;
+                html += `<h6 style="color: ${risks.treatmentEligibility.eligible ? '#92400e' : '#991b1b'}; margin-bottom: 10px;">${risks.treatmentEligibility.eligible ? '[WARNING] Treatment Precautions' : '[HOLD] Treatment Not Recommended'}</h6>`;
+                
+                if (risks.treatmentEligibility.reasons.length > 0) {
+                    risks.treatmentEligibility.reasons.forEach(reason => {
+                        html += `<div style="padding: 8px; background: #fecaca; border-radius: 6px; margin-bottom: 8px; color: #991b1b;"><strong>[HOLD]</strong> ${reason}</div>`;
+                    });
+                }
+                
+                if (risks.treatmentEligibility.warnings.length > 0) {
+                    risks.treatmentEligibility.warnings.forEach(warning => {
+                        html += `<div style="padding: 8px; background: #fef3c7; border-radius: 6px; margin-bottom: 8px; color: #92400e;"><strong>[CAUTION]</strong> ${warning}</div>`;
+                    });
+                }
+                
+                if (risks.treatmentEligibility.doseAdjustment < 100) {
+                    html += `<div style="margin-top: 10px; padding: 10px; background: #dbeafe; border-radius: 6px; color: #1e40af;"><strong>Recommended Dose:</strong> ${Math.round(simulationDose * risks.treatmentEligibility.doseAdjustment / 100)} mg/m² (${risks.treatmentEligibility.doseAdjustment}% of standard)</div>`;
+                }
+                
+                html += `</div>`;
+            }
+            
+            // ============================================================================
+            // DRUG INTERACTION ALERTS
+            // ============================================================================
+            if (risks.drugInteractionAlerts && risks.drugInteractionAlerts.length > 0) {
+                html += `<div style="background: #fef2f2; border: 2px solid #dc2626; border-radius: 10px; padding: 15px; margin: 15px 0;">`;
+                html += `<h6 style="color: #991b1b; margin-bottom: 10px;">[DRUG INTERACTIONS DETECTED]</h6>`;
+                risks.drugInteractionAlerts.forEach(alert => {
+                    html += `<div style="padding: 6px 10px; background: white; border-radius: 4px; margin-bottom: 5px; font-size: 0.9em;">${alert}</div>`;
+                });
+                html += `<div style="margin-top: 10px; padding: 8px; background: #fecaca; border-radius: 6px; text-align: center;"><strong>Additional Risk: +${risks.drugInteractionRisk}%</strong></div>`;
+                html += `</div>`;
+            }
             
             // Display calculation details
             html += `<div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin: 15px 0;">`;
@@ -665,38 +1720,105 @@
                 risks.neutroModifiers.forEach(mod => html += `<div class="calculation-step">${mod}</div>`);
             }
             
+            if (risks.anemiaModifiers && risks.anemiaModifiers.length > 0) {
+                html += `<p><strong>Anemia Factors:</strong></p>`;
+                risks.anemiaModifiers.forEach(mod => html += `<div class="calculation-step">${mod}</div>`);
+            }
+            
             html += `</div>`;
             
+            // Risk Metrics Grid
             html += `<div class="metrics-grid" style="margin: 15px 0;">`;
-            html += `<div class="metric-card"><div class="metric-value">${risks.cardioRisk}%</div><div class="metric-label">Cardiotoxicity</div></div>`;
-            html += `<div class="metric-card"><div class="metric-value">${risks.neutroRisk}%</div><div class="metric-label">Neutropenia</div></div>`;
-            html += `<div class="metric-card"><div class="metric-value">${risks.anemiaRisk}%</div><div class="metric-label">Anemia</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value" style="color: ${risks.cardioRisk > 30 ? '#dc2626' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981'};">${risks.cardioRisk}%</div><div class="metric-label">Cardiotoxicity</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value" style="color: ${risks.neutroRisk > 60 ? '#dc2626' : risks.neutroRisk > 40 ? '#f59e0b' : '#10b981'};">${risks.neutroRisk}%</div><div class="metric-label">Neutropenia</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value" style="color: ${risks.anemiaRisk > 60 ? '#dc2626' : risks.anemiaRisk > 40 ? '#f59e0b' : '#10b981'};">${risks.anemiaRisk}%</div><div class="metric-label">Anemia</div></div>`;
+            html += `<div class="metric-card"><div class="metric-value" style="color: ${risks.thromboRisk > 50 ? '#dc2626' : risks.thromboRisk > 30 ? '#f59e0b' : '#10b981'};">${risks.thromboRisk}%</div><div class="metric-label">Thrombocytopenia</div></div>`;
             html += `<div class="metric-card"><div class="metric-value">${risks.overallScore}</div><div class="metric-label">Recovery Score</div></div>`;
+            html += `</div>`;
+            
+            // CBC Status Display
+            html += `<div style="background: #f0fdf4; border: 1px solid #10b981; border-radius: 10px; padding: 15px; margin: 15px 0;">`;
+            html += `<h6 style="color: #166534; margin-bottom: 10px;">CBC Status at Simulation</h6>`;
+            html += `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; text-align: center;">`;
+            
+            const ancColor = risks.cbcStatus.anc < 1.0 ? '#dc2626' : risks.cbcStatus.anc < 1.5 ? '#f59e0b' : '#10b981';
+            const hgbColor = risks.cbcStatus.hemoglobin < 8.0 ? '#dc2626' : risks.cbcStatus.hemoglobin < 10.0 ? '#f59e0b' : '#10b981';
+            const pltColor = risks.cbcStatus.platelets < 75 ? '#dc2626' : risks.cbcStatus.platelets < 100 ? '#f59e0b' : '#10b981';
+            
+            html += `<div><div style="font-size: 1.5em; font-weight: 700; color: ${ancColor};">${risks.cbcStatus.anc}</div><div style="font-size: 0.85em; color: #64748b;">ANC (x10^9/L)</div></div>`;
+            html += `<div><div style="font-size: 1.5em; font-weight: 700; color: ${hgbColor};">${risks.cbcStatus.hemoglobin}</div><div style="font-size: 0.85em; color: #64748b;">Hemoglobin (g/dL)</div></div>`;
+            html += `<div><div style="font-size: 1.5em; font-weight: 700; color: ${pltColor};">${risks.cbcStatus.platelets}</div><div style="font-size: 0.85em; color: #64748b;">Platelets (x10^9/L)</div></div>`;
+            html += `</div></div>`;
+            
+            // GLS-specific display
+            html += `<div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 15px; border-radius: 10px; margin: 15px 0; border: 2px solid #f59e0b;">`;
+            html += `<h6 style="color: #92400e; margin-bottom: 10px;">GLS-Based Cardiotoxicity Assessment</h6>`;
+            html += `<div style="display: flex; gap: 20px; flex-wrap: wrap;">`;
+            html += `<div><strong>GLS Change:</strong> <span style="color: ${risks.glsChangeSignificance.color}; font-weight: 700;">${risks.glsRelativeChange >= 0 ? '+' : ''}${risks.glsRelativeChange.toFixed(1)}%</span></div>`;
+            html += `<div><strong>Status:</strong> <span style="background: ${risks.glsStatus.color}20; color: ${risks.glsStatus.color}; padding: 2px 10px; border-radius: 10px; font-weight: 600;">${risks.glsStatus.label}</span></div>`;
+            html += `</div>`;
+            if (risks.isGLSCardiotoxicity) {
+                html += `<div style="margin-top: 10px; padding: 10px; background: #fef2f2; border-left: 4px solid #dc2626; border-radius: 4px;">`;
+                html += `<strong style="color: #dc2626;">[ALERT] GLS CARDIOTOXICITY DETECTED</strong>`;
+                html += `<p style="color: #7f1d1d; font-size: 0.9em; margin-top: 5px;">≥15% GLS reduction or absolute GLS > -16% indicates subclinical LV dysfunction per ASE/EACVI guidelines</p>`;
+                html += `</div>`;
+            }
             html += `</div>`;
 
             // Add alerts based on risks
-            const hasHighRisk = risks.cardioRisk > 30 || simulatedPatient.cumulativeDose > 550 || 
-                               risks.neutroRisk > 60 || risks.anemiaRisk > 70;
+            const hasHighRisk = risks.cardioRisk > 30 || simulatedPatient.cumulativeDose > maxDose || 
+                               risks.neutroRisk > 60 || risks.anemiaRisk > 70 || risks.isGLSCardiotoxicity ||
+                               !risks.treatmentEligibility.eligible;
             
             if (hasHighRisk) {
                 html += '<div class="alert">';
                 html += '<h4>SIMULATION ALERT: High Risk Projected</h4>';
                 
-                if (simulatedPatient.cumulativeDose > 550) {
-                    html += `<p>❌ Cumulative dose (${simulatedPatient.cumulativeDose} mg/m²) exceeds maximum recommended (550 mg/m²)</p>`;
+                if (simulatedPatient.cumulativeDose > maxDose) {
+                    html += `<p>[X] Cumulative dose (${simulatedPatient.cumulativeDose} mg/m²) exceeds maximum recommended (${maxDose} mg/m²) for ${risks.regimenData.name}</p>`;
+                }
+                if (risks.isGLSCardiotoxicity) {
+                    html += `<p>[X] GLS indicates cardiotoxicity - ${risks.glsChangeSignificance.label} (${risks.glsRelativeChange >= 0 ? '+' : ''}${risks.glsRelativeChange.toFixed(1)}% change)</p>`;
                 }
                 if (risks.cardioRisk > 30) {
-                    html += `<p>❌ Cardiotoxicity risk projected at ${risks.cardioRisk}% - consider dose reduction or cardioprotection</p>`;
+                    html += `<p>[X] Cardiotoxicity risk projected at ${risks.cardioRisk}% - consider dose reduction or cardioprotection</p>`;
                 }
                 if (risks.neutroRisk > 60) {
-                    html += `<p>⚠️ Neutropenia risk projected at ${risks.neutroRisk}% - G-CSF prophylaxis recommended</p>`;
+                    html += `<p>[WARNING] Neutropenia risk projected at ${risks.neutroRisk}% - G-CSF prophylaxis recommended</p>`;
                 }
                 if (risks.anemiaRisk > 70) {
-                    html += `<p>⚠️ Anemia risk projected at ${risks.anemiaRisk}% - monitor hemoglobin closely</p>`;
+                    html += `<p>[WARNING] Anemia risk projected at ${risks.anemiaRisk}% - monitor hemoglobin closely</p>`;
+                }
+                if (risks.cbcStatus.anc < 1.5) {
+                    html += `<p>[X] ANC ${risks.cbcStatus.anc} below threshold - HOLD treatment until recovery</p>`;
+                }
+                if (risks.cbcStatus.platelets < 100) {
+                    html += `<p>[X] Platelets ${risks.cbcStatus.platelets} below threshold - HOLD treatment</p>`;
                 }
                 
                 html += '</div>';
             }
+            
+            // Clinical Recommendations
+            html += `<div style="background: #f0f9ff; border: 1px solid #0066cc; border-radius: 10px; padding: 15px; margin: 15px 0;">`;
+            html += `<h6 style="color: #0066cc; margin-bottom: 10px;">Clinical Recommendations</h6>`;
+            html += `<ul style="margin: 0; padding-left: 20px; font-size: 0.9em; color: #1e40af;">`;
+            
+            if (risks.neutroRisk > 60) {
+                html += `<li>Consider G-CSF (filgrastim/pegfilgrastim) prophylaxis per NCCN guidelines</li>`;
+            }
+            if (risks.cbcStatus.hemoglobin < 10) {
+                html += `<li>Evaluate for EPO-stimulating agents or transfusion per NCCN Anemia guidelines</li>`;
+            }
+            if (risks.isGLSCardiotoxicity || risks.cardioRisk > 25) {
+                html += `<li>Cardiology consultation recommended. Consider dexrazoxane cardioprotection.</li>`;
+            }
+            if (risks.renalStatus.egfr < 60) {
+                html += `<li>Dose adjustment required for renal impairment. Hydration recommended.</li>`;
+            }
+            html += `<li>Monitor CBC weekly during treatment cycle</li>`;
+            html += `<li>Repeat GLS/ECHO before next cycle if cardiotoxicity concerns</li>`;
+            html += `</ul></div>`;
 
             resultsContainer.innerHTML = html;
             resultsPanel.style.display = 'block';
@@ -709,17 +1831,36 @@
             }
 
             const doses = [30, 60, 90, 120];
-            let html = '<h5>Multiple Scenario Analysis</h5>';
-            html += '<p>Comparison of different dose strategies:</p>';
+            const regimen = virtualPatient.regimen || 'doxorubicin';
+            const regimenData = REGIMEN_DATA[regimen];
+            
+            let html = `<h5>Multiple Scenario Analysis - ${regimenData.name}</h5>`;
+            html += `<p>Comparison of different dose strategies (Max lifetime: ${regimenData.maxLifetimeDose} mg/m²):</p>`;
+            
+            // Treatment eligibility check first
+            const baseRisks = calculateDigitalTwinRisks(virtualPatient);
+            if (!baseRisks.treatmentEligibility.eligible) {
+                html += `<div style="background: #fef2f2; border: 2px solid #dc2626; border-radius: 10px; padding: 15px; margin: 15px 0;">`;
+                html += `<h6 style="color: #991b1b; margin-bottom: 10px;">[HOLD] Current Labs Do Not Support Treatment</h6>`;
+                baseRisks.treatmentEligibility.reasons.forEach(reason => {
+                    html += `<p style="color: #991b1b;">${reason}</p>`;
+                });
+                html += `</div>`;
+            }
+            
             html += '<table style="width: 100%; border-collapse: collapse; margin-top: 15px;">';
             html += '<thead><tr style="background: #f1f5f9;">';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Dose (mg/m²)</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Dose</th>';
             html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cumulative</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cardio Risk</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Neutro Risk</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Anemia Risk</th>';
-            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Recovery Score</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Cardio</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">GLS</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Neutro</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Anemia</th>';
+            html += '<th style="padding: 10px; text-align: left; border-bottom: 2px solid #e5e7eb;">Eligible</th>';
             html += '</tr></thead><tbody>';
+
+            let bestDose = null;
+            let bestScore = -1;
 
             doses.forEach(dose => {
                 const simulatedPatient = JSON.parse(JSON.stringify(virtualPatient));
@@ -727,30 +1868,81 @@
                 const risks = calculateDigitalTwinRisks(simulatedPatient);
 
                 const cardioColor = risks.cardioRisk > 30 ? '#ef4444' : risks.cardioRisk > 15 ? '#f59e0b' : '#10b981';
-                const neutroColor = risks.neutroRisk > 60 ? '#ef4444' : risks.neutroRisk > 40 ? '#f59e0b' : '#3b82f6';
-                const anemiaColor = risks.anemiaRisk > 70 ? '#ef4444' : risks.anemiaRisk > 50 ? '#f59e0b' : '#8b5cf6';
+                const neutroColor = risks.neutroRisk > 60 ? '#ef4444' : risks.neutroRisk > 40 ? '#f59e0b' : '#10b981';
+                const anemiaColor = risks.anemiaRisk > 60 ? '#ef4444' : risks.anemiaRisk > 40 ? '#f59e0b' : '#10b981';
+                const glsIcon = risks.isGLSCardiotoxicity ? '[!]' : '[OK]';
+                const eligibleIcon = risks.treatmentEligibility.eligible ? '[YES]' : '[NO]';
+                const eligibleColor = risks.treatmentEligibility.eligible ? '#10b981' : '#dc2626';
+                
+                // Track best dose option
+                if (risks.treatmentEligibility.eligible && risks.overallScore > bestScore && risks.cardioRisk < 35) {
+                    bestScore = risks.overallScore;
+                    bestDose = { dose, risks };
+                }
+                
+                const exceededMax = simulatedPatient.cumulativeDose > regimenData.maxLifetimeDose;
 
-                html += `<tr>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${dose}</td>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${simulatedPatient.cumulativeDose}</td>`;
+                html += `<tr style="${exceededMax ? 'background: #fef2f2;' : ''}">`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${dose}${risks.treatmentEligibility.doseAdjustment < 100 ? ` (adj: ${Math.round(dose * risks.treatmentEligibility.doseAdjustment / 100)})` : ''}</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${simulatedPatient.cumulativeDose}${exceededMax ? ' [EXCEEDED]' : ''}</td>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${cardioColor}; font-weight: bold;">${risks.cardioRisk}%</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb;"><span style="background: ${risks.glsStatus.color}20; color: ${risks.glsStatus.color}; padding: 2px 8px; border-radius: 8px; font-size: 0.85em;">${glsIcon}</span></td>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${neutroColor}; font-weight: bold;">${risks.neutroRisk}%</td>`;
                 html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${anemiaColor}; font-weight: bold;">${risks.anemiaRisk}%</td>`;
-                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-weight: bold;">${risks.overallScore}</td>`;
+                html += `<td style="padding: 10px; border-bottom: 1px solid #e5e7eb; color: ${eligibleColor}; font-weight: bold;">${eligibleIcon}</td>`;
                 html += `</tr>`;
             });
 
             html += '</tbody></table>';
+            
+            // Best dose recommendation
+            if (bestDose) {
+                html += `<div style="margin-top: 15px; padding: 15px; background: #f0fdf4; border: 2px solid #10b981; border-radius: 10px;">`;
+                html += `<h6 style="color: #166534; margin-bottom: 10px;">Recommended Dose Option</h6>`;
+                html += `<p><strong>${bestDose.dose} mg/m²</strong> offers the best balance of efficacy and safety for this patient.</p>`;
+                html += `<p style="font-size: 0.9em; color: #166534;">Cardiotoxicity: ${bestDose.risks.cardioRisk}% | Neutropenia: ${bestDose.risks.neutroRisk}% | Recovery Score: ${bestDose.risks.overallScore}</p>`;
+                html += `</div>`;
+            }
+            
+            // Drug interactions summary
+            if (baseRisks.drugInteractionAlerts && baseRisks.drugInteractionAlerts.length > 0) {
+                html += `<div style="margin-top: 15px; padding: 15px; background: #fef2f2; border: 2px solid #dc2626; border-radius: 10px;">`;
+                html += `<h6 style="color: #991b1b; margin-bottom: 10px;">Active Drug Interactions</h6>`;
+                html += `<p style="font-size: 0.9em;">The following interactions are affecting all dose calculations:</p>`;
+                html += `<ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9em;">`;
+                baseRisks.drugInteractionAlerts.forEach(alert => {
+                    html += `<li style="color: #991b1b;">${alert}</li>`;
+                });
+                html += `</ul>`;
+                html += `</div>`;
+            }
 
-            // Add summary analysis
-            html += `<div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 10px;">`;
-            html += `<h6>Summary Analysis:</h6>`;
-            html += `<p>The optimal dose strategy balances treatment efficacy with manageable side effects. Consider:</p>`;
-            html += `<ul>`;
-            html += `<li><strong>Lower doses (30-60 mg/m²):</strong> Better safety profile, suitable for high-risk patients</li>`;
-            html += `<li><strong>Moderate doses (60-90 mg/m²):</strong> Balance between efficacy and toxicity</li>`;
-            html += `<li><strong>Higher doses (90-120 mg/m²):</strong> Maximum efficacy but increased risk of complications</li>`;
+            // CBC-based guidance
+            html += `<div style="margin-top: 15px; padding: 15px; background: #f8fafc; border-radius: 10px;">`;
+            html += `<h6 style="margin-bottom: 10px;">Laboratory-Based Treatment Thresholds (NCCN/ASCO)</h6>`;
+            html += `<table style="width: 100%; font-size: 0.85em; border-collapse: collapse;">`;
+            html += `<tr><td style="padding: 5px; border-bottom: 1px solid #e5e7eb;"><strong>ANC</strong></td><td style="padding: 5px; border-bottom: 1px solid #e5e7eb;">≥1.5 x10^9/L to proceed, &lt;1.0 requires G-CSF</td></tr>`;
+            html += `<tr><td style="padding: 5px; border-bottom: 1px solid #e5e7eb;"><strong>Platelets</strong></td><td style="padding: 5px; border-bottom: 1px solid #e5e7eb;">≥100 x10^9/L to proceed, &lt;50 consider transfusion</td></tr>`;
+            html += `<tr><td style="padding: 5px; border-bottom: 1px solid #e5e7eb;"><strong>Hemoglobin</strong></td><td style="padding: 5px; border-bottom: 1px solid #e5e7eb;">≥8 g/dL preferred, &lt;7 requires transfusion</td></tr>`;
+            html += `<tr><td style="padding: 5px;"><strong>eGFR</strong></td><td style="padding: 5px;">&lt;60: dose reduction, &lt;30: 50% dose or avoid</td></tr>`;
+            html += `</table></div>`;
+
+            // GLS Guidelines Reference
+            html += `<div style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 10px; border: 2px solid #f59e0b;">`;
+            html += `<h6 style="color: #92400e; margin-bottom: 10px;">GLS Cardiotoxicity Guidelines (ASE/EACVI):</h6>`;
+            html += `<ul style="color: #78350f; font-size: 0.9em; margin: 0; padding-left: 20px;">`;
+            html += `<li><strong>≥15% relative decrease</strong> from baseline = Significant cardiotoxicity</li>`;
+            html += `<li><strong>Absolute GLS > -16%</strong> (less negative) = Severely abnormal</li>`;
+            html += `<li>GLS detects cardiotoxicity <strong>2-3 months earlier</strong> than LVEF</li>`;
             html += `</ul>`;
+            html += `</div>`;
+
+            // Regimen-specific guidance
+            html += `<div style="margin-top: 15px; padding: 15px; background: #f0f9ff; border: 1px solid #0066cc; border-radius: 10px;">`;
+            html += `<h6 style="color: #0066cc; margin-bottom: 10px;">${regimenData.name} - Clinical Guidance</h6>`;
+            html += `<p style="font-size: 0.9em;"><strong>Key Toxicities:</strong> ${regimenData.keyToxicities.join(', ')}</p>`;
+            html += `<p style="font-size: 0.9em;"><strong>Monitoring:</strong> ${regimenData.monitoring.join(', ')}</p>`;
+            html += `<p style="font-size: 0.9em;"><strong>Max Lifetime Dose:</strong> ${regimenData.maxLifetimeDose} mg/m² (doxorubicin equivalent)</p>`;
             html += `</div>`;
 
             const resultsContainer = document.getElementById('simulationContent');
